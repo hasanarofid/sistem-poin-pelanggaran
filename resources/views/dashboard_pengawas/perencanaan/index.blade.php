@@ -20,7 +20,7 @@
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between">
             <div class="card-title mb-0">
-              <h5 class="m-0 me-2">Tabel Perencanaan</h5>
+              <h5 class="m-0 me-2">Tabel Input Rencana Kerja</h5>
               <small class="text-muted">Pengawas : {{ Auth::user()->name}}</small>
             </div>
 

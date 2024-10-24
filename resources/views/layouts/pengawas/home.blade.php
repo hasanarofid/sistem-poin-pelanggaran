@@ -148,15 +148,15 @@ lang="{{ str_replace('_', '-', app()->getLocale()) }}"
               <li class="menu-item {{ (request()->is('perencanaan')) ? 'active' : '' }}">
                 <a href="{{ route('pengawas.perencanaan') }}" class="menu-link">
                   <i class="menu-icon tf-icons ti ti-layout-kanban"></i>
-                  <div data-i18n="Perencanaan">Perencanaan</div>
+                  <div data-i18n="Perencanaan">Input Rencana Kerja</div>
                 </a>
               </li>
-              <li class="menu-item {{ (request()->is('pelaporan')) ? 'active' : '' }}">
+              {{-- <li class="menu-item {{ (request()->is('pelaporan')) ? 'active' : '' }}">
                 <a href="{{ route('pengawas.pelaporan') }}" class="menu-link">
                   <i class="menu-icon tf-icons ti ti-messages"></i>
                   <div data-i18n="Pelaporan">Pelaporan</div>
                 </a>
-              </li>
+              </li> --}}
               <li class="menu-item {{ (request()->is('umpanbalik')) ? 'active' : '' }}">
                 <a href="{{ route('pengawas.umpanbalik') }}" class="menu-link">
                   <i class="menu-icon tf-icons ti ti-calendar"></i>

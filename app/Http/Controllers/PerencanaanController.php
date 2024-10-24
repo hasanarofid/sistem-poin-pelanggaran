@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AspekProgram;
+use App\Models\JenisProgram;
 use App\Models\Kategory;
 use App\Models\RencanaKerjaT;
 use App\Models\SekolahbinaanT;
@@ -21,9 +23,27 @@ class PerencanaanController extends Controller
         $subkategory = [];
         $binaan = SekolahbinaanT::with('sekolah')
         ->where('id_pengawas',Auth::user()->id)->get();
+        $currentMonth = date('n'); // Numeric representation of the current month (1-12)
+        $currentYear = date('Y');  // Current year
+        $months = [];
+    
+        // Generate the current and next 3 months
+        for ($i = 0; $i < 3; $i++) {
+            $timestamp = strtotime("+$i month");
+            $months[] = [
+                'value' => date('n', $timestamp),  // Month number (1-12)
+                'name' => date('F', $timestamp),   // Full month name
+            ];
+        }
+        $jenisProgram = JenisProgram::where('status',true)->get();
+        $aspekProgram = AspekProgram::where('status',true)->get();
 
         return view('dashboard_pengawas.perencanaan.index',
-        compact('kegiatan','kategory','subkategory','binaan'));
+        compact('kegiatan'
+        ,'kategory','subkategory','binaan','months',
+        'jenisProgram','aspekProgram'
+        
+    ));
     }
 
      // get data perencanaa

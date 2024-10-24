@@ -1,0 +1,80 @@
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+    <div class="app-brand demo" style="height: 190px !important;">
+        <a href="{{ route('admin.index') }}" class="app-brand-link">
+            <img src="{{ asset('logomodip.jpeg') }}" height="200px" width="200px" alt="Image placeholder" class="">
+        </a>
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
+            <i class="ti menu-toggle-icon d-none d-xl-block ti-sm align-middle"></i>
+            <i class="ti ti-x d-block d-xl-none ti-sm align-middle"></i>
+        </a>
+    </div>
+    <div class="menu-inner-shadow"></div>
+    <ul class="menu-inner py-1" style="margin-top: 10px">
+        <li class="menu-item {{ request()->is('dashboard') ? 'active' : '' }}">
+            <a href="{{ route('admin.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-smart-home"></i>
+                <div data-i18n="Profile">Dashboard</div>
+            </a>
+        </li>
+        @if (Auth::user()->role == 'Super Admin')
+        <li class="menu-item {{ (request()->is('superadmin/admin*')) ? 'active' : '' }}">
+            <a href="{{ route('admin.data') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-users"></i>
+                <div data-i18n="Profile">Admin</div>
+            </a>
+        </li>
+        <li class="menu-item {{ (request()->is('superadmin/mastertupoksi*')) ? 'active' : '' }}">
+            <a href="{{ route('mastertupoksi.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-list"></i>
+                <div data-i18n="Profile">Master Tupoksi</div>
+            </a>
+        </li>
+        <li class="menu-item {{ (request()->is('superadmin/pembagiantupoksi*')) ? 'active' : '' }}">
+            <a href="{{ route('pembagiantupoksi.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-id"></i>
+                <div data-i18n="Profile">Pembagian Tupoksi</div>
+            </a>
+        </li>
+        @endif
+
+        @if (Auth::user()->role == 'Admin')
+        <li class="menu-item {{ (request()->is('admin/masterpengawas*')) ? 'active' : '' }}">
+            <a href="{{ route('masterpengawas.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-user"></i>
+                <div data-i18n="Profile">Pengawas</div>
+            </a>
+        </li>
+        <li class="menu-item {{ (request()->is('admin/sekolah*')) ? 'active' : '' }}">
+            <a href="{{ route('sekolah.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-list"></i>
+                <div data-i18n="Profile">Sekolah</div>
+            </a>
+        </li>
+        <li class="menu-item {{ (request()->is('admin/guru*')) ? 'active' : '' }}">
+            <a href="{{ route('guru.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-users"></i>
+                <div data-i18n="Profile">Guru / Kepala Sekolah</div>
+            </a>
+        </li>
+
+        <li class="menu-item {{ (request()->is('admin/stakeholder*')) ? 'active' : '' }}">
+            <a href="{{ route('stakeholder.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-users"></i>
+                <div data-i18n="Profile">Stakeholder</div>
+            </a>
+        </li>
+        
+        @endif
+
+        <li class="menu-item">
+            <a class="menu-link" href="{{ route('logout') }}"
+                onclick="event.preventDefault(); document.getElementById('logout-form2').submit();">
+                <i class="menu-icon fa fa-sign-out"></i>
+                <div data-i18n="Logout">Logout</div>
+            </a>
+            <form id="logout-form2" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+        </li>
+    </ul>
+</aside>

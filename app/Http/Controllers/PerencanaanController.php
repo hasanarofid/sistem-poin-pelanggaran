@@ -26,13 +26,30 @@ class PerencanaanController extends Controller
         $currentMonth = date('n'); // Numeric representation of the current month (1-12)
         $currentYear = date('Y');  // Current year
         $months = [];
-    
-        // Generate the current and next 3 months
-        for ($i = 0; $i < 3; $i++) {
+        
+        // Array of month names in Indonesian
+        $monthNamesIndo = [
+            1 => 'Januari', 
+            2 => 'Februari', 
+            3 => 'Maret', 
+            4 => 'April', 
+            5 => 'Mei', 
+            6 => 'Juni', 
+            7 => 'Juli', 
+            8 => 'Agustus', 
+            9 => 'September', 
+            10 => 'Oktober', 
+            11 => 'November', 
+            12 => 'Desember'
+        ];
+        
+        // Generate the current and next 11 months in Indonesian
+        for ($i = 0; $i < 12; $i++) {
             $timestamp = strtotime("+$i month");
+            $monthNumber = date('n', $timestamp);
             $months[] = [
-                'value' => date('n', $timestamp),  // Month number (1-12)
-                'name' => date('F', $timestamp),   // Full month name
+                'value' => $monthNumber,                // Month number (1-12)
+                'name' => $monthNamesIndo[$monthNumber] // Full month name in Indonesian
             ];
         }
         $jenisProgram = JenisProgram::where('status',true)->get();
@@ -51,7 +68,7 @@ class PerencanaanController extends Controller
         if ($request->ajax()) {
 
     
-         $post = RencanaKerjaT::with('kategoriprogram')
+         $post = RencanaKerjaT::with('kategoriprogram','jenisprogram','aspekprogram')
          ->where('id_pengawas',Auth::user()->id)->latest()->get();
     
             return Datatables::of($post)
@@ -71,6 +88,17 @@ class PerencanaanController extends Controller
             })
             ->addColumn('nama_kategori', function($row){
                 return $row->kategoriprogram->nama;
+            })
+
+            ->addColumn('nama_jenis', function($row){
+                return !empty($row->jenisprogram->nama) ? $row->jenisprogram->nama : '-';
+            })
+
+            ->addColumn('nama_aspek', function($row){
+                return !empty($row->aspekprogram->nama) ? $row->aspekprogram->nama : '-';
+            })
+            ->addColumn('bulan_tahun', function($row){
+                return $row->bulan .' - '. $row->tahun_ajaran;
             })
 
              ->addColumn('nama_sekolah', function($row){
@@ -93,18 +121,27 @@ class PerencanaanController extends Controller
     
                             return $btn;
                     })
-                    ->rawColumns(['action','nama_kategori','nama_sekolah'])
+                    ->rawColumns(['action',
+                    'nama_kategori',
+                    'nama_jenis',
+                    'nama_aspek',
+                    'nama_sekolah',
+                    'bulan_tahun'])
                     ->make(true);
         }
     }
 
     public function save(Request $request){
+        // dd($request->post());
         $sekolah_ids = implode(',', $request->post('sekolah_id'));
         $model = new RencanaKerjaT();
         $model->tahun_ajaran = date('Y');
         $model->id_pengawas = Auth::user()->id;
         $model->nama_program_kerja = $request->post('nama_program_kerja');
         $model->kategoriprogram_id = $request->post('kategoriprogram_id');
+        $model->jenisprogram_id = $request->post('jenisprogram_id');
+        $model->aspekprogram_id = $request->post('aspekprogram_id');
+        $model->bulan = $request->post('bulan');
         $model->sekolah_id = $sekolah_ids;
         $model->deskripsi_permasalahan = $request->post('deskripsi_permasalahan');
         $model->target_capaian = $request->post('target_capaian');
@@ -123,6 +160,10 @@ class PerencanaanController extends Controller
         $data->nama_program_kerja = $request->post('nama_program_kerja');
         $data->kategoriprogram_id = $request->post('kategoriprogram_id');
         $data->sekolah_id = $sekolah_ids;
+        $data->kategoriprogram_id = $request->post('kategoriprogram_id');
+        $data->jenisprogram_id = $request->post('jenisprogram_id');
+        $data->aspekprogram_id = $request->post('aspekprogram_id');
+        $data->bulan = $request->post('bulan');
         $data->deskripsi_permasalahan = $request->post('deskripsi_permasalahan');
         $data->target_capaian = $request->post('target_capaian');
         $data->tenggat_waktu = $request->post('tenggat_waktu');

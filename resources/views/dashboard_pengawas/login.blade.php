@@ -10,7 +10,7 @@
           <div class="card-body">
             <img src="{{ asset('logomodip.jpeg') }}" height="150px" alt="Image placeholder" class="card-img">
             <h5 class="mb-1 pt-3 text-center">Monitoring & Evaluasi Pengawas dalam Pendampingan Satuan Pendidikan
-              berbasis Digital di JCD Wilayah Kabupaten Tanggerang </h5>
+              berbasis Digital di KCD Wilayah Kabupaten Tanggerang </h5>
               <hr>
             <form  role="form" method="POST" action="{{ route('superPengawasLogin') }}">
                 @csrf

@@ -13,4 +13,14 @@ class RencanaKerjaT extends Model
         return $this->hasOne(Kategory::class, 'id', 'kategoriprogram_id');
     }
 
+    public function jenisprogram()
+    {
+        return $this->hasOne(JenisProgram::class, 'id', 'jenisprogram_id');
+    }
+
+    public function aspekprogram()
+    {
+        return $this->hasOne(AspekProgram::class, 'id', 'aspekprogram_id');
+    }
+
 }

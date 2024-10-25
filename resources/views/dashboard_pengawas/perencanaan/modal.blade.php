@@ -14,11 +14,12 @@
                     <label class="form-label" for="basic-default-name">Bulan</label>
                     <select class="form-control" id="bulan" name="bulan">
                       @foreach($months as $month)
-                          <option value="{{ $month['value'] }}">
+                          <option value="{{ $month['name'] }}">
                               {{ $month['name'] }}
                           </option>
                       @endforeach
-                  </select>                </div>
+                    </select>                
+                </div>
                 <div class="col-12 col-md-6">
                   <label class="form-label" for="basic-default-name">Tahun</label>
                    <input type="text" class="form-control"  id="tahun_ajaran" value="{{ date('Y') }}">  
@@ -127,9 +128,19 @@
                   <input type="hidden" id="id" name="id">
                   @csrf
                   <div class="col-12 col-md-6">
-                      <label class="form-label" for="basic-default-name">Tahun</label>
-                       <input type="text" class="form-control" disabled id="tahun_ajaran_edit" value="">
+                      <label class="form-label" for="basic-default-name">Bulan</label>
+                      <select class="form-control" id="bulan_edit" name="bulan">
+                        @foreach($months as $month)
+                            <option value="{{ $month['name'] }}">
+                                {{ $month['name'] }}
+                            </option>
+                        @endforeach
+                      </select> 
                   </div>
+                  <div class="col-12 col-md-6">
+                    <label class="form-label" for="basic-default-name">Tahun</label>
+                     <input type="text" class="form-control" disabled id="tahun_ajaran_edit" value="">
+                </div>
                   <div class="col-12 col-md-6">
                       <label class="form-label" for="basic-default-name">Nama Program Kerja</label>
                       <input placeholder="Nama Program Kerja" type="text" class="form-control"  name="nama_program_kerja" id="nama_program_kerja_edit" required>
@@ -150,6 +161,35 @@
                           </select>
                   </div>
                   <div class="col-12 col-md-6">
+                    <label class="form-label" for="basic-default-name">Jenis Program </label>
+                    <select
+                          id="jenisprogram_id_edit"
+                          name="jenisprogram_id"
+                          class="select2 form-select"
+                          required
+                          >
+                          <option value="">Select</option>
+                          @foreach ($jenisProgram as $item)
+                              <option value="{{ $item->id }}">{{ $item->nama }}</option>
+                          @endforeach
+                        </select>
+                </div>
+  
+                <div class="col-12 col-md-6">
+                  <label class="form-label" for="basic-default-name">Aspek Program </label>
+                  <select
+                        id="aspekprogram_id_edit"
+                        name="aspekprogram_id"
+                        class="select2 form-select"
+                        required
+                        >
+                        <option value="">Select</option>
+                        @foreach ($aspekProgram as $item)
+                            <option value="{{ $item->id }}">{{ $item->nama }}</option>
+                        @endforeach
+                      </select>
+              </div>
+                  <div class="col-12 col-md-12">
                       <label class="form-label" for="basic-default-name">Sekolah Sasaran</label>
                       <select
                             id="sekolah_id_edit"
@@ -171,32 +211,8 @@
                       <textarea id="deskripsi_permasalahan_edit" name="deskripsi_permasalahan" class="form-control"></textarea>
                   </div>
   
-                  <div class="col-12">
-                      <label class="form-label" for="uraian">Target capaian</label>
-                      <textarea id="target_capaian_edit" name="target_capaian" class="form-control"></textarea>
-                    </div>
-                    <div class="col-12">
-                      <label class="form-label" for="basic-default-name">Kategori Program </label>
-                      <select
-                            id="tenggat_waktu_edit"
-                            name="tenggat_waktu"
-                            class="select2 form-select"
-                            required
-                            >
-                            <option value="">Select</option>
-                            @php
-                                $tenggat = [
-                        'Triwulan 1'=>'Triwulan 1',
-                        'Triwulan 2'=>'Triwulan 2',
-                        'Triwulan 3'=>'Triwulan 3',
-                        'Triwulan 4'=>'Triwulan 4',
-                                            ];
-                            @endphp 
-                            @foreach ($tenggat as $key => $value)
-                            <option value="{{ $key }}">{{ $value }}</option>
-                        @endforeach
-                          </select>
-                    </div>
+
+                  
   
                   <div class="col-12 text-center">
                     <button type="submit" class="btn btn-primary me-sm-3 me-1">Submit</button>

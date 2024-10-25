@@ -36,11 +36,12 @@
                           <thead>
                               <tr>
                                   <th>No</th>
-                                  <th>Tahun</th>
+                                  <th>Bulan - Tahun</th>
                                   <th>Nama Program Kerja</th>
                                   <th>Kategori</th>
+                                  <th>Jenis Program</th>
+                                  <th>Aspek Program</th>
                                   <th>Sekolah Sasaran</th>
-                                  <th>Tenggat waktu</th>
                                   <th>Tanggal Dibuat</th>
                                   <th>#</th>
                               </tr>

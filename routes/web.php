@@ -66,11 +66,40 @@ Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->group(function 
         Route::get('/hapus-admin{id}', 'AdminController@hapus')->name('admin.hapus');
     });
 
-      Route::prefix('mastertupoksi')->group(function () {
+      Route::prefix('jenisprogram')->group(function () {
+        Route::get('/', 'JenisprogramController@index')->name('jenisprogram.index');
+        Route::get('/get-jenisprogram', 'JenisprogramController@getdata')->name('jenisprogram.getdata');
+        Route::get('/add-jenisprogram', 'JenisprogramController@add')->name('jenisprogram.add');
+        Route::post('/store-jenisprogram', 'JenisprogramController@store')->name('jenisprogram.store');
+        Route::get('/edit-jenisprogram/{id}', 'JenisprogramController@edit')->name('jenisprogram.edit');
+        Route::post('/update-jenisprogram/{id}', 'JenisprogramController@update')->name('jenisprogram.update');
+        Route::get('/hapus-jenisprogram{id}', 'JenisprogramController@hapus')->name('jenisprogram.hapus');
+    });
+
+    Route::prefix('aspekprogram')->group(function () {
+        Route::get('/', 'AspekprogramController@index')->name('aspekprogram.index');
+        Route::get('/get-aspekprogram', 'AspekprogramController@getdata')->name('aspekprogram.getdata');
+        Route::get('/add-aspekprogram', 'AspekprogramController@add')->name('aspekprogram.add');
+        Route::post('/store-aspekprogram', 'AspekprogramController@store')->name('aspekprogram.store');
+        Route::get('/edit-aspekprogram/{id}', 'AspekprogramController@edit')->name('aspekprogram.edit');
+        Route::post('/update-aspekprogram/{id}', 'AspekprogramController@update')->name('aspekprogram.update');
+        Route::get('/hapus-aspekprogram{id}', 'AspekprogramController@hapus')->name('aspekprogram.hapus');
+    });
+
+    Route::prefix('rencanatugas')->group(function () {
+        Route::get('/', 'RencanaTugasController@index')->name('rencanatugas.index');
+        Route::get('/get-rencanatugas', 'RencanaTugasController@getdata')->name('rencanatugas.getdata');
+        Route::get('/add-rencanatugas', 'RencanaTugasController@add')->name('rencanatugas.add');
+        Route::post('/store-rencanatugas', 'RencanaTugasController@store')->name('rencanatugas.store');
+        Route::get('/edit-rencanatugas/{id}', 'RencanaTugasController@edit')->name('rencanatugas.edit');
+        Route::post('/update-rencanatugas/{id}', 'RencanaTugasController@update')->name('rencanatugas.update');
+        Route::get('/hapus-aspekprogram{id}', 'RencanaTugasController@hapus')->name('rencanatugas.hapus');
+    });
+
+    Route::prefix('mastertupoksi')->group(function () {
         Route::get('/', 'MastertupoksiController@index')->name('mastertupoksi.index');
         Route::get('/get-mastertupoksi', 'MastertupoksiController@getdata')->name('mastertupoksi.getdata');
         Route::get('/getkegiatan', 'MastertupoksiController@getkegiatan')->name('mastertupoksi.getkegiatan');
-
         Route::get('/add-mastertupoksi', 'MastertupoksiController@add')->name('mastertupoksi.add');
         Route::post('/store-mastertupoksi', 'MastertupoksiController@store')->name('mastertupoksi.store');
         Route::get('/edit-mastertupoksi/{id}', 'MastertupoksiController@edit')->name('mastertupoksi.edit');

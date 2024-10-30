@@ -71,9 +71,10 @@
             {data: 'bulan_tahun', name: 'bulan_tahun'},
             {data: 'nama_program_kerja', name: 'nama_program_kerja'},
             {data: 'nama_kategori', name: 'nama_kategori'},
-            {data: 'nama_sekolah', name: 'nama_sekolah'},
             {data: 'nama_jenis', name: 'nama_jenis'},
             {data: 'nama_aspek', name: 'nama_aspek'},
+            {data: 'nama_sekolah', name: 'nama_sekolah'},
+           
             {data: 'tanggal', name: 'tanggal'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ]

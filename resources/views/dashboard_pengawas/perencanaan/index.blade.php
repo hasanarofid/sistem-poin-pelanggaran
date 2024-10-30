@@ -43,7 +43,7 @@
                                   <th>Aspek Program</th>
                                   <th>Sekolah Sasaran</th>
                                   <th>Tanggal Dibuat</th>
-                                  <th>#</th>
+                                  <th>Action</th>
                               </tr>
                           </thead>
                       </table>

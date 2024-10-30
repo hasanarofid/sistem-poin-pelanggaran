@@ -29,14 +29,14 @@
                 <div data-i18n="Profile">Kategori Program</div>
             </a>
         </li>
-        <li class="menu-item {{ (request()->is('superadmin/pembagiantupoksi*')) ? 'active' : '' }}">
-            <a href="{{ route('pembagiantupoksi.index') }}" class="menu-link">
+        <li class="menu-item {{ (request()->is('superadmin/jenisprogram*')) ? 'active' : '' }}">
+            <a href="{{ route('jenisprogram.index') }}" class="menu-link">
              <i class="menu-icon tf-icons fas fa-table"></i>
                 <div data-i18n="Profile">Jenis Program</div>
             </a>
         </li>
-        <li class="menu-item {{ (request()->is('superadmin/pembagiantupoksi*')) ? 'active' : '' }}">
-            <a href="{{ route('pembagiantupoksi.index') }}" class="menu-link">
+        <li class="menu-item {{ (request()->is('superadmin/aspekprogram*')) ? 'active' : '' }}">
+            <a href="{{ route('aspekprogram.index') }}" class="menu-link">
              <i class="menu-icon tf-icons fas fa-list"></i>
                 <div data-i18n="Profile">Aspek Program</div>
             </a>
@@ -46,6 +46,13 @@
                 {{-- <i class="menu-icon tf-icons ti ti-user"></i> --}}
                 <i class="menu-icon tf-icons fa-solid fas fa-person"></i>
                 <div data-i18n="Profile">Pengawas</div>
+            </a>
+        </li>
+        <li class="menu-item {{ (request()->is('superadmin/rencanatugas*')) ? 'active' : '' }}">
+            <a href="{{ route('rencanatugas.index') }}" class="menu-link">
+                {{-- <i class="menu-icon tf-icons ti ti-user"></i> --}}
+                <i class="menu-icon tf-icons fa-solid fas fa-list-ol"></i>
+                <div data-i18n="Profile">List Rencana Tugas</div>
             </a>
         </li>
         <li class="menu-item {{ (request()->is('superadmin/sekolah*')) ? 'active' : '' }}">

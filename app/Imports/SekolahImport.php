@@ -19,12 +19,12 @@ class SekolahImport implements ToArray
                $rows = array_slice($rows, 1);
                     foreach ($rows as $row) {
                         try {
-                            if(Auth::user()->role == 'Super Admin'){
+                            // if(Auth::user()->role == 'Super Admin'){
                                 $kabupaten_id = 1;
-                            }else if(Auth::user()->role == 'Admin' || Auth::user()->role == 'Stakeholder' ){
-                                $kabupaten_id = Auth::user()->kabupaten_id;
+                            // }else if(Auth::user()->role == 'Admin' || Auth::user()->role == 'Stakeholder' ){
+                            //     $kabupaten_id = Auth::user()->kabupaten_id;
                     
-                            }
+                            // }
                         
                         $sekolah = new SekolahM();
                         $sekolah->nama_sekolah = $row[0];

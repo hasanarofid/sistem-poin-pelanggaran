@@ -75,10 +75,10 @@ class PegawasMController extends Controller
 
     public function setSekolahBinaan($id){
         $models = User::where('id',$id)->first();
-        $sekolah = SekolahM::where('kabupaten_id',Auth::user()->kabupaten_id)->get();
-        $binaan = SekolahbinaanT::with('sekolah')->where('id_pengawas',Auth::user()->kabupaten_id)->get();
+        $sekolah = SekolahM::get();
+        $binaan = SekolahbinaanT::with('sekolah')->get();
                        
-        // dd($sekolah);
+        // dd($binaan);
         return view('pengawas.add_sekolahbinaan',compact('models','sekolah','binaan'));
     }
 
@@ -86,19 +86,22 @@ class PegawasMController extends Controller
 
     public function getdata(Request $request){
         if ($request->ajax()) {
-            if(Auth::user()->role == 'Super Admin'){
-                $post = User::with('kabupaten')->where('role','Pengawas')->latest()->get(); 
-            }else if(Auth::user()->role == 'Admin' || Auth::user()->role == 'Stakeholder' ){
-                $kelompok_kabupaten = Kabupaten::find(Auth::user()->kabupaten_id)->kelompok_kabupaten;
-                $kabupaten = Kabupaten::where('kelompok_kabupaten',$kelompok_kabupaten)->get();
-                $id_filter = [];
-                foreach($kabupaten as $kab){
-                    $id_filter[] = $kab->id;
-                }
+            // if(Auth::user()->role == 'Super Admin'){
+            //     $post = User::with('kabupaten')->where('role','Pengawas')->latest()->get(); 
+            // }else if(Auth::user()->role == 'Admin' || Auth::user()->role == 'Stakeholder' ){
+            //     $kelompok_kabupaten = Kabupaten::find(Auth::user()->kabupaten_id)->kelompok_kabupaten;
+            //     $kabupaten = Kabupaten::where('kelompok_kabupaten',$kelompok_kabupaten)->get();
+            //     $id_filter = [];
+            //     foreach($kabupaten as $kab){
+            //         $id_filter[] = $kab->id;
+            //     }
     
-                $post = User::with('kabupaten')->where('role','Pengawas')->whereIn('kabupaten_id',$id_filter)->latest()->get();
+                $post = User::with('kabupaten')
+                ->where('role','Pengawas')
+                // ->whereIn('kabupaten_id',$id_filter)
+                ->latest()->get();
     
-            }
+            // }
             // dd($post);
             return Datatables::of($post)
                     ->addIndexColumn()
@@ -106,7 +109,8 @@ class PegawasMController extends Controller
                         if($row->foto_profile == 'userdefault.jpg'){
                             $foto = asset('userdefault.jpg');
                         }else{
-                            $foto =  route('pengawas',$row->foto_profile );
+                            $foto = route('fotopengawas', $row->foto_profile);
+                            // $foto =  route('pengawas',$row->foto_profile );
                         }
 
                      return  ' <div class="card card-profile"><img src="'.$foto.'" height="100px" alt="Image placeholder" class="card-img-top"></div>';

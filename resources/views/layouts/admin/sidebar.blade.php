@@ -41,20 +41,20 @@
                 <div data-i18n="Profile">Aspek Program</div>
             </a>
         </li>
-        <li class="menu-item {{ (request()->is('admin/masterpengawas*')) ? 'active' : '' }}">
+        <li class="menu-item {{ (request()->is('superadmin/masterpengawas*')) ? 'active' : '' }}">
             <a href="{{ route('masterpengawas.index') }}" class="menu-link">
                 {{-- <i class="menu-icon tf-icons ti ti-user"></i> --}}
                 <i class="menu-icon tf-icons fa-solid fas fa-person"></i>
                 <div data-i18n="Profile">Pengawas</div>
             </a>
         </li>
-        <li class="menu-item {{ (request()->is('admin/sekolah*')) ? 'active' : '' }}">
+        <li class="menu-item {{ (request()->is('superadmin/sekolah*')) ? 'active' : '' }}">
             <a href="{{ route('sekolah.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons fas fa-school"></i>
                 <div data-i18n="Profile">Sekolah</div>
             </a>
         </li>
-        <li class="menu-item {{ (request()->is('admin/guru*')) ? 'active' : '' }}">
+        <li class="menu-item {{ (request()->is('superadmin/guru*')) ? 'active' : '' }}">
             <a href="{{ route('guru.index') }}" class="menu-link">
                 {{-- <i class="menu-icon tf-icons ti ti-users"></i> --}}
                 <i class="menu-icon tf-icons fa-solid fas fa-users-line"></i>
@@ -62,7 +62,7 @@
             </a>
         </li>
 
-        <li class="menu-item {{ (request()->is('admin/stakeholder*')) ? 'active' : '' }}">
+        <li class="menu-item {{ (request()->is('superadmin/stakeholder*')) ? 'active' : '' }}">
             <a href="{{ route('stakeholder.index') }}" class="menu-link">
                 {{-- <i class="menu-icon tf-icons ti ti-users"></i> --}}
                 <i class="menu-icon tf-icons fa-solid fa-user-tie"></i>

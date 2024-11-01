@@ -38,7 +38,7 @@
         <li class="menu-item {{ (request()->is('superadmin/aspekprogram*')) ? 'active' : '' }}">
             <a href="{{ route('aspekprogram.index') }}" class="menu-link">
              <i class="menu-icon tf-icons fas fa-list"></i>
-                <div data-i18n="Profile">Aspek Program</div>
+                <div data-i18n="Profile">Aspek Raport Pendidikan</div>
             </a>
         </li>
         <li class="menu-item {{ (request()->is('superadmin/masterpengawas*')) ? 'active' : '' }}">
@@ -52,7 +52,14 @@
             <a href="{{ route('rencanatugas.index') }}" class="menu-link">
                 {{-- <i class="menu-icon tf-icons ti ti-user"></i> --}}
                 <i class="menu-icon tf-icons fa-solid fas fa-list-ol"></i>
-                <div data-i18n="Profile">List Rencana Tugas</div>
+                <div data-i18n="Profile">List Rencana Kerja</div>
+            </a>
+        </li>
+        <li class="menu-item {{ (request()->is('superadmin/listumpanbalik*')) ? 'active' : '' }}">
+            <a href="{{ route('listumpanbalik.index') }}" class="menu-link">
+                {{-- <i class="menu-icon tf-icons ti ti-user"></i> --}}
+                <i class="menu-icon tf-icons fa-solid fas fa-thumbs-up"></i>
+                <div data-i18n="Profile">List Umpan Balik</div>
             </a>
         </li>
         <li class="menu-item {{ (request()->is('superadmin/sekolah*')) ? 'active' : '' }}">

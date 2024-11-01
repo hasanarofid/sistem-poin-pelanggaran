@@ -22,7 +22,6 @@
                         </div>
                     </div>
                     <div class="card-body">
-                       
                         <div class="table-responsive p-0">
                             <table class="table table-bordered table-striped" id="data-table">
                                 <thead>
@@ -33,7 +32,7 @@
                                         <th>Nama Program Kerja</th>
                                         <th>Kategori</th>
                                         <th>Jenis Program</th>
-                                        <th>Aspek Program</th>
+                                        <th>Aspek Raport Pendidikan</th>
                                         <th>Sekolah Sasaran</th>
                                         <th>Tanggal Dibuat</th>
                                     </tr>
@@ -53,67 +52,81 @@
 
 @section('script')
 <script>
-$(document).ready(function () {
-    var isExporting = false;
-
-    var table = $('#data-table').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-            url: "{{ route('rencanatugas.getdata') }}",
-            data: function (d) {
-                // Disable pagination when exporting
-                if (isExporting) {
-                    d.length = -1; // Loads all data
+    $(document).ready(function () {
+        var isExporting = false;
+    
+        var table = $('#data-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ route('rencanatugas.getdata') }}",
+                data: function (d) {
+                    // Disable pagination when exporting
+                    if (isExporting) {
+                        d.length = -1; // Loads all data
+                    }
                 }
-            }
-        },
-        columns: [
-            {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-            {data: 'pengawas', name: 'pengawas'},
-            {data: 'bulan_tahun', name: 'bulan_tahun'},
-            {data: 'nama_program_kerja', name: 'nama_program_kerja'},
-            {data: 'nama_kategori', name: 'nama_kategori'},
-            {data: 'nama_jenis', name: 'nama_jenis'},
-            {data: 'nama_aspek', name: 'nama_aspek'},
-            {data: 'nama_sekolah', name: 'nama_sekolah'},
-            {data: 'tanggal', name: 'tanggal'},
-        ],
-        dom: 'Bfrtip', // Enables the buttons at the top of the DataTable
-        buttons: [
-            {
-                extend: 'pdfHtml5',
-                title: 'List Rencana Kerja',
-                text: '<i class="fas fa-file-pdf"></i> Export PDF', // Adds PDF icon
-                className: 'btn btn-danger', // Adds Bootstrap's bg-danger for red background
-                orientation: 'landscape',
-                pageSize: 'A4',
-                exportOptions: {
-                    columns: ':visible', // Export only visible columns
-                },
-                customize: function (doc) {
-                    doc.styles.tableHeader.alignment = 'left';
-                },
-                action: function (e, dt, button, config) {
-                    isExporting = true;
-
-                    // Temporarily load all data
-                    table.ajax.reload(function () {
-                        // Perform export using DataTable's internal pdfHtml5 action
-                        $.fn.dataTable.ext.buttons.pdfHtml5.action.call(dt.button(button), e, dt, button, config);
-
-                        // Reset to default pagination
-                        isExporting = false;
-                        table.ajax.reload();
-                    }, false);
+            },
+            columns: [
+                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                {data: 'pengawas', name: 'pengawas'},
+                {data: 'bulan_tahun', name: 'bulan_tahun'},
+                {data: 'nama_program_kerja', name: 'nama_program_kerja'},
+                {data: 'nama_kategori', name: 'nama_kategori'},
+                {data: 'nama_jenis', name: 'nama_jenis'},
+                {data: 'nama_aspek', name: 'nama_aspek'},
+                {data: 'nama_sekolah', name: 'nama_sekolah'}, // For display
+                {data: 'tanggal', name: 'tanggal'},
+            ],
+            dom: 'Bfrtip', // Enables the buttons at the top of the DataTable
+            buttons: [
+                {
+                    extend: 'pdfHtml5',
+                    title: 'List Rencana Kerja',
+                    text: '<i class="fas fa-file-pdf"></i> Export PDF',
+                    className: 'btn btn-danger',
+                    orientation: 'landscape',
+                    pageSize: 'A4',
+                    exportOptions: {
+                        columns: ':visible', // Export only visible columns
+                        format: {
+                            body: function (data, row, column, node) {
+                                if (column === 7) { // Adjust index based on your columns
+                                    // Collect all data-sekolah2 attributes
+                                    let sekolahData = [];
+                                    $(node).find('span').each(function() {
+                                        // Push each data-sekolah2 into the array
+                                        sekolahData.push($(this).data('sekolah2'));
+                                    });
+                                    // Join them into a single string
+                                    return sekolahData.join(', ') || data; // Fallback to data if not found
+                                }
+                                return data; // Return data as is for other columns
+                            }
+                        }
+                    },
+                    customize: function (doc) {
+                        doc.styles.tableHeader.alignment = 'left';
+                    },
+                    action: function (e, dt, button, config) {
+                        isExporting = true;
+    
+                        // Load all data for export
+                        table.ajax.url('{{ route("rencanatugas.getdata") }}?export=pdf').load(function() {
+                            // Call DataTable's internal pdfHtml5 action
+                            $.fn.dataTable.ext.buttons.pdfHtml5.action.call(dt.button(button), e, dt, button, config);
+    
+                            // Reset exporting state
+                            isExporting = false;
+                            // Reload the default data
+                            table.ajax.url("{{ route('rencanatugas.getdata') }}").load();
+                        });
+                    }
                 }
-            }
-        ]
+            ]
+        });
     });
-});
-
-
-
-
-</script>
+    </script>
+            
+    
 @endsection

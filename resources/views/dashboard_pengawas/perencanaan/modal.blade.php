@@ -60,7 +60,7 @@
               </div>
 
               <div class="col-12 col-md-6">
-                <label class="form-label" for="basic-default-name">Aspek Program </label>
+                <label class="form-label" for="basic-default-name">Aspek Raport Pendidikan </label>
                 <select
                       id="aspekprogram_id"
                       name="aspekprogram_id"
@@ -176,7 +176,7 @@
                 </div>
   
                 <div class="col-12 col-md-6">
-                  <label class="form-label" for="basic-default-name">Aspek Program </label>
+                  <label class="form-label" for="basic-default-name">Aspek Raport Pendidikan </label>
                   <select
                         id="aspekprogram_id_edit"
                         name="aspekprogram_id"

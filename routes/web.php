@@ -93,7 +93,17 @@ Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->group(function 
         Route::post('/store-rencanatugas', 'RencanaTugasController@store')->name('rencanatugas.store');
         Route::get('/edit-rencanatugas/{id}', 'RencanaTugasController@edit')->name('rencanatugas.edit');
         Route::post('/update-rencanatugas/{id}', 'RencanaTugasController@update')->name('rencanatugas.update');
-        Route::get('/hapus-aspekprogram{id}', 'RencanaTugasController@hapus')->name('rencanatugas.hapus');
+        Route::get('/hapus-rencanatugas{id}', 'RencanaTugasController@hapus')->name('rencanatugas.hapus');
+    });
+
+    Route::prefix('listumpanbalik')->group(function () {
+        Route::get('/', 'ListumpanbalikController@index')->name('listumpanbalik.index');
+        Route::get('/get-listumpanbalik', 'ListumpanbalikController@getdata')->name('listumpanbalik.getdata');
+        Route::get('/add-listumpanbalik', 'ListumpanbalikController@add')->name('listumpanbalik.add');
+        Route::post('/store-listumpanbalik', 'ListumpanbalikController@store')->name('listumpanbalik.store');
+        Route::get('/edit-listumpanbalik/{id}', 'ListumpanbalikController@edit')->name('listumpanbalik.edit');
+        Route::post('/update-listumpanbalik/{id}', 'ListumpanbalikController@update')->name('listumpanbalik.update');
+        Route::get('/hapus-listumpanbalik{id}', 'ListumpanbalikController@hapus')->name('listumpanbalik.hapus');
     });
 
     Route::prefix('mastertupoksi')->group(function () {

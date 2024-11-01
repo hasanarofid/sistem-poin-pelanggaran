@@ -40,7 +40,7 @@
                                   <th>Nama Program Kerja</th>
                                   <th>Kategori</th>
                                   <th>Jenis Program</th>
-                                  <th>Aspek Program</th>
+                                  <th>Aspek Raport Pendidikan</th>
                                   <th>Sekolah Sasaran</th>
                                   <th>Tanggal Dibuat</th>
                                   <th>Action</th>

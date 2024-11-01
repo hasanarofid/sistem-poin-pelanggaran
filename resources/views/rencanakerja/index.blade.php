@@ -35,6 +35,8 @@
                                         <th>Aspek Raport Pendidikan</th>
                                         <th>Sekolah Sasaran</th>
                                         <th>Tanggal Dibuat</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -77,6 +79,8 @@
                 {data: 'nama_aspek', name: 'nama_aspek'},
                 {data: 'nama_sekolah', name: 'nama_sekolah'}, // For display
                 {data: 'tanggal', name: 'tanggal'},
+                {data: 'status', name: 'status'},
+                {data: 'action', name: 'action', orderable: false, searchable: false},
             ],
             dom: 'Bfrtip', // Enables the buttons at the top of the DataTable
             buttons: [
@@ -107,20 +111,6 @@
                     },
                     customize: function (doc) {
                         doc.styles.tableHeader.alignment = 'left';
-                    },
-                    action: function (e, dt, button, config) {
-                        isExporting = true;
-    
-                        // Load all data for export
-                        table.ajax.url('{{ route("rencanatugas.getdata") }}?export=pdf').load(function() {
-                            // Call DataTable's internal pdfHtml5 action
-                            $.fn.dataTable.ext.buttons.pdfHtml5.action.call(dt.button(button), e, dt, button, config);
-    
-                            // Reset exporting state
-                            isExporting = false;
-                            // Reload the default data
-                            table.ajax.url("{{ route('rencanatugas.getdata') }}").load();
-                        });
                     }
                 }
             ]

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AspekProgram;
 use App\Models\Pelaporan;
 use App\Models\UmpanbalikM;
 use App\Models\UmpanbalikT;
@@ -26,14 +27,15 @@ class UmpanbalikController extends Controller
         $umpanBalikM = UmpanbalikM::where('aspek','pendampingan')->orderBy('urutan')->get();
         $umpanBalikM2 = UmpanbalikM::where('aspek','kompetensi')->orderBy('urutan')->get();
         $umpanBalikM3 = UmpanbalikM::where('aspek','lainnya')->orderBy('urutan')->get();
-
+        $asepek = AspekProgram::get();
         return view('umpanbalik.index',compact(
             'pengawas',
             'model',
             'umpanBalikM',
             'umpanBalikM2',
             'umpanBalikM3',
-            'pelaporan'
+            'pelaporan',
+            'asepek',
         ));
     }
 

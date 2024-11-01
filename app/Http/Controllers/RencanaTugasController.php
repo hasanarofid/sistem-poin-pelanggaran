@@ -69,7 +69,22 @@ class RencanaTugasController extends Controller
     
                     return implode(', ', $nama_sekolah); 
                 })
-                ->rawColumns(['pengawas', 'nama_kategori', 'nama_jenis', 'nama_aspek', 'nama_sekolah','nama_sekolah2'])
+                ->addColumn('status', function($row){
+                    if($row->status == 1){
+                        $status = '<span class="badge bg-label-success m-1" >Sudah Kirim WA Blast</span>';
+                    }else{
+                        $status = '<span class="badge bg-label-danger m-1" >Belum Kirim WA Blast</span>';
+                    }
+                        return $status;
+                })
+                ->addColumn('action', function($row){
+
+                    $btn = '<a  onclick="KirimWaBlast('.$row->id.')" class="btn btn-sm bg-success text-white " > <i class="fa fa-envelope"></i> Kirim Wa</a>';
+                 
+                     return $btn;
+             })
+
+                ->rawColumns(['pengawas', 'nama_kategori', 'nama_jenis', 'nama_aspek', 'nama_sekolah','nama_sekolah2','status','action'])
                 ->make(true);
         }
     

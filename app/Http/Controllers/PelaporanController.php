@@ -143,12 +143,31 @@ class PelaporanController extends Controller
 
             $phone = $user->no_telp;
             $fullUrl = url('umpan-balik/' . $uniqueUrl);
-            $pesan = 'Yth Bapak / Ibu ' . $user->nama . ', 
-Pengawas Pembina ' . Auth::user()->name . ' baru saja menyelesaikan kunjungan ke sekolah Bapak/Ibu. 
-Mohon berkenan meluangkan Waktu untuk memberikan umpan balik terhadap kunjungan beliau melalui link berikut: 
-' . $fullUrl . '. 
-Terimakasih, Salam, 
-Admin Delman Super';
+            // yth. Bapak <<nama kepsek>>. Kepala <<nama sekolah>>. Pada bulan <<bulan>> <<tahun>> pengawas << nama pengawas>> akan melakukan kegiatan pendampingan <<nama rencana kerja>>  ke sekolah. Mohon dapat mengisi formulir Monev pada link berikut : 
+
+            //     <<link monev>> 
+                
+            //     Berikut ini beberapa catatan yang penting : 
+            //     1. pastikan link diisi pada hari pengawas melakukan pendampingan. 
+            //     2. sertakan 1 bukti pendampingan berupa foto kegiatan bersama pengawas. 
+                
+            //     Terimakasih
+                
+            //     Pesan ini digenerate otomatis oleh Sistem Monitoring dan Evaluasi Digital Pengawas (SiMODiP) KCD Kabupaten Tangerang
+
+            $pesan = 'Yth Bapak / Ibu ' . $user->nama . ' Kepala <<nama sekolah>>, 
+Pada bulan <<bulan>> <<tahun>> pengawas << nama pengawas>> akan melakukan kegiatan pendampingan <<nama rencana kerja>>  ke sekolah. 
+Mohon dapat mengisi formulir Monev pada link berikut :
+    
+    ' . $fullUrl . '. 
+  
+    Berikut ini beberapa catatan yang penting : 
+        1. pastikan link diisi pada hari pengawas melakukan pendampingan. 
+        2. sertakan 1 bukti pendampingan berupa foto kegiatan bersama pengawas. 
+                
+    Terimakasih
+                
+Pesan ini digenerate otomatis oleh Sistem Monitoring dan Evaluasi Digital Pengawas (SiMODiP) KCD Kabupaten Tangerang';
         
             // Inisialisasi curl
             $curl = curl_init();

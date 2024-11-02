@@ -93,7 +93,7 @@ Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->group(function 
         Route::post('/store-rencanatugas', 'RencanaTugasController@store')->name('rencanatugas.store');
         Route::get('/edit-rencanatugas/{id}', 'RencanaTugasController@edit')->name('rencanatugas.edit');
         Route::post('/update-rencanatugas/{id}', 'RencanaTugasController@update')->name('rencanatugas.update');
-        Route::get('/hapus-rencanatugas{id}', 'RencanaTugasController@hapus')->name('rencanatugas.hapus');
+        Route::get('/kirim-wa/{id}', 'RencanaTugasController@kirimWa')->name('rencanatugas.kirimwa');
     });
 
     Route::prefix('listumpanbalik')->group(function () {

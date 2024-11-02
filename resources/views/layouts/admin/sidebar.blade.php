@@ -72,7 +72,7 @@
             <a href="{{ route('guru.index') }}" class="menu-link">
                 {{-- <i class="menu-icon tf-icons ti ti-users"></i> --}}
                 <i class="menu-icon tf-icons fa-solid fas fa-users-line"></i>
-                <div data-i18n="Profile">Guru / Kepala Sekolah</div>
+                <div data-i18n="Profile"> Kepala Sekolah</div>
             </a>
         </li>
 

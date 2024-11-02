@@ -22,6 +22,24 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="filter-pengawas">Filter by Pengawas:</label>
+                                <select
+                                id="filter-pengawas"
+                                name="pengawas"
+                                class="select2 form-select"
+                                required
+                            >
+                                <option value="all">All</option> <!-- Option to show all records -->
+                                @foreach ($listPengawas as $item)
+                                    <option value="{{ $item->id }}">{{ $item->name.' - '.$item->nip }}</option>
+                                @endforeach
+                            </select>
+                            
+                            </div>
+                        </div>
+
                         <div class="table-responsive p-0">
                             <table class="table table-bordered table-striped" id="data-table">
                                 <thead>
@@ -51,23 +69,64 @@
     </div>
 </div>
 @endsection
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script> <!-- Include SweetAlert2 -->
 @section('script')
 <script>
+
+function kirimWaBlast(id) {
+    let button = $('#sendWaButton-' + id);  // Reference to the specific button
+
+    // Disable button and add a loading state
+    button.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Sending...');
+
+    $.ajax({
+        url: '{{ route("rencanatugas.kirimwa", ":id") }}'.replace(':id', id),
+        type: 'GET',
+        success: function(response) {
+            // Show success message with SweetAlert and re-enable button
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'WA message sent successfully!',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                // Reload DataTable after successful WA blast
+                $('#data-table').DataTable().ajax.reload();
+            });
+            button.prop('disabled', false).html('<i class="fa fa-envelope"></i> Kirim Wa');
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+            // Show error message with SweetAlert and re-enable button
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to send WA message. Please try again.',
+                confirmButtonText: 'OK'
+            });
+            button.prop('disabled', false).html('<i class="fa fa-envelope"></i> Kirim Wa');
+        }
+    });
+}
+
+
     $(document).ready(function () {
+
+
+
         var isExporting = false;
-    
-        var table = $('#data-table').DataTable({
+        $('#filter-pengawas').change(function () {
+    $('#data-table').DataTable().ajax.reload(); // Reload the table when filter changes
+});
+
+$('#data-table').DataTable({
             processing: true,
             serverSide: true,
             ajax: {
                 url: "{{ route('rencanatugas.getdata') }}",
-                data: function (d) {
-                    // Disable pagination when exporting
-                    if (isExporting) {
-                        d.length = -1; // Loads all data
-                    }
-                }
+                data: function(d) {
+                         d.pengawas = $('#filter-pengawas').val(); // Pass the selected pengawas value
+                 }
             },
             columns: [
                 {data: 'DT_RowIndex', name: 'DT_RowIndex'},
@@ -92,8 +151,8 @@
                     orientation: 'landscape',
                     pageSize: 'A4',
                     exportOptions: {
-                        columns: ':visible', // Export only visible columns
-                        format: {
+                        columns: [0, 1, 2, 3, 4, 5, 6, 7, 8], 
+                         format: {
                             body: function (data, row, column, node) {
                                 if (column === 7) { // Adjust index based on your columns
                                     // Collect all data-sekolah2 attributes
@@ -115,6 +174,9 @@
                 }
             ]
         });
+
+        
+
     });
     </script>
             

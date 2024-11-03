@@ -23,11 +23,19 @@ class AspekprogramController extends Controller
     public function getdata(Request $request){
         if ($request->ajax()) {
           
-                $post = AspekProgram::orderBy('urutan','ASC')->get();
+                $post = AspekProgram::get();
     
             // dd($post);
             return Datatables::of($post)
             ->addIndexColumn()
+            ->addColumn('status', function($row){
+                if($row->status == 1){
+                    $status = '<span class="badge bg-label-success m-1" >Active</span>';
+                }else{
+                    $status = '<span class="badge bg-label-success m-1" >InActive</span>';
+                }
+                    return $status;
+            })
                     ->addColumn('action', function($row){
    
                            $btn = '<a href="'.route('aspekprogram.edit',$row->id).'" data-toggle="tooltip"  class="edit btn btn-primary btn-sm editPost">Edit</a>';
@@ -35,7 +43,7 @@ class AspekprogramController extends Controller
     
                             return $btn;
                     })
-                    ->rawColumns(['action'])
+                    ->rawColumns(['action','status'])
                     ->make(true);
         }
         return view('aspekprogram.index');

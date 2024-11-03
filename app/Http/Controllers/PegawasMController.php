@@ -128,7 +128,7 @@ class PegawasMController extends Controller
                         $bin = '';
                         foreach ($binaan as $key => $value) {
                             
-                            $bin .= '<span class="badge badge-info">'.$value->sekolah->nama_sekolah.'</span>';
+                            $bin .= '<span class="badge bg-label-primary m-1">'.$value->sekolah->nama_sekolah.'</span>';
                         }
                         return $bin; 
 

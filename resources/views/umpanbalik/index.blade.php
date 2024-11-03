@@ -109,10 +109,10 @@
 
             <!-- Content -->
             <div class="container-xxl flex-grow-1 container-p-y">
-              <h3 class="text-center">Umpan Balik Pelaksanaan Pendampingan / Supervisi Pengawas Sekolah Provinsi Banten</h3>
+              <h3 class="text-center">Umpan Balik Pelaksanaan Pendampingan / Supervisi Pengawas Sekolah </h3>
 
                 <div class="container ">
-                        <form id="multiStepForm" action="{{ route('kirimumpanbalik') }}" method="POST">
+                        <form id="multiStepForm" action="{{ route('kirimumpanbalik') }}" method="POST" enctype="multipart/form-data">
                           @csrf
                           <input type="hidden" name="id_umpanbalik" value="{{ $model->id }}">
                           <div id="form1" class="formStep">
@@ -129,7 +129,7 @@
                               <div class="card-body">
                               <div class="form-group">
                                   <label for="email1">Tanggal Kedatangan Pengawas</label>
-                                  <input type="date"  disabled class="form-control" value="{{ $pelaporan->tgl_pendampingan }}">
+                                  <input type="date"  required name="tgl_pendampingan" class="form-control" >
                               </div>
                               </div>
                             </div>
@@ -230,11 +230,25 @@
                                   @else
                                       <textarea  class="form-control" name="{{ 'jawaban_' . $item->id }}"></textarea>
                                   @endif
+
+                                  
+
                               </div>
                               </div>
                             </div>
+                          
+
                               <br>
                               @endforeach
+
+                              <div class="card">
+                                <div class="card-body">
+                                  <div class="form-group">
+                                    <label for="email1">Ambil Foto</label>
+                                    <input type="file" required name="foto" class="form-control" id="foto" accept="image/*">
+                                    </div>
+                                </div>
+                              </div>
                           </div>
                           <div class="row mt-3">
                             <div class="col text-left">

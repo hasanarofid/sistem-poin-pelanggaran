@@ -14,6 +14,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Kabupaten;
 use Auth;
+use Exception;
 class GuruMController extends Controller
 {
     /**
@@ -29,19 +30,20 @@ class GuruMController extends Controller
     public function getdata(Request $request){
         if ($request->ajax()) {
            
-            if(Auth::user()->role == 'Super Admin'){
-                $post = GuruM::with('sekolah')->where('is_aktif',true)->latest()->get();
-            }else if(Auth::user()->role == 'Admin' || Auth::user()->role == 'Stakeholder' ){
-                $kelompok_kabupaten = Kabupaten::find(Auth::user()->kabupaten_id)->kelompok_kabupaten;
-                $kabupaten = Kabupaten::where('kelompok_kabupaten',$kelompok_kabupaten)->get();
-                $id_filter = [];
-                foreach($kabupaten as $kab){
-                    $id_filter[] = $kab->id;
-                }
+            // if(Auth::user()->role == 'Super Admin'){
+            //     $post = GuruM::with('sekolah')->where('is_aktif',true)->latest()->get();
+            // }else if(Auth::user()->role == 'Admin' || Auth::user()->role == 'Stakeholder' ){
+            //     $kelompok_kabupaten = Kabupaten::find(Auth::user()->kabupaten_id)->kelompok_kabupaten;
+            //     $kabupaten = Kabupaten::where('kelompok_kabupaten',$kelompok_kabupaten)->get();
+            //     $id_filter = [];
+            //     foreach($kabupaten as $kab){
+            //         $id_filter[] = $kab->id;
+            //     }
     
-                $post = GuruM::with('sekolah')->where('is_aktif',true)->whereIn('kabupaten_id',$id_filter)->latest()->get();
+                $post = GuruM::with('sekolah')->where('is_aktif',true)
+                ->latest()->get();
     
-            }
+            // }
             return Datatables::of($post)
                     ->addIndexColumn()
                      ->addColumn('nama_sekolah', function($row){
@@ -61,12 +63,21 @@ class GuruMController extends Controller
     }
 
 
-    public function importfile(Request $request){
-        Excel::import(new GuruImport,
-                      $request->file('file')->store('files'));
-        return redirect()->back()->with('success', 'Guru Import successfully');
-       
+    public function importfile(Request $request)
+    {
+        try {
+            // Import the file
+            Excel::import(new GuruImport, $request->file('file')->store('files'));
+    
+            // If import is successful
+            return redirect()->back()->with('success', 'Guru Import successfully');
+            
+        } catch (Exception $e) {
+            // If there’s an error, redirect back with the error message
+            return redirect()->back()->with('error', 'Gagal mengimpor data: ' . $e->getMessage());
+        }
     }
+    
 
     public function excelcontoh(Request $request){
          $models = GuruM::with('sekolah')->where('is_aktif',true)->limit(1)->get();
@@ -77,14 +88,8 @@ class GuruMController extends Controller
     /** add data Guru */
     public function add(){
         $listsekolah = SekolahM::where('is_aktif',true)->get();
-        $kelompok_kabupaten = Kabupaten::find(Auth::user()->kabupaten_id)->kelompok_kabupaten;
-               
-        $wilayah = Kabupaten::select('nama_kabupaten', DB::raw('MAX(id) as id'),
-         DB::raw('COUNT(*) as total'))
-        ->groupBy('nama_kabupaten')
-        ->where('kelompok_kabupaten',$kelompok_kabupaten)
-        ->get();
-        return view('guru.add',compact('listsekolah','wilayah'));
+      
+        return view('guru.add',compact('listsekolah'));
     }
 
      /** add data Guru */
@@ -106,7 +111,7 @@ class GuruMController extends Controller
             $guru->alamat_lengkap = $request->alamat_lengkap;
             $guru->kode_area = $request->kode_area;
             $guru->sekolah_id = $request->sekolah_id;
-            $guru->kabupaten_id = $request->kabupaten_id;
+            $guru->kabupaten_id = 1;
 
             $guru->is_aktif = true;
             $guru->save();
@@ -116,7 +121,8 @@ class GuruMController extends Controller
 
     public function edit($id){
         $models = GuruM::where('id',$id)->first();
-        $listsekolah = SekolahM::find($models->sekolah_id);
+        $listsekolah = SekolahM::where('is_aktif',true)->get();
+
 
         return view('guru.edit',compact('models','listsekolah'));
     }

@@ -12,6 +12,7 @@ use App\User;
 use Illuminate\Http\Request;
 use Auth;
 use DataTables;
+use Illuminate\Support\Str;
 class UmpanbalikController extends Controller
 {
    //index
@@ -22,7 +23,7 @@ class UmpanbalikController extends Controller
     public function umpan($generate){
         $model = UmpanbalikT::where('generate_url',$generate)->first();
         $pengawas = User::find($model->id_pengawas);
-        $pelaporan = Pelaporan::find($model->id_pelaporan);
+        $pelaporan = RencanaKerjaT::find($model->id_pelaporan);
         // dd($pengawas);
         $umpanBalikM = UmpanbalikM::where('aspek','pendampingan')->orderBy('urutan')->get();
         $umpanBalikM2 = UmpanbalikM::where('aspek','kompetensi')->orderBy('urutan')->get();
@@ -40,6 +41,21 @@ class UmpanbalikController extends Controller
     }
 
     public function saveumpan(Request $request){
+
+        // dd($request);
+        if ($request->hasFile('foto')) {
+            $image = $request->file('foto');
+
+            // Generate a unique name based on the current date and time.
+            $imageName = now()->format('YmdHis') . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+        
+            // Store the image in the "blog" directory within the "public" disk.
+            $request->foto->storeAs('umpanbalik', $imageName, 'public');
+            
+        }else{
+            $imageName = 'userdefault.jpg';
+        }
+
         $model = new TanggapanUmpanbalikT();
         $model->id_umpanbalik  = $request->post('id_umpanbalik');
         $model->jawaban_1  = $request->post('jawaban_1');
@@ -53,6 +69,9 @@ class UmpanbalikController extends Controller
         $model->jawaban_9  = $request->post('jawaban_9');
         $model->jawaban_10  = $request->post('jawaban_10');
         $model->jawaban_11  = $request->post('jawaban_11');
+        $model->tanggal_kedatangan  = $request->tgl_pendampingan;
+        $model->foto  = $imageName;
+        
         $model->save();
         return redirect()->route('tanggapan')->with('success', 'Umpan Balik anda berhasil disimpan. terima kasih untuk tanggapan anda');
     }
@@ -92,7 +111,7 @@ class UmpanbalikController extends Controller
     public function umpanview($generate){
         $model = UmpanbalikT::where('generate_url',$generate)->first();
         $pengawas = User::find($model->id_pengawas);
-        $pelaporan = Pelaporan::find($model->id_pelaporan);
+        $pelaporan = RencanaKerjaT::find($model->id_pelaporan);
         // dd($pengawas);
         $umpanBalikM = UmpanbalikM::where('aspek','pendampingan')->orderBy('urutan')->get();
         $umpanBalikM2 = UmpanbalikM::where('aspek','kompetensi')->orderBy('urutan')->get();

@@ -1,37 +1,22 @@
-@extends('layouts.master')
-@section('title','Guru')
-@section('subjudul','Add Guru')
-@section('breadcrumbs')
-<li class="breadcrumb-item text-sm"><a class="opacity-5 text-white" href="javascript:;">Add Guru</a></li>
-<style>
-#data-table_info{
-   font-size: 12px;
-}
-#data-table_paginate{
-   font-size: 12px;
-}
-#data-table tbody tr {
-    font-size: 12px; /* Adjust the font size to your desired value */
-}
+@extends('layouts.admin.home')
+@section('title', 'Add  Kepala Sekolah')
+@section('titelcard', 'Add  Kepala Sekolah')
 
-</style>
-@endsection
 @section ('content')
- <div class="container-fluid py-2">
- 
-
-       <div class="row">
-         <div class="col-12">
-          <div class="card mb-4">
-            <div class="card-header pb-0 p-3">
-                     <div class="row">
-                     <div class="col-6 d-flex align-items-center">
-                        <h6 class="mb-0">Form Add Guru </h6>
-                     </div>
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+      <div class="row">
+          <div class="col-12">
+              <div class="card mb-4">
+                  <div class="card-header pb-0 p-3">
+                      <div class="row">
+                          <div class="col-6 d-flex align-items-center">
+                              <h6 class="mb-0">Add  Sekolah</h6>
+                          </div>
                      
-                     </div>
+                      </div>
                   </div>
-               <div class="card-body ">
+                  <div class="card-body">
 @if(Session::has('success'))
     <div class="alert alert-success">
         {{ Session::get('success') }}
@@ -53,36 +38,33 @@
                         method="POST"
                         enctype="multipart/form-data">
                      @csrf
+                     
                      <div class="form-group">
                               <label for="name">Nama Sekolah</label>
-                              <select name="sekolah_id" id="sekolah_id" class="form-control" required>
-                                 <option value="">.: Pilih Sekolah:. </option>
-                                 @foreach ($listsekolah as $sekolah)
-                                     <option value="{{ $sekolah->id }}">{{ $sekolah->nama_sekolah }}</option>
-                                 @endforeach
-                              </select>
+                              <select
+                              id="sekolah_id"
+                              name="sekolah_id"
+                              class="select2 form-select"
+                              required
+                              >
+                              <option value="">.: Pilih Sekolah:. </option>
+                              @foreach ($listsekolah as $sekolah)
+                                  <option value="{{ $sekolah->id }}">{{ $sekolah->nama_sekolah }}</option>
+                              @endforeach
+                            </select>
+                              
                      </div>
                      <div class="form-group">
                         <label for="name">Nama </label>
                         <input type="text" class="form-control" name="nama" id="nama" placeholder="Nama Guru" required>
                      </div>
 
-                     <div class="form-group">
-                        <label for="kabupaten_id">Wilayah Kabupaten </label>
-                        <select name="kabupaten_id" id="kabupaten_id" class="form-control" required>
-                           <option value="">.: Pilih Wilayah :. </option>
-                           @foreach ($wilayah as $item)
-                              <option value="{{  $item->id }}">{{  $item->nama_kabupaten }}</option>
-                           @endforeach
-                            </select>
-                     </div>
-                     
+                    
                      <div class="form-group">
                         <label for="name">Jabatan </label>
                         <select name="jabatan" id="jabatan" class="form-control" required>
-                           <option value="">.: Pilih Jabatan:. </option>
-                           <option value="Kepala Sekolah"> Kepala Sekolah </option>
-                           <option value="Guru"> Guru </option>
+                       
+                           <option selected value="Kepala Sekolah"> Kepala Sekolah </option>
                         </select>
                      </div>
                      
@@ -116,7 +98,13 @@
       </div>
  </div>
 @endsection
-       @section('js')
+       @section('script')
+       <script>
+           $(document).ready(function () {
+      $('#sekolah_id').select2();
 
+   });
+       </script>
+ 
        @endsection
 

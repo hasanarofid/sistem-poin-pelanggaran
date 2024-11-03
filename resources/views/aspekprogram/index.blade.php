@@ -1,6 +1,6 @@
 @extends('layouts.admin.home')
-@section('title', 'List Stakeholder')
-@section('titelcard', 'List Stakeholder')
+@section('title', 'List Aspek Report Pendidikan')
+@section('titelcard', 'List Aspek Report Pendidikan')
 @section('content')
 <div class="content-wrapper">
     <div class="container-xxl flex-grow-1 container-p-y">
@@ -10,12 +10,12 @@
                     <div class="card-header pb-0 p-3">
                         <div class="row">
                             <div class="col-6 d-flex align-items-center">
-                                <h6 class="mb-0">Tabel Stakeholder</h6>
+                                <h6 class="mb-0">Tabel Aspek Report Pendidikan</h6>
                             </div>
                             <div class="col-6 d-flex justify-content-end">
                                 <div class="btn-group" role="group" aria-label="Basic example">
-                                    <a class="btn btn-primary waves-effect waves-light" href="{{ route('stakeholder.add') }}">
-                                        <i class="fas fa-plus" aria-hidden="true"></i>&nbsp;Add Stakeholder
+                                    <a class="btn btn-primary waves-effect waves-light" href="{{ route('aspekprogram.add') }}">
+                                        <i class="fas fa-plus" aria-hidden="true"></i>&nbsp;Add Aspek Report Pendidikan
                                     </a>
                                 </div>
                             </div>
@@ -28,19 +28,13 @@
                         </div>
                         @endif
                         <div class="table-responsive p-0">
-                            <table class="table table-bordered table-striped" id="data-table">
+                            <table class="table" id="data-table">
                                 <thead>
                                     <tr>
-                                      <th >No</th>
-                                      <th >Foto Profile</th>
-                                      <th >Kabupten</th>
-                
-                                      <th >Nama</th>
-                                      <th >Email</th>
-                
-                                      <th >No Whatsapp</th>
-                                      <th >Alamat</th>
-                                      <th >Action</th>
+                                        <th class="text-sm font-weight mb-1">No</th>
+                                        <th class="text-sm font-weight mb-1">Nama</th>
+                                        <th class="text-sm font-weight mb-1">Status</th>
+                                        <th class="text-sm font-weight mb-1">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -58,33 +52,22 @@
 
 @section('script')
 <script>
-    
-   $(function () {
-    
-    
-   //   alert(3);
-    var table = $('#data-table').DataTable({
-     
-        processing: true,
-        serverSide: true,
-        ajax: "{{ route('stakeholder.getdata') }}",
-        columns: [
-            {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-            {data: 'foto', name: 'foto'},
-            {data: 'kabupaten', name: 'kabupaten'},
-
-            {data: 'name', name: 'name'},
-            {data: 'email', name: 'email'},
-
-            {data: 'no_telp', name: 'no_telp'},
-            {data: 'alamat', name: 'alamat'},
-
-            {data: 'action', name: 'action', orderable: false, searchable: false},
-        ]
+        $(document).ready(function () {
+      
+        var table = $('#data-table').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ route('aspekprogram.getdata') }}",
+            },
+            columns: [
+                {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+                {data: 'nama', name: 'nama'},
+                {data: 'status', name: 'status'},
+                {data: 'action', name: 'action', orderable: false, searchable: false},
+            ]
+        });
     });
-  });
-
-
     
 </script>
 @endsection

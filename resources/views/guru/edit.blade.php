@@ -1,37 +1,22 @@
-@extends('layouts.master')
-@section('title','Guru')
-@section('subjudul','Edit Guru')
-@section('breadcrumbs')
-<li class="breadcrumb-item text-sm"><a class="opacity-5 text-white" href="javascript:;">Edit Guru</a></li>
-<style>
-#data-table_info{
-   font-size: 12px;
-}
-#data-table_paginate{
-   font-size: 12px;
-}
-#data-table tbody tr {
-    font-size: 12px; /* Adjust the font size to your desired value */
-}
+@extends('layouts.admin.home')
+@section('title', 'Edit  Kepala Sekolah')
+@section('titelcard', 'Edit  Kepala Sekolah')
 
-</style>
-@endsection
 @section ('content')
- <div class="container-fluid py-2">
- 
-
-       <div class="row">
-         <div class="col-12">
-          <div class="card mb-4">
-            <div class="card-header pb-0 p-3">
-                     <div class="row">
-                     <div class="col-6 d-flex align-items-center">
-                        <h6 class="mb-0">Form Add Sekolah </h6>
-                     </div>
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+      <div class="row">
+          <div class="col-12">
+              <div class="card mb-4">
+                  <div class="card-header pb-0 p-3">
+                      <div class="row">
+                          <div class="col-6 d-flex align-items-center">
+                              <h6 class="mb-0">Edit Kepala  Sekolah</h6>
+                          </div>
                      
-                     </div>
+                      </div>
                   </div>
-               <div class="card-body ">
+                  <div class="card-body">
 @if(Session::has('success'))
     <div class="alert alert-success">
         {{ Session::get('success') }}
@@ -49,14 +34,30 @@
     </div>
 @endif
 
+
                      <form action="{{ route('guru.update',array('id'=>$models->id)) }}"
                         method="POST"
                         enctype="multipart/form-data">
                      @csrf
                      <div class="form-group">
-                              <label for="name">Nama Sekolah</label>
-                              <input type="text" class="form-control" name="nama" id="nama" value="{{ $listsekolah->nama_sekolah }}" placeholder="Nama Guru" readonly required>
-                     </div>
+                        <label for="name">Nama Sekolah</label>
+                        <select
+                        id="sekolah_id"
+                        name="sekolah_id"
+                        class="select2 form-select"
+                        required
+                    >
+                        <option value="">.: Pilih Sekolah:. </option>
+                        @foreach ($listsekolah as $sekolah)
+                            <option value="{{ $sekolah->id }}" 
+                                {{ ($models->sekolah_id == $sekolah->id) ? 'selected' : '' }}>
+                                {{ $sekolah->nama_sekolah }}
+                            </option>
+                        @endforeach
+                    </select>
+                        
+               </div>
+
                      <div class="form-group">
                         <label for="name">Nama </label>
                         <input type="text" class="form-control" name="nama" id="nama" value="{{ $models->nama }}" placeholder="Nama Guru" required>
@@ -66,7 +67,7 @@
                         <select name="jabatan" id="jabatan" class="form-control" required>
                            <option value="">.: Pilih Jabatan:. </option>
                            <option value="Kepala Sekolah" {{ ($models->jabatan == 'Kepala Sekolah') ? 'selected' : ''  }}> Kepala Sekolah </option>
-                           <option value="Guru" {{ ($models->jabatan == 'Guru') ? 'selected' : ''  }}> Guru </option>
+                        
                         </select>
                      </div>
                      
@@ -100,7 +101,16 @@
       </div>
  </div>
 @endsection
-       @section('js')
+@section('script')
+<script>
+  $(document).ready(function () {
+        // Initialize Select2 after the DOM is ready and options are populated
+        $('#sekolah_id').select2();
 
-       @endsection
+        // Optionally trigger change event if needed
+        $('#sekolah_id').trigger('change');
+    });
+</script>
+
+@endsection
 

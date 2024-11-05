@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kategory;
 use Illuminate\Http\Request;
 use App\MasterTupoksi;
 use App\Kabupaten;
@@ -23,7 +24,7 @@ class MastertupoksiController extends Controller
     public function getdata(Request $request){
         if ($request->ajax()) {
           
-                $post = MasterTupoksi::orderBy('urutan','ASC')->get();
+                $post = Kategory::where('type', 'pelaporan')->get();
     
             // dd($post);
             return Datatables::of($post)

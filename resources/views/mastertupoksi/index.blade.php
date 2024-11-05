@@ -1,6 +1,6 @@
 @extends('layouts.admin.home')
-@section('title', 'List Master Tupoksi')
-@section('titelcard', 'List Master Tupoksi')
+@section('title', 'List Kategori Program')
+@section('titelcard', 'List Kategori Program')
 @section('content')
 <div class="content-wrapper">
     <div class="container-xxl flex-grow-1 container-p-y">
@@ -10,12 +10,12 @@
                     <div class="card-header pb-0 p-3">
                         <div class="row">
                             <div class="col-6 d-flex align-items-center">
-                                <h6 class="mb-0">Tabel Master Tupoksi</h6>
+                                <h6 class="mb-0">Tabel Kategori Program</h6>
                             </div>
                             <div class="col-6 d-flex justify-content-end">
                                 <div class="btn-group" role="group" aria-label="Basic example">
                                     <a class="btn btn-primary waves-effect waves-light" href="{{ route('admin.add') }}">
-                                        <i class="fas fa-plus" aria-hidden="true"></i>&nbsp;Master Tupoksi
+                                        <i class="fas fa-plus" aria-hidden="true"></i>&nbsp;Kategori Program
                                     </a>
                                 </div>
                             </div>
@@ -32,9 +32,7 @@
                                 <thead>
                                     <tr>
                                         <th class="text-sm font-weight mb-1">No</th>
-                                        <th class="text-sm font-weight mb-1">Tahun Ajaran</th>
-                                        <th class="text-sm font-weight mb-1">Semester</th>
-                                        <th class="text-sm font-weight mb-1">Kegiatan</th>
+                                        <th class="text-sm font-weight mb-1">Nama</th>
                                         <th class="text-sm font-weight mb-1">Action</th>
                                     </tr>
                                 </thead>
@@ -71,16 +69,8 @@
                     name: 'DT_RowIndex'
                 },
                 {
-                    data: 'tahun_ajaran',
-                    name: 'tahun_ajaran'
-                },
-                {
-                    data: 'semester',
-                    name: 'semester'
-                },
-                {
-                    data: 'kegiatan',
-                    name: 'kegiatan'
+                    data: 'nama',
+                    name: 'nama'
                 },
                 {
                     data: 'action',

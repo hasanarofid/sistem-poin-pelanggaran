@@ -12,6 +12,9 @@ use DataTables;
 use Illuminate\Support\Facades\Hash;
 use Auth;
 use App\MasterTupoksi;
+use App\Models\RencanaKerjaT;
+use App\Models\UmpanbalikT;
+
 class AdminController extends Controller
 {
     public function index()
@@ -23,26 +26,28 @@ class AdminController extends Controller
                 Auth::logout(); // Logout pengguna yang bukan pengawas
                 return redirect('/pengawas/login');
             } else {
-                if(Auth::user()->role == 'Super Admin'){
+                // if(Auth::user()->role == 'Super Admin'){
                     $total_guru = GuruM::where('is_aktif',true)->get()->count();
                     $total_sekolah = SekolahM::where('is_aktif',true)->get()->count();
                     $total_pengawas = User::where('role','Pengawas')->get()->count();
                     $total_stockholder = User::where('role','Stakeholder')->get()->count();    
-                }else if(Auth::user()->role == 'Admin' || Auth::user()->role == 'Stakeholder' ){
-                    $kelompok_kabupaten = Kabupaten::find(Auth::user()->kabupaten_id)->kelompok_kabupaten;
-                    $kabupaten = Kabupaten::where('kelompok_kabupaten',$kelompok_kabupaten)->get();
-                    $id_filter = [];
-                    foreach($kabupaten as $kab){
-                        $id_filter[] = $kab->id;
-                    }
+                    $total_rencankerja = RencanaKerjaT::get()->count();
+                    $total_umpanbalik = UmpanbalikT::get()->count();
+                    // }else if(Auth::user()->role == 'Admin' || Auth::user()->role == 'Stakeholder' ){
+                //     $kelompok_kabupaten = Kabupaten::find(Auth::user()->kabupaten_id)->kelompok_kabupaten;
+                //     $kabupaten = Kabupaten::where('kelompok_kabupaten',$kelompok_kabupaten)->get();
+                //     $id_filter = [];
+                //     foreach($kabupaten as $kab){
+                //         $id_filter[] = $kab->id;
+                //     }
         
-                    $total_guru = GuruM::where('is_aktif',true)->whereIn('kabupaten_id',$id_filter)->get()->count();
-                    $total_sekolah = SekolahM::where('is_aktif',true)->whereIn('kabupaten_id',$id_filter)->get()->count();
-                    $total_pengawas = User::where('role','Pengawas')->whereIn('kabupaten_id',$id_filter)->get()->count();
-                    $total_stockholder = User::where('role','Stakeholder')->whereIn('kabupaten_id',$id_filter)->get()->count();    
-                     // dd($total_guru);
+                //     $total_guru = GuruM::where('is_aktif',true)->whereIn('kabupaten_id',$id_filter)->get()->count();
+                //     $total_sekolah = SekolahM::where('is_aktif',true)->whereIn('kabupaten_id',$id_filter)->get()->count();
+                //     $total_pengawas = User::where('role','Pengawas')->whereIn('kabupaten_id',$id_filter)->get()->count();
+                //     $total_stockholder = User::where('role','Stakeholder')->whereIn('kabupaten_id',$id_filter)->get()->count();    
+                //      // dd($total_guru);
         
-                }
+                // }
             $master = MasterTupoksi::orderBy('urutan')->get();
             // dd($master);die;
                 return view('adminNew.index',
@@ -51,7 +56,8 @@ class AdminController extends Controller
                     'total_sekolah',
                     'total_pengawas',
                     'total_stockholder',
-                    'master'
+                    'total_rencankerja',
+                    'total_umpanbalik'
                     ) );
             }
         }

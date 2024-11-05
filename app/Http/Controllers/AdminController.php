@@ -49,7 +49,9 @@ class AdminController extends Controller
         
                 // }
             $master = MasterTupoksi::orderBy('urutan')->get();
-            // dd($master);die;
+           
+
+            
                 return view('adminNew.index',
                 compact(
                     'total_guru',
@@ -63,6 +65,41 @@ class AdminController extends Controller
         }
        
     }
+
+    public function chartData()
+    {
+        $data = RencanaKerjaT::with('pengawasnama')
+            ->selectRaw('id_pengawas, COUNT(*) as total')
+            ->groupBy('id_pengawas')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'pengawas' => $item->pengawasnama ? $item->pengawasnama->name : 'Unknown',
+                    'total' => $item->total
+                ];
+            });
+
+        return response()->json($data); // Return JSON data for use in the view
+    }
+
+
+    public function chartData2()
+    {
+        $data = UmpanbalikT::with('pengawasnama')
+            ->selectRaw('id_pengawas, COUNT(*) as total')
+            ->groupBy('id_pengawas')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'pengawas' => $item->pengawasnama ? $item->pengawasnama->name : 'Unknown',
+                    'total' => $item->total
+                ];
+            });
+
+        return response()->json($data); // Return JSON data for use in the view
+    }
+
+
 
     public function data()
     {

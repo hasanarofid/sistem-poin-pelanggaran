@@ -83,6 +83,14 @@
                 <div data-i18n="Profile">Stakeholder</div>
             </a>
         </li>
+
+        <li class="menu-item {{ (request()->is('superadmin/wablasthistory')) ? 'active' : '' }}">
+            <a href="{{ route('wablasthistory.index') }}" class="menu-link">
+                {{-- <i class="menu-icon tf-icons ti ti-users"></i> --}}
+                <i class="menu-icon tf-icons fa-solid fa-envelope"></i>
+                <div data-i18n="Profile">Histori Wa Blast</div>
+            </a>
+        </li>
         @endif
 
         @if (Auth::user()->role == 'Admin')

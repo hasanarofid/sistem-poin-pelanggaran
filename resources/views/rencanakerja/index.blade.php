@@ -38,6 +38,42 @@
                             </select>
                             
                             </div>
+
+                            <div class="col-md-4">
+                                <label for="filter-pengawas">Filter Bulan:</label>
+                                <select
+                                id="filter-bln"
+                                name="bln"
+                                class="select2 form-select"
+                                required
+                            >
+                                <option value="all">All</option> <!-- Option to show all records -->
+                                @foreach($months as $month)
+                                    <option value="{{ $month['name'] }}">
+                                        {{ $month['name'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            
+                            </div>
+                            <div class="col-md-4">
+                                <label for="filter-tahun">Filter Tahun:</label>
+                                <select
+                                    id="filter-tahun"
+                                    name="tahun"
+                                    class="select2 form-select"
+                                    required
+                                >
+                                    <option value="all">All</option> <!-- Option to show all records -->
+                                    @foreach($years as $year)
+                                        <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
+                                            {{ $year }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            
+                            
                         </div>
 
                         <div class="table-responsive p-0">
@@ -111,11 +147,21 @@ function kirimWaBlast(id) {
 
 
     $(document).ready(function () {
-
-
-
+        $('#filter-pengawas').select2();
+        $('#filter-bln').select2();
+        $('#filter-tahun').select2();
         var isExporting = false;
         $('#filter-pengawas').change(function () {
+    $('#data-table').DataTable().ajax.reload(); // Reload the table when filter changes
+});
+
+
+$('#filter-bln').change(function () {
+    $('#data-table').DataTable().ajax.reload(); // Reload the table when filter changes
+});
+
+
+$('#filter-tahun').change(function () {
     $('#data-table').DataTable().ajax.reload(); // Reload the table when filter changes
 });
 
@@ -125,7 +171,9 @@ $('#data-table').DataTable({
             ajax: {
                 url: "{{ route('rencanatugas.getdata') }}",
                 data: function(d) {
-                         d.pengawas = $('#filter-pengawas').val(); // Pass the selected pengawas value
+                         d.pengawas = $('#filter-pengawas').val();
+                         d.bln = $('#filter-bln').val();
+                         d.tahun = $('#filter-tahun').val();
                  }
             },
             columns: [

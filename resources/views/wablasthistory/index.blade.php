@@ -1,6 +1,6 @@
 @extends('layouts.admin.home')
-@section('title', 'List Umpan Balik')
-@section('titelcard', 'List Umpan Balik')
+@section('title', 'History WA Blast')
+@section('titelcard', 'History WA Blast')
 @section('content')
 <div class="content-wrapper">
     <!-- Content -->
@@ -17,7 +17,7 @@
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between">
             <div class="card-title mb-0">
-              <h5 class="m-0 me-2">Tabel Umpan Balik</h5>
+              <h5 class="m-0 me-2">Tabel History WA Blast</h5>
             </div>
 
           
@@ -31,13 +31,12 @@
                           <thead>
                               <tr>
                                 <th>No</th>
-                                <th>Tanggal</th>
-                                <th>Pengawas</th>
-                                <th>Sekolah Sasaran</th>
-                                <th>Aspek Raport Pendidikan</th>
+                                <th>Rencana Kerja</th>
+                                <th>Kepala Sekolah</th>
+                                <th>No Wa</th>
                                 <th>Status</th>
-                                <th>Preview</th>
-                                {{-- <th>#</th> --}}
+                                <th>Keterangan</th>
+                                <th>Action</th>
                             </tr>
                           </thead>
                       </table>
@@ -72,14 +71,14 @@
      
         processing: true,
         serverSide: true,
-        ajax: "{{ route('listumpanbalik.getdata') }}",
+        ajax: "{{ route('wablasthistory.getdata') }}",
         columns: [
             {data: 'DT_RowIndex', name: 'DT_RowIndex'},
-            {data: 'tanggal', name: 'tanggal'},
-            {data: 'pengawas', name: 'pengawas'},
-            {data: 'nama_sekolah', name: 'nama_sekolah'},
-            {data: 'sasaran', name: 'sasaran'},
-            {data: 'tanggapan', name: 'tanggapan'},
+            {data: 'rencana', name: 'rencana'},
+            {data: 'kepalasekolah', name: 'kepalasekolah'},
+            {data: 'phone_number', name: 'phone_number'},
+            {data: 'status', name: 'status'},
+            {data: 'failure_reason', name: 'failure_reason'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ]
     });

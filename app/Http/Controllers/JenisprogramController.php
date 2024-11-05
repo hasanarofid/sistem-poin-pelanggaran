@@ -31,7 +31,7 @@ class JenisprogramController extends Controller
                         if($row->status == 1){
                             $status = '<span class="badge bg-label-success m-1" >Active</span>';
                         }else{
-                            $status = '<span class="badge bg-label-success m-1" >InActive</span>';
+                            $status = '<span class="badge bg-label-warning m-1" >InActive</span>';
                         }
                             return $status;
                     })

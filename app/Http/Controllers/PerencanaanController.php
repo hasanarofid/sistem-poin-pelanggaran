@@ -9,6 +9,7 @@ use App\Models\RencanaKerjaT;
 use App\Models\SekolahbinaanT;
 use App\Models\TugaskerjaT;
 use App\Models\UmpanbalikT;
+use App\Models\WhatsappMessagesLog;
 use App\SekolahM;
 use Illuminate\Http\Request;
 use Auth;
@@ -258,12 +259,18 @@ class PerencanaanController extends Controller
             Log::error("Failed to create or send feedback link: " . $e->getMessage());
         }
     }
-    
-    protected function sendWhatsAppMessage($phone, $message)
+
+    protected function sendWhatsAppMessage($phone, $message,$nama_kepala_sekolah_id,$model)
     {
         $token = 'OZ9q0PSQUUV4PRZGxyKUfZjt9EFyt22dTIRnklQSepTmFlrFMN9BqaIs7RXtnD9I';
         $url = "https://jogja.wablas.com/api/send-message";
-    
+
+        $logEntry = new WhatsappMessagesLog();
+        $logEntry->rencana_kerja_id = $model->id; // Add the Rencana Kerja ID here
+        $logEntry->kepala_sekolah_id = $nama_kepala_sekolah_id;
+        $logEntry->phone_number = $phone;
+        $logEntry->message = $message;
+
         try {
             $response = Http::withHeaders([
                 'Authorization' => $token,
@@ -271,16 +278,47 @@ class PerencanaanController extends Controller
                 'phone' => $phone,
                 'message' => $message,
             ]);
-    
+
             if ($response->successful()) {
                 Log::info("WhatsApp message sent successfully to {$phone}");
+                $logEntry->is_sent = true;
             } else {
                 Log::error("Failed to send WhatsApp message to {$phone}: " . $response->body());
+                $logEntry->is_sent = false;
+                $logEntry->failure_reason = "Failed to send message: " . $response->body();
             }
-            
         } catch (\Exception $e) {
             Log::error("WhatsApp API error for {$phone}: " . $e->getMessage());
+            $logEntry->is_sent = false;
+            $logEntry->failure_reason = "API error: " . $e->getMessage();
         }
+        
+        $logEntry->save(); // Save the log entry to the database
     }
+
+    
+    // protected function sendWhatsAppMessage($phone, $message)
+    // {
+    //     $token = 'OZ9q0PSQUUV4PRZGxyKUfZjt9EFyt22dTIRnklQSepTmFlrFMN9BqaIs7RXtnD9I';
+    //     $url = "https://jogja.wablas.com/api/send-message";
+    
+    //     try {
+    //         $response = Http::withHeaders([
+    //             'Authorization' => $token,
+    //         ])->post($url, [
+    //             'phone' => $phone,
+    //             'message' => $message,
+    //         ]);
+    
+    //         if ($response->successful()) {
+    //             Log::info("WhatsApp message sent successfully to {$phone}");
+    //         } else {
+    //             Log::error("Failed to send WhatsApp message to {$phone}: " . $response->body());
+    //         }
+            
+    //     } catch (\Exception $e) {
+    //         Log::error("WhatsApp API error for {$phone}: " . $e->getMessage());
+    //     }
+    // }
 
 }

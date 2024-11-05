@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\RencanaKerjaT;
 use App\Models\UmpanbalikT;
+use App\SekolahM;
+use App\TanggapanUmpanbalikT;
 use App\User;
 use Illuminate\Http\Request;
 use Auth;
@@ -36,6 +38,27 @@ class ListumpanbalikController extends Controller
                         $rencana = RencanaKerjaT::find($row->id_pelaporan);
                         return $rencana->aspekprogram->nama;
                     })
+                    ->addColumn('tanggapan', function($row){
+                        $tanggapan = TanggapanUmpanbalikT::where('id_umpanbalik',$row->id)->first();
+                        if($tanggapan){
+                            $btn = '<span class="badge bg-label-success m-1" > Sudah diberi tanggapan </span>';
+                        }else{
+                            $btn = '<span class="badge bg-label-danger m-1" > Belum diberi tanggapan </span>';
+                        }
+                        return $btn;
+
+                    })
+                    ->addColumn('nama_sekolah', function($row) {
+                        $rencana = RencanaKerjaT::find($row->id_pelaporan);
+                        $sekolahIds = explode(',', $rencana->sekolah_id);
+                        $sekolahs = SekolahM::whereIn('id', $sekolahIds)->get();
+            
+                        $nama_sekolah = '';
+                        foreach ($sekolahs as $sekolah) {
+                            $nama_sekolah .= '<span class="badge bg-label-primary m-1" data-sekolah2="' . $sekolah->nama_sekolah . '">' . $sekolah->nama_sekolah . '</span> ';
+                        }
+                        return $nama_sekolah;
+                    })
    
                ->addColumn('action', function($row){
                 $fullUrl = url('umpan-balik-view/' . $row->generate_url);
@@ -44,7 +67,7 @@ class ListumpanbalikController extends Controller
                            
                                return $btn;
                        })
-                       ->rawColumns(['action','sasaran','tanggal','pengawas'])
+                       ->rawColumns(['action','sasaran','tanggal','pengawas','nama_sekolah','tanggapan'])
                        ->make(true);
            }
     }

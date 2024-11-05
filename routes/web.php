@@ -49,6 +49,10 @@ Route::get('/', function(){
 // route panel dashboard admin
 Route::get('/', 'AdminController@index')->name('admin.index')->middleware(['auth']);
 Route::get('/dashboard', 'AdminController@index')->name('admin.index')->middleware(['auth']);
+Route::get('/chart-data', 'AdminController@chartData')->name('admin.chartData')->middleware(['auth']);
+Route::get('/chart-data2', 'AdminController@chartData2')->name('admin.chartData2')->middleware(['auth']);
+
+
 // end panel dashboard admin
 // umpan balik
 
@@ -201,6 +205,13 @@ Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->group(function 
     });
     // end route panel menu stakeholder
 
+    // route wablasthistory
+
+    // end wablasthistory
+    Route::prefix('wablasthistory')->group(function () {
+        Route::get('/', 'WablasthistoryController@index')->name('wablasthistory.index');
+        Route::get('/get-history', 'WablasthistoryController@getdata')->name('wablasthistory.getdata');
+    });
 
     // end route menu admin 
 });    

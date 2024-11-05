@@ -67,6 +67,131 @@
                 </div>
             </div>
 
+            <div class="row mt-4">
+   
+                <div class="col-lg-6">
+                  <div class="card">
+                    <div class="card-header pb-0 p-3">
+                      <h6 class="mb-0">Grafik Jumlah Rencana per pengawas </h6>
+                    </div>
+                        <div class="card-body p-3">
+                            <canvas id="pengawasChart"></canvas> <!-- Canvas for the chart -->
+                        </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card">
+                      <div class="card-header pb-0 p-3">
+                        <h6 class="mb-0">Grafik umpan balik per pengawas </h6>
+                      </div>
+                          <div class="card-body p-3">
+                            <canvas id="umpanbalikChart"></canvas> <!-- Canvas for the chart -->
+                          </div>
+                    </div>
+                  </div>
+
+            </div>
+
         </div>
     </div>
 @endsection
+
+
+@section('script')
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Fetch data for the chart
+    fetch("{{ route('admin.chartData') }}")
+        .then(response => response.json())
+        .then(data => {
+            const pengawasNames = data.map(item => item.pengawas);
+            const rencanaCounts = data.map(item => item.total);
+
+            // Set up the chart
+            const ctx = document.getElementById('pengawasChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: pengawasNames,
+                    datasets: [{
+                        label: 'Jumlah Rencana Kerja',
+                        data: rencanaCounts,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Jumlah Rencana Kerja'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Pengawas'
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching chart data:', error));
+
+
+        // Fetch data for the chart
+    fetch("{{ route('admin.chartData2') }}")
+        .then(response => response.json())
+        .then(data => {
+            const pengawasNames = data.map(item => item.pengawas);
+            const rencanaCounts = data.map(item => item.total);
+
+            // Set up the chart
+            const ctx = document.getElementById('umpanbalikChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: pengawasNames,
+                    datasets: [{
+                        label: 'Jumlah Umpan Balik',
+                        data: rencanaCounts,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Jumlah Umpan Balik'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Pengawas'
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching chart data:', error));
+
+
+});
+
+  
+</script>

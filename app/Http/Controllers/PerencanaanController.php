@@ -253,7 +253,7 @@ class PerencanaanController extends Controller
             Terimakasih
             Pesan ini digenerate otomatis oleh Sistem Monitoring dan Evaluasi Digital Pengawas (SiMODiP) KCD Kabupaten Tangerang";
     
-            $this->sendWhatsAppMessage($no_telp, $pesan);
+            $this->sendWhatsAppMessage($no_telp, $pesan,$nama_kepala_sekolah_id,$model);
             
         } catch (\Exception $e) {
             Log::error("Failed to create or send feedback link: " . $e->getMessage());

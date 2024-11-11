@@ -103,14 +103,14 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Fetch data for the chart
+    // Fetch data for the first chart (Jumlah Rencana Kerja)
     fetch("{{ route('admin.chartData') }}")
         .then(response => response.json())
         .then(data => {
             const pengawasNames = data.map(item => item.pengawas);
             const rencanaCounts = data.map(item => item.total);
 
-            // Set up the chart
+            // Set up the first chart
             const ctx = document.getElementById('pengawasChart').getContext('2d');
             new Chart(ctx, {
                 type: 'bar',
@@ -119,8 +119,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     datasets: [{
                         label: 'Jumlah Rencana Kerja',
                         data: rencanaCounts,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.2)', // Color for each bar
+                            'rgba(255, 159, 64, 0.2)', // Color for each bar
+                            'rgba(153, 102, 255, 0.2)', // Color for each bar
+                            'rgba(255, 99, 132, 0.2)', // Color for each bar
+                            'rgba(54, 162, 235, 0.2)', // Color for each bar
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',  // Border color
+                            'rgba(255, 159, 64, 1)',  // Border color
+                            'rgba(153, 102, 255, 1)', // Border color
+                            'rgba(255, 99, 132, 1)',  // Border color
+                            'rgba(54, 162, 235, 1)',  // Border color
+                        ],
                         borderWidth: 1
                     }]
                 },
@@ -146,15 +158,14 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error fetching chart data:', error));
 
-
-        // Fetch data for the chart
+    // Fetch data for the second chart (Jumlah Umpan Balik)
     fetch("{{ route('admin.chartData2') }}")
         .then(response => response.json())
         .then(data => {
             const pengawasNames = data.map(item => item.pengawas);
             const rencanaCounts = data.map(item => item.total);
 
-            // Set up the chart
+            // Set up the second chart
             const ctx = document.getElementById('umpanbalikChart').getContext('2d');
             new Chart(ctx, {
                 type: 'bar',
@@ -163,8 +174,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     datasets: [{
                         label: 'Jumlah Umpan Balik',
                         data: rencanaCounts,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: [
+                            'rgba(153, 102, 255, 0.2)', // Color for each bar
+                            'rgba(255, 159, 64, 0.2)',  // Color for each bar
+                            'rgba(75, 192, 192, 0.2)',  // Color for each bar
+                            'rgba(255, 99, 132, 0.2)',  // Color for each bar
+                            'rgba(54, 162, 235, 0.2)',  // Color for each bar
+                        ],
+                        borderColor: [
+                            'rgba(153, 102, 255, 1)',  // Border color
+                            'rgba(255, 159, 64, 1)',   // Border color
+                            'rgba(75, 192, 192, 1)',   // Border color
+                            'rgba(255, 99, 132, 1)',   // Border color
+                            'rgba(54, 162, 235, 1)',   // Border color
+                        ],
                         borderWidth: 1
                     }]
                 },
@@ -189,9 +212,5 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         })
         .catch(error => console.error('Error fetching chart data:', error));
-
-
 });
-
-  
 </script>

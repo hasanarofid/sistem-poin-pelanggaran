@@ -51,7 +51,7 @@ Route::get('/', 'AdminController@index')->name('admin.index')->middleware(['auth
 Route::get('/dashboard', 'AdminController@index')->name('admin.index')->middleware(['auth']);
 Route::get('/chart-data', 'AdminController@chartData')->name('admin.chartData')->middleware(['auth']);
 Route::get('/chart-data2', 'AdminController@chartData2')->name('admin.chartData2')->middleware(['auth']);
-
+Route::get('/spider-web-data', 'AdminController@getSpiderWebData')->name('admin.spiderWebData')->middleware(['auth']);
 
 // end panel dashboard admin
 // umpan balik

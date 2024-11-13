@@ -12,4 +12,5 @@ class UmpanbalikT extends Model
     {
         return $this->hasOne(User::class, 'id', 'id_pengawas');
     }
+    
 }

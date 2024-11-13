@@ -12,6 +12,7 @@ use DataTables;
 use Illuminate\Support\Facades\Hash;
 use Auth;
 use App\MasterTupoksi;
+use App\TanggapanUmpanbalikT;
 use App\Models\RencanaKerjaT;
 use App\Models\UmpanbalikT;
 
@@ -49,9 +50,38 @@ class AdminController extends Controller
         
                 // }
             $master = MasterTupoksi::orderBy('urutan')->get();
-           
+            $currentMonth = date('n'); // Numeric representation of the current month (1-12)
+        $currentYear = date('Y');  // Current year
+        $years = range($currentYear - 5, $currentYear + 5);
+         $months = [];
+        
+        // Array of month names in Indonesian
+        $monthNamesIndo = [
+            1 => 'Januari', 
+            2 => 'Februari', 
+            3 => 'Maret', 
+            4 => 'April', 
+            5 => 'Mei', 
+            6 => 'Juni', 
+            7 => 'Juli', 
+            8 => 'Agustus', 
+            9 => 'September', 
+            10 => 'Oktober', 
+            11 => 'November', 
+            12 => 'Desember'
+        ];
+        
+        // Generate the current and next 11 months in Indonesian
+        for ($i = 0; $i < 12; $i++) {
+            $timestamp = strtotime("+$i month");
+            $monthNumber = date('n', $timestamp);
+            $months[] = [
+                'value' => $monthNumber,                // Month number (1-12)
+                'name' => $monthNamesIndo[$monthNumber] // Full month name in Indonesian
+            ];
+        }
 
-            
+        $listPengawas = User::where('role','pengawas')->get();
                 return view('adminNew.index',
                 compact(
                     'total_guru',
@@ -59,19 +89,38 @@ class AdminController extends Controller
                     'total_pengawas',
                     'total_stockholder',
                     'total_rencankerja',
-                    'total_umpanbalik'
+                    'total_umpanbalik',
+                    'months',
+                    'currentYear',    
+                    'years',  
+                    'listPengawas' 
                     ) );
             }
         }
        
     }
 
-    public function chartData()
+    public function chartData(Request $request)
     {
-        $data = RencanaKerjaT::with('pengawasnama')
-            ->selectRaw('id_pengawas, COUNT(*) as total')
-            ->groupBy('id_pengawas')
-            ->get()
+        $month = $request->input('bln', 'all');
+        $year = $request->input('tahun', 'all');
+
+        $query = RencanaKerjaT::with('pengawasnama')
+        ->selectRaw('id_pengawas, COUNT(*) as total')
+        ->groupBy('id_pengawas');
+
+        // Apply the month filter
+        if ($month !== 'all') {
+            $query->where('bulan', $month);
+        }
+
+        // Apply the year filter
+        if ($year !== 'all') {
+            $query->where('tahun_ajaran', $year);
+        }
+
+        // Get the results
+        $data = $query->get()
             ->map(function ($item) {
                 return [
                     'pengawas' => $item->pengawasnama ? $item->pengawasnama->name : 'Unknown',
@@ -79,25 +128,75 @@ class AdminController extends Controller
                 ];
             });
 
+        // Return the data as JSON
         return response()->json($data); // Return JSON data for use in the view
     }
 
 
-    public function chartData2()
+    public function chartData2(Request $request)
     {
-        $data = UmpanbalikT::with('pengawasnama')
-            ->selectRaw('id_pengawas, COUNT(*) as total')
-            ->groupBy('id_pengawas')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'pengawas' => $item->pengawasnama ? $item->pengawasnama->name : 'Unknown',
-                    'total' => $item->total
-                ];
-            });
+        $pengawas = $request->input('pengawas', 'all');
+        $query = UmpanbalikT::with('pengawasnama')
+        ->selectRaw('id_pengawas, COUNT(*) as total')
+        ->groupBy('id_pengawas');
 
-        return response()->json($data); // Return JSON data for use in the view
+         // Apply the year filter
+         if ($pengawas !== 'all') {
+            $query->where('id_pengawas', $pengawas);
+        }
+
+         // Get the results
+         $data = $query->get()
+         ->map(function ($item) {
+             return [
+                'pengawas' => $item->pengawasnama ? $item->pengawasnama->name : 'Unknown',
+                'total' => $item->total
+             ];
+         });
+         return response()->json($data);
     }
+
+    // spider web
+    public function getSpiderWebData(Request $request)
+    {
+        $pengawasId = $request->input('pengawas', 'all');
+        // umpanBalikT
+        // $query = TanggapanUmpanbalikT::selectRaw(
+        //     'COUNT(CASE WHEN jawaban_5 IS NOT NULL THEN 1 END) as interaksi,
+        //      COUNT(CASE WHEN jawaban_6 IS NOT NULL THEN 1 END) as suasana,
+        //      COUNT(CASE WHEN jawaban_7 IS NOT NULL THEN 1 END) as materi,
+        //      COUNT(CASE WHEN jawaban_8 IS NOT NULL THEN 1 END) as komunikasi,
+        //      COUNT(CASE WHEN jawaban_9 IS NOT NULL THEN 1 END) as ketepatan_waktu'
+        // );
+
+        // if ($pengawasId !== 'all') {
+        //     $query->where('id_pengawas', $pengawasId);
+        // }
+
+        // $data = $query->get();
+        $query = TanggapanUmpanbalikT::selectRaw(
+            'count(jawaban_5) as interaksi, 
+             count(jawaban_6) as suasana, 
+             count(jawaban_7) as materi, 
+             count(jawaban_8) as komunikasi, 
+             count(jawaban_9) as ketepatan_waktu, 
+             rt.id' // Tambahkan kolom id di sini
+        )
+        ->join('umpanbalik_t as ut', 'ut.id', '=', 'tanggapan_umpanbalik_t.id_umpanbalik')
+        ->join('rencakakerja_t as rt', 'rt.id', '=', 'ut.id_pelaporan')
+        ->groupBy('rt.id'); // Pastikan groupBy berdasarkan id
+        
+        // Jika ada filter berdasarkan pengawas
+        if ($pengawasId !== 'all') {
+            $query->where('rt.id', $pengawasId);
+        }
+        
+        // Menjalankan query dan mengambil hasilnya
+        $data = $query->get();
+        
+        return response()->json($data);
+    }
+
 
 
 

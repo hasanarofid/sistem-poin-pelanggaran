@@ -156,6 +156,39 @@ class AdminController extends Controller
          return response()->json($data);
     }
 
+    // chartDataRaportPendidikan
+    public function chartDataRaportPendidikan(Request $request)
+    {
+        $month = $request->input('bln', 'all');
+        $year = $request->input('tahun', 'all');
+
+        $query = RencanaKerjaT::with('aspekprogram')
+        ->selectRaw('aspekprogram_id, COUNT(*) as total')
+        ->groupBy('aspekprogram_id');
+
+        // Apply the month filter
+        if ($month !== 'all') {
+            $query->where('bulan', $month);
+        }
+
+        // Apply the year filter
+        if ($year !== 'all') {
+            $query->where('tahun_ajaran', $year);
+        }
+
+        // Get the results
+        $data = $query->get()
+            ->map(function ($item) {
+                return [
+                    'aspekprogram' => $item->aspekprogram ? $item->aspekprogram->nama : 'Unknown',
+                    'total' => $item->total
+                ];
+            });
+
+        // Return the data as JSON
+        return response()->json($data); // Return JSON data for use in the view
+    }
+
     // spider web
     public function getSpiderWebData(Request $request)
         {

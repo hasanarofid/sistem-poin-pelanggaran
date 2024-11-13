@@ -156,40 +156,155 @@
 
 
             </div>
+
+            
+
             <div class="row mt-4">
-                 {{-- begin spider web --}}
-                 <div class="col-lg-6">
+                
+
+                {{-- begin spider web --}}
+                <div class="col-lg-6">
                     <div class="card">
                       <div class="card-header pb-0 p-3">
-                        <h6 class="mb-0">Spider Web Profile Pengawas </h6>
+                        <h6 class="mb-0">Grafik Jumlah Rencana Kerja per Raport Pendidikan </h6>
                       </div>
                           <div class="card-body p-3">
                             <div class="row mb-3">
-                              
-                                <div class="col-md-12">
-                                  
-                                    <label for="filter-pengawas">Filter by Pengawas:</label>
+                               
+    
+                                <div class="col-md-6">
+                                    <label for="filter-pengawas">Filter Bulan:</label>
                                     <select
-                                    id="filter-pengawas2"
-                                    name="pengawas"
+                                    id="filter-bln2"
+                                    name="bln"
                                     class="select2 form-select"
                                     required
                                 >
                                     <option value="all">All</option> <!-- Option to show all records -->
-                                    @foreach ($listPengawas as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name.' - '.$item->nip }}</option>
+                                    @foreach($months as $month)
+                                        <option value="{{ $month['name'] }}">
+                                            {{ $month['name'] }}
+                                        </option>
                                     @endforeach
                                 </select>
+                                
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="filter-tahun">Filter Tahun:</label>
+                                    <select
+                                        id="filter-tahun2"
+                                        name="tahun"
+                                        class="select2 form-select"
+                                        required
+                                    >
+                                        <option value="all">All</option> <!-- Option to show all records -->
+                                        @foreach($years as $year)
+                                            <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
+                                                {{ $year }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    
+                                
                                 </div>
                                 
-                                
                             </div>
-                            <canvas id="spiderWebPengawas"></canvas> <!-- Canvas for the chart -->
+                            <canvas id="chartPerRencanaKerja"></canvas> <!-- Canvas for the chart -->
                           </div>
                     </div>
                 </div>
-
                 {{-- end spider web --}}
+
+                 {{-- begin spider web --}}
+                 <div class="col-lg-6">
+                    <div class="card">
+                      <div class="card-header pb-0 p-3">
+                        <h6 class="mb-0">Grafik Jumlah Pendampingan Terkonfirmasi </h6>
+                      </div>
+                          <div class="card-body p-3">
+                            <div class="row mb-3">
+                               
+    
+                                <div class="col-md-6">
+                                    <label for="filter-pengawas">Filter Bulan:</label>
+                                    <select
+                                    id="filter-bln3"
+                                    name="bln"
+                                    class="select2 form-select"
+                                    required
+                                >
+                                    <option value="all">All</option> <!-- Option to show all records -->
+                                    @foreach($months as $month)
+                                        <option value="{{ $month['name'] }}">
+                                            {{ $month['name'] }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="filter-tahun">Filter Tahun:</label>
+                                    <select
+                                        id="filter-tahun3"
+                                        name="tahun"
+                                        class="select2 form-select"
+                                        required
+                                    >
+                                        <option value="all">All</option> <!-- Option to show all records -->
+                                        @foreach($years as $year)
+                                            <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
+                                                {{ $year }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    
+                                
+                                </div>
+                                
+                            </div>
+                            <canvas id="chartKonfrim"></canvas> <!-- Canvas for the chart -->
+                          </div>
+                    </div>
+                </div>
+                {{-- end spider web --}}
+
+            </div>
+
+
+            <div class="row mt-4">
+                {{-- begin spider web --}}
+                <div class="col-lg-12">
+                   <div class="card">
+                     <div class="card-header pb-0 p-3">
+                       <h6 class="mb-0">Spider Web Profile Pengawas </h6>
+                     </div>
+                         <div class="card-body p-3">
+                           <div class="row mb-3">
+                             
+                               <div class="col-md-12">
+                                 
+                                   <label for="filter-pengawas">Filter by Pengawas:</label>
+                                   <select
+                                   id="filter-pengawas2"
+                                   name="pengawas"
+                                   class="select2 form-select"
+                                   required
+                               >
+                                   <option value="all">All</option> <!-- Option to show all records -->
+                                   @foreach ($listPengawas as $item)
+                                       <option value="{{ $item->id }}">{{ $item->name.' - '.$item->nip }}</option>
+                                   @endforeach
+                               </select>
+                               </div>
+                               
+                               
+                           </div>
+                           <canvas id="spiderWebPengawas"></canvas> <!-- Canvas for the chart -->
+                         </div>
+                   </div>
+               </div>
             </div>
 
         </div>
@@ -200,7 +315,92 @@
 @section('script')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    $('#filter-pengawas').select2();
+    //chart terkonfirmasi
+$('#filter-bln3').select2();
+$('#filter-tahun3').select2();
+// chart terkonfirmasi
+//chart per raport pendidikan
+$('#filter-bln2').select2();
+$('#filter-tahun2').select2();
+let raportPendidikanChartInstance = null;
+function fetchChartDataRaportPendidikan(month = 'all', year = 'all') {
+    fetch(`{{ route('admin.chartDataRaportPendidikan') }}?bln=${month}&tahun=${year}`)
+        .then(response => response.json())
+        .then(data => {
+            // Check if data is empty
+            if (!data || data.length === 0) {
+                console.warn('No data available for the chart');
+                
+                // Destroy the existing chart instance if it exists
+                if (raportPendidikanChartInstance) {
+                    raportPendidikanChartInstance.destroy();
+                }
+
+                // Display a "No data available" message in the canvas
+                const ctx = document.getElementById('chartPerRencanaKerja').getContext('2d');
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear previous content
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data available for the chart', ctx.canvas.width / 2, ctx.canvas.height / 2);
+
+                return; // Exit early as there’s no data to display in the chart
+            }
+
+            const pengawasNames = data.map(item => item.aspekprogram);
+            const rencanaCounts = data.map(item => item.total);
+
+            // Destroy the existing chart instance if it exists
+            if (raportPendidikanChartInstance) {
+                raportPendidikanChartInstance.destroy();
+            }
+
+            // Set up the chart and assign it to chartPerRencanaKerjaInstance
+            const ctx = document.getElementById('chartPerRencanaKerja').getContext('2d');
+            raportPendidikanChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: pengawasNames,
+                    datasets: [{
+                        label: 'Jumlah Rencana Kerja',
+                        data: rencanaCounts,
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)', 'rgba(255, 159, 64, 1)', 'rgba(153, 102, 255, 1)',
+                            'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Jumlah Rencana Kerja' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Raport Pendidikan' }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching chart data:', error));
+}
+fetchChartDataRaportPendidikan();
+
+// Event listener for filter changes
+$('#filter-bln2, #filter-tahun2').change(function() {
+    const month = $('#filter-bln2').val();
+    const year = $('#filter-bln2').val();
+    fetchChartDataRaportPendidikan(month, year);
+});
+
+// end chart per raport pendidikan
+        $('#filter-pengawas').select2();
         $('#filter-bln').select2();
         $('#filter-tahun').select2();
    

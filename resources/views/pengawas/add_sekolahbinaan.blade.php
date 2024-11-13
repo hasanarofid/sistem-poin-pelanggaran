@@ -1,57 +1,45 @@
-@extends('layouts.master')
-@section('title','Pengawas')
-@section('subjudul','add Pengawas')
-@section('breadcrumbs')
-<li class="breadcrumb-item text-sm"><a class="opacity-5 text-white" href="javascript:;">add Pengawas</a></li>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css">
+@extends('layouts.admin.home')
+@section('title', 'Set Sekolah Binaan')
+@section('titelcard', 'Set Sekolah Binaan')
 
-<style>
-#data-table_info{
-   font-size: 12px;
-}
-#data-table_paginate{
-   font-size: 12px;
-}
-#data-table tbody tr {
-    font-size: 12px; /* Adjust the font size to your desired value */
-}
-
-</style>
-@endsection
 @section ('content')
- <div class="container-fluid py-2">
- 
-
-       <div class="row">
-         <div class="col-12">
-          <div class="card mb-4">
-            <div class="card-header pb-0 p-3">
-                     <div class="row">
-                     <div class="col-6 d-flex align-items-center">
-                        <h6 class="mb-0">Form Add Pengawas </h6>
-                     </div>
+<style>
+    .select2-selection__choice{
+        background-color: #7367f0 !important;
+        color: #fff !important;
+    }
+</style>
+<div class="content-wrapper">
+  <div class="container-xxl flex-grow-1 container-p-y">
+      <div class="row">
+          <div class="col-12">
+              <div class="card mb-4">
+                  <div class="card-header pb-0 p-3">
+                      <div class="row">
+                          <div class="col-6 d-flex align-items-center">
+                              <h6 class="mb-0">Set Sekolah Binaan  (Total : {{ $total_binaan }} ) </h6>
+                          </div>
                      
-                     </div>
+                      </div>
                   </div>
-               <div class="card-body ">
-@if(Session::has('success'))
-    <div class="alert alert-success">
-        {{ Session::get('success') }}
-    </div>
-    {{ Session::forget('success') }}
-@endif
-              
-               @if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-                     <form action="{{ route('masterpengawas.store_sekolah') }}"
+                  <div class="card-body">
+                            @if(Session::has('success'))
+                                <div class="alert alert-success">
+                                    {{ Session::get('success') }}
+                                </div>
+                                {{ Session::forget('success') }}
+                            @endif
+                                        
+                                        @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                                                <form  action="{{ route('masterpengawas.store_sekolah') }}"
                         method="POST"
                         enctype="multipart/form-data">
                      @csrf
@@ -60,7 +48,8 @@
                      
                      <div class="form-group">
                         <label for="kabupaten_id">Sekolah </label>
-                        <select name="sekolah_id[]" id="sekolah_id" class="form-control select2" required multiple>
+                        
+                        <select name="sekolah_id[]" id="sekolah_id" class="form-select select2" required multiple>
                             @php
                                 $allSelected = true;
                             @endphp
@@ -72,10 +61,10 @@
                                         $allSelected = false;
                                     }
                                 @endphp
-                                <option value="{{ $item->id }}" {{ $selected }}>{{ $item->nama_sekolah }}</option>
+                                <option   value="{{ $item->id }}" {{ $selected }}>{{ $item->nama_sekolah }}</option>
                             @endforeach
                             @if ($allSelected)
-                                <option value="" disabled hidden>All selected</option>
+                                <option  value="" disabled hidden>All selected</option>
                             @endif
                         </select>
                         
@@ -94,19 +83,15 @@
          </div>
       </div>
  </div>
+</div>
 @endsection
-    @section('js')
-       <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
-
-         <script>
-           jQuery(document).ready(function () {
-    // Initialize Select2 for the 'select2' class elements
-    jQuery('.select2').select2();
-
-  
-});
-   
-         </script>
+       @section('script')
+       <script>
+           $(document).ready(function () {
+      $('#sekolah_id').select2();
+   });
+       </script>
+ 
        @endsection
 
 

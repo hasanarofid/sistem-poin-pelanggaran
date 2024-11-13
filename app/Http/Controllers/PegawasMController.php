@@ -76,10 +76,11 @@ class PegawasMController extends Controller
     public function setSekolahBinaan($id){
         $models = User::where('id',$id)->first();
         $sekolah = SekolahM::get();
-        $binaan = SekolahbinaanT::with('sekolah')->get();
-                       
+        $binaan = SekolahbinaanT::with('sekolah')->where('id_pengawas',$id)->get();
+        $total_binaan = SekolahbinaanT::with('sekolah')->where('id_pengawas',$id)->count();
+
         // dd($binaan);
-        return view('pengawas.add_sekolahbinaan',compact('models','sekolah','binaan'));
+        return view('pengawas.add_sekolahbinaan',compact('models','sekolah','binaan','total_binaan'));
     }
 
 
@@ -182,27 +183,36 @@ class PegawasMController extends Controller
     public function import(){
         return view('pengawas.import');
     }
-
-    public function store_sekolah(Request $request){
-        // dd($request);
+    public function store_sekolah(Request $request)
+    {
         $sekolahIds = $request->input('sekolah_id');
-
-        // Loop through each sekolah_id
-        foreach ($sekolahIds as $sekolahId) {
-            // Retrieve data based on the current sekolah_id
-            // $sekolah = Sekolah::find($sekolahId);
+        $id_pengawas = $request->input('id_pengawas');
+    
+        // Retrieve current sekolah binaan for the supervisor
+        $currentSekolahIds = SekolahbinaanT::where('id_pengawas', $id_pengawas)->pluck('id_sekolah')->toArray();
+    
+        // Find sekolah_ids to delete (currently in the database but not in the new request)
+        $deleteSekolahIds = array_diff($currentSekolahIds, $sekolahIds);
+        
+        // Find sekolah_ids to add (in the new request but not in the database)
+        $addSekolahIds = array_diff($sekolahIds, $currentSekolahIds);
+    
+        // Delete removed sekolah binaan
+        SekolahbinaanT::where('id_pengawas', $id_pengawas)
+            ->whereIn('id_sekolah', $deleteSekolahIds)
+            ->delete();
+    
+        // Add new sekolah binaan
+        foreach ($addSekolahIds as $sekolahId) {
             $skolahbinaan = new SekolahbinaanT();
-            $skolahbinaan->id_pengawas = $request->input('id_pengawas');
+            $skolahbinaan->id_pengawas = $id_pengawas;
             $skolahbinaan->id_sekolah = $sekolahId;
             $skolahbinaan->save();
         }
-
-
-            return redirect()->route('masterpengawas.index')->with('success', 'add sekolah binaan pengawas created successfully');
-
-
+    
+        return redirect()->route('masterpengawas.index')
+                         ->with('success', 'Sekolah binaan pengawas updated successfully');
     }
-
     /** save data pengawas */
     public function store(Request $request){
         // dd($request->post());die;belum

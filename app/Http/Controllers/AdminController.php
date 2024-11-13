@@ -158,44 +158,70 @@ class AdminController extends Controller
 
     // spider web
     public function getSpiderWebData(Request $request)
-    {
-        $pengawasId = $request->input('pengawas', 'all');
-        // umpanBalikT
-        // $query = TanggapanUmpanbalikT::selectRaw(
-        //     'COUNT(CASE WHEN jawaban_5 IS NOT NULL THEN 1 END) as interaksi,
-        //      COUNT(CASE WHEN jawaban_6 IS NOT NULL THEN 1 END) as suasana,
-        //      COUNT(CASE WHEN jawaban_7 IS NOT NULL THEN 1 END) as materi,
-        //      COUNT(CASE WHEN jawaban_8 IS NOT NULL THEN 1 END) as komunikasi,
-        //      COUNT(CASE WHEN jawaban_9 IS NOT NULL THEN 1 END) as ketepatan_waktu'
-        // );
+        {
+            $pengawasId = $request->input('pengawas', 'all');
 
-        // if ($pengawasId !== 'all') {
-        //     $query->where('id_pengawas', $pengawasId);
-        // }
+            // Define the query to calculate averages
+            $query = TanggapanUmpanbalikT::selectRaw(
+                'AVG(
+                    CASE jawaban_5
+                        WHEN "Sangat Baik" THEN 4
+                        WHEN "Baik" THEN 3
+                        WHEN "Cukup" THEN 2
+                        WHEN "Kurang" THEN 1
+                        WHEN "Sangat Kurang" THEN 0
+                    END
+                ) as interaksi, 
+                AVG(
+                    CASE jawaban_6
+                        WHEN "Sangat Baik" THEN 4
+                        WHEN "Baik" THEN 3
+                        WHEN "Cukup" THEN 2
+                        WHEN "Kurang" THEN 1
+                        WHEN "Sangat Kurang" THEN 0
+                    END
+                ) as suasana, 
+                AVG(
+                    CASE jawaban_7
+                        WHEN "Sangat Baik" THEN 4
+                        WHEN "Baik" THEN 3
+                        WHEN "Cukup" THEN 2
+                        WHEN "Kurang" THEN 1
+                        WHEN "Sangat Kurang" THEN 0
+                    END
+                ) as materi, 
+                AVG(
+                    CASE jawaban_8
+                        WHEN "Sangat Baik" THEN 4
+                        WHEN "Baik" THEN 3
+                        WHEN "Cukup" THEN 2
+                        WHEN "Kurang" THEN 1
+                        WHEN "Sangat Kurang" THEN 0
+                    END
+                ) as komunikasi, 
+                AVG(
+                    CASE jawaban_9
+                        WHEN "Sangat Baik" THEN 4
+                        WHEN "Baik" THEN 3
+                        WHEN "Cukup" THEN 2
+                        WHEN "Kurang" THEN 1
+                        WHEN "Sangat Kurang" THEN 0
+                    END
+                ) as ketepatan_waktu'
+            )
+            ->join('umpanbalik_t as ut', 'ut.id', '=', 'tanggapan_umpanbalik_t.id_umpanbalik')
+            ->join('rencakakerja_t as rt', 'rt.id', '=', 'ut.id_pelaporan');
 
-        // $data = $query->get();
-        $query = TanggapanUmpanbalikT::selectRaw(
-            'count(jawaban_5) as interaksi, 
-             count(jawaban_6) as suasana, 
-             count(jawaban_7) as materi, 
-             count(jawaban_8) as komunikasi, 
-             count(jawaban_9) as ketepatan_waktu, 
-             rt.id' // Tambahkan kolom id di sini
-        )
-        ->join('umpanbalik_t as ut', 'ut.id', '=', 'tanggapan_umpanbalik_t.id_umpanbalik')
-        ->join('rencakakerja_t as rt', 'rt.id', '=', 'ut.id_pelaporan')
-        ->groupBy('rt.id'); // Pastikan groupBy berdasarkan id
-        
-        // Jika ada filter berdasarkan pengawas
-        if ($pengawasId !== 'all') {
-            $query->where('rt.id', $pengawasId);
+            // Apply filter based on pengawasId, if specified
+            if ($pengawasId !== 'all') {
+                $query->where('rt.id_pengawas', $pengawasId);
+            }
+
+            // Execute the query to retrieve the averages
+            $data = $query->first();
+
+            return response()->json($data);
         }
-        
-        // Menjalankan query dan mengambil hasilnya
-        $data = $query->get();
-        
-        return response()->json($data);
-    }
 
 
 

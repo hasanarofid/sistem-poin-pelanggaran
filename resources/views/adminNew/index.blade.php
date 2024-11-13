@@ -376,12 +376,11 @@ $('#filter-pengawas').change(function() {
     fetchChartData2(pengawas);
 });
 
-
 $('#filter-pengawas2').select2();
 
 let spiderChartInstance;
 
-// Definisikan kategori warna
+// Define category colors
 const categoryColors = {
     interaksi: 'rgba(54, 162, 235, 0.2)', // Light blue
     suasana: 'rgba(255, 99, 132, 0.2)', // Light red
@@ -390,7 +389,7 @@ const categoryColors = {
     ketepatan_waktu: 'rgba(255, 159, 64, 0.2)' // Light orange
 };
 
-// Fungsi untuk mengambil data chart dan menampilkannya
+// Function to fetch chart data and display it
 function fetchSpiderWebData(pengawas = 'all') {
     fetch(`{{ route('admin.spiderWebData') }}?pengawas=${pengawas}`)
         .then(response => response.json())
@@ -401,15 +400,15 @@ function fetchSpiderWebData(pengawas = 'all') {
 
             const ctx = document.getElementById('spiderWebPengawas').getContext('2d');
 
-            // Menyiapkan dataset untuk chart
-            const datasets = data.map(pengawasData => ({
-                label: `Pengawas ${pengawasData.id_pengawas}`, // Label pengawas
+            // Prepare dataset for the chart
+            const dataset = {
+                label: `Pengawas ${pengawas === 'all' ? 'All' : pengawas}`,
                 data: [
-                    pengawasData.interaksi,
-                    pengawasData.suasana,
-                    pengawasData.materi,
-                    pengawasData.komunikasi,
-                    pengawasData.ketepatan_waktu
+                    data.interaksi,
+                    data.suasana,
+                    data.materi,
+                    data.komunikasi,
+                    data.ketepatan_waktu
                 ],
                 fill: true,
                 backgroundColor: [
@@ -435,30 +434,28 @@ function fetchSpiderWebData(pengawas = 'all') {
                 ],
                 pointBorderColor: '#fff',
                 pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgb(54, 162, 235)'
-            }));
+                pointHoverBorderColor: [
+                    'rgb(54, 162, 235)', // Blue
+                    'rgb(255, 99, 132)', // Red
+                    'rgb(75, 192, 192)', // Green
+                    'rgb(153, 102, 255)', // Purple
+                    'rgb(255, 159, 64)' // Orange
+                ]
+            };
 
-            // Konfigurasi chart radar
+            // Configure the radar chart
             spiderChartInstance = new Chart(ctx, {
                 type: 'radar',
                 data: {
                     labels: ['Interaksi', 'Suasana', 'Materi', 'Komunikasi', 'Ketepatan Waktu'],
-                    datasets: datasets // Menambahkan semua dataset pengawas
+                    datasets: [dataset]
                 },
                 options: {
                     responsive: true,
                     scales: {
                         r: {
                             beginAtZero: true,
-                            max: Math.max(
-                                ...data.flatMap(pengawasData => [
-                                    pengawasData.interaksi,
-                                    pengawasData.suasana,
-                                    pengawasData.materi,
-                                    pengawasData.komunikasi,
-                                    pengawasData.ketepatan_waktu
-                                ])
-                            ) + 5, // Set max secara dinamis berdasarkan data terbesar
+                            max: 4, // Set max to match your rating scale (0-4 if 'Sangat Baik' is 4)
                             ticks: {
                                 stepSize: 1
                             }
@@ -476,14 +473,16 @@ function fetchSpiderWebData(pengawas = 'all') {
         .catch(error => console.error('Error fetching spider web data:', error));
 }
 
-// Memuat data chart pertama kali
+// Initial chart data load
 fetchSpiderWebData();
 
-// Mengambil data ketika filter pengawas berubah
+// Fetch data when the pengawas filter changes
 $('#filter-pengawas2').change(function() {
     const pengawas = $(this).val();
     fetchSpiderWebData(pengawas);
 });
+
+
 });
 
 

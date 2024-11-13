@@ -32,7 +32,7 @@ class AspekprogramController extends Controller
                 if($row->status == 1){
                     $status = '<span class="badge bg-label-success m-1" >Active</span>';
                 }else{
-                    $status = '<span class="badge bg-label-success m-1" >InActive</span>';
+                    $status = '<span class="badge bg-label-danger m-1" >InActive</span>';
                 }
                     return $status;
             })
@@ -78,49 +78,32 @@ class AspekprogramController extends Controller
         // dd($request->post());die;
   
             $model = new AspekProgram();
-            $model->tahun_ajaran = $request->tahun_ajaran;
-            $model->semester = $request->semester;
-            $model->kegiatan = $request->kegiatan;
-            $model->urutan = $request->urutan;
-
-            if($request->is_sub == 'sub'){
-                $model->id_kegiatan = $request->id_kegiatan;
-            }
+            $model->nama = $request->nama;
+            $model->status = $request->status;
 
             $model->save();
 
         
-            return redirect()->route('aspekprogram.index')->with('success', 'AspekProgram created successfully');
+            return redirect()->route('aspekprogram.index')->with('success', 'Aspek Program created successfully');
     }
 
     public function edit($id){
-        $models = User::where('id',$id)->first();
-        return view('pengawas.edit',compact('models'));
+        $models = AspekProgram::where('id',$id)->first();
+        return view('aspekprogram.edit',compact('models'));
     }
 
      public function hapus($id){
-         $user = User::where('id',$id)->delete();
+         $user = AspekProgram::where('id',$id)->delete();
         return redirect()->back()->with('success', 'pengawas Delete successfully');
     }
 
     public function update(Request $request){
-         $user = User::where('id',$request->id)->first();
-         $user->jenjang_jabatan = $request->jenjang_jabatan;
-         $user->pangkat = $request->pangkat;
-         $user->gol_ruang = $request->gol_ruang;
-       
-               $user->no_telp = $request->no_telp;
-            $user->kota = $request->kota;
-            $user->alamat_lengkap = $request->alamat_lengkap;
-            $user->kode_area = $request->kode_area;
-             $user->save();
+         $model = AspekProgram::where('id',$request->id)->first();
+         $model->nama = $request->nama;
+         $model->status = $request->status;
+             $model->save();
 
-        if(isset($request->password)){
-            $user->password = Hash::make($request->password);
-            $user->update();
-        }
-
-        return redirect()->route('pengawas.index',$request->id)->with('success', 'pengawas update successfully');
+        return redirect()->route('aspekprogram.index',$request->id)->with('success', 'pengawas update successfully');
     }
 
     public function getkegiatan(Request $request)

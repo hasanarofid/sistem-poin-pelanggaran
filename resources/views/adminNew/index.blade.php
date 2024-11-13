@@ -124,12 +124,49 @@
                 <div class="col-lg-6">
                     <div class="card">
                       <div class="card-header pb-0 p-3">
-                        <h6 class="mb-0">Grafik umpan balik per pengawas </h6>
+                        <h6 class="mb-0">Grafik Umpan Balik per Rencana Kerja </h6>
                       </div>
                           <div class="card-body p-3">
-                            <div class="row mb-3">
+                            <div class="row mb-2">
+
+                                <div class="col-md-3">
+                                    <label for="filter-pengawas">Bulan:</label>
+                                    <select
+                                    id="filter-bln-last"
+                                    name="bln"
+                                    class="select2 form-select"
+                                    required
+                                >
+                                    <option value="all">All</option> <!-- Option to show all records -->
+                                    @foreach($months as $month)
+                                        <option value="{{ $month['name'] }}">
+                                            {{ $month['name'] }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label for="filter-tahun-last">Filter Tahun:</label>
+                                    <select
+                                        id="filter-tahun-last"
+                                        name="tahun"
+                                        class="select2 form-select"
+                                        required
+                                    >
+                                        <option value="all">All</option> <!-- Option to show all records -->
+                                        @foreach($years as $year)
+                                            <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
+                                                {{ $year }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    
+                                
+                                </div>
                               
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                   
                                     <label for="filter-pengawas">Filter by Pengawas:</label>
                                     <select
@@ -268,17 +305,17 @@
                           </div>
                     </div>
                 </div>
-                {{-- end spider web --}}
+                
 
             </div>
 
 
             <div class="row mt-4">
                 {{-- begin spider web --}}
-                <div class="col-lg-12">
+                <div class="col-lg-6">
                    <div class="card">
                      <div class="card-header pb-0 p-3">
-                       <h6 class="mb-0">Spider Web Profile Pengawas </h6>
+                       <h6 class="mb-0">Profil Kompetensi Pengawas </h6>
                      </div>
                          <div class="card-body p-3">
                            <div class="row mb-3">
@@ -305,6 +342,40 @@
                          </div>
                    </div>
                </div>
+               {{-- end spider web --}}
+
+                {{-- begin pie web --}}
+                <div class="col-lg-6">
+                    <div class="card">
+                      <div class="card-header pb-0 p-3">
+                        <h6 class="mb-0"> Realisasi Pelaksanaan Pendampingan </h6>
+                      </div>
+                          <div class="card-body p-3">
+                            <div class="row mb-3">
+                              
+                                <div class="col-md-12">
+                                  
+                                    <label for="filter-pengawas">Filter by Pengawas:</label>
+                                    <select
+                                    id="filter-pengawas3"
+                                    name="pengawas"
+                                    class="select2 form-select"
+                                    required
+                                >
+                                    <option value="all">All</option> <!-- Option to show all records -->
+                                    @foreach ($listPengawas as $item)
+                                        <option value="{{ $item->id }}">{{ $item->name.' - '.$item->nip }}</option>
+                                    @endforeach
+                                </select>
+                                </div>
+                                
+                                
+                            </div>
+                            <canvas id="piePengawas"></canvas> <!-- Canvas for the chart -->
+                          </div>
+                    </div>
+                </div>
+                {{-- end pie web --}}
             </div>
 
         </div>
@@ -315,9 +386,180 @@
 @section('script')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // diagram pie
+    $('#filter-pengawas3').select2();
+
+let pieChartInstance = null;
+
+// Fungsi untuk mengambil dan menampilkan data chart pie
+function fetchChartDataPie(pengawas = 'all') {
+    fetch(`{{ route('admin.chartpie') }}?pengawas=${pengawas}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data || data.length === 0) {
+                console.warn('No data available for the chart');
+
+                // Hapus instance chart jika sudah ada
+                if (pieChartInstance) {
+                    pieChartInstance.destroy();
+                }
+
+                // Tampilkan pesan "No data available" di canvas
+                const ctx = document.getElementById('piePengawas').getContext('2d');
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data available for the chart', ctx.canvas.width / 2, ctx.canvas.height / 2);
+
+                return;
+            }
+
+            const pengawasNames = data.map(item => item.jawaban);
+            const rencanaCounts = data.map(item => item.total);
+
+            // Hapus instance chart jika sudah ada
+            if (pieChartInstance) {
+                pieChartInstance.destroy();
+            }
+
+            // Buat chart baru dengan type "pie"
+            const ctx = document.getElementById('piePengawas').getContext('2d');
+            pieChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: pengawasNames,
+                    datasets: [{
+                        label: 'Jumlah Umpan Balik',
+                        data: rencanaCounts,
+                        backgroundColor: [
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return `${tooltipItem.label}: ${tooltipItem.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching chart data:', error));
+}
+
+// Load chart awal tanpa filter (semua data)
+fetchChartDataPie();
+
+// Event listener untuk perubahan filter
+$('#filter-pengawas3').change(function() {
+    const pengawas = $('#filter-pengawas3').val();
+    fetchChartDataPie(pengawas);
+});
+    // end diagram pie
     //chart terkonfirmasi
 $('#filter-bln3').select2();
 $('#filter-tahun3').select2();
+let terkomfrimChartInstance = null;
+function fetchChartTerkonfrim(month = 'all', year = 'all') {
+    fetch(`{{ route('admin.chartTerkonfirmasi') }}?bln=${month}&tahun=${year}`)
+        .then(response => response.json())
+        .then(data => {
+            // Check if data is empty
+            if (!data || data.length === 0) {
+                console.warn('No data available for the chart');
+                
+                // Destroy the existing chart instance if it exists
+                if (terkomfrimChartInstance) {
+                    terkomfrimChartInstance.destroy();
+                }
+
+                // Display a "No data available" message in the canvas
+                const ctx = document.getElementById('chartKonfrim').getContext('2d');
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear previous content
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data available for the chart', ctx.canvas.width / 2, ctx.canvas.height / 2);
+
+                return; // Exit early as there’s no data to display in the chart
+            }
+
+            const pengawasNames = data.map(item => item.pengawas);
+            const rencanaCounts = data.map(item => item.total);
+
+            // Destroy the existing chart instance if it exists
+            if (terkomfrimChartInstance) {
+                terkomfrimChartInstance.destroy();
+            }
+
+            // Set up the chart and assign it to chartPerRencanaKerjaInstance
+            const ctx = document.getElementById('chartKonfrim').getContext('2d');
+            terkomfrimChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: pengawasNames,
+                    datasets: [{
+                        label: 'Jumlah Pendampingan',
+                        data: rencanaCounts,
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.2)'
+                            // , 'rgba(255, 159, 64, 0.2)', 'rgba(153, 102, 255, 0.2)',
+                            // 'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)'
+                            // , 'rgba(255, 159, 64, 1)', 'rgba(153, 102, 255, 1)',
+                            // 'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Jumlah Pendampingan' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Pengawas' }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching chart data:', error));
+}
+fetchChartTerkonfrim();
+
+// Event listener for filter changes
+$('#filter-bln3, #filter-tahun3').change(function() {
+    const month = $('#filter-bln3').val();
+    const year = $('#filter-tahun3').val();
+    fetchChartDataRaportPendidikan(month, year);
+});
+
+
 // chart terkonfirmasi
 //chart per raport pendidikan
 $('#filter-bln2').select2();
@@ -364,12 +606,14 @@ function fetchChartDataRaportPendidikan(month = 'all', year = 'all') {
                         label: 'Jumlah Rencana Kerja',
                         data: rencanaCounts,
                         backgroundColor: [
-                            'rgba(75, 192, 192, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'
+                            // 'rgba(75, 192, 192, 0.2)', 
+                            'rgba(255, 159, 64, 0.2)'
+                            //  'rgba(153, 102, 255, 0.2)',
+                            // 'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'
                         ],
                         borderColor: [
-                            'rgba(75, 192, 192, 1)', 'rgba(255, 159, 64, 1)', 'rgba(153, 102, 255, 1)',
-                            'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'
+                             'rgba(255, 159, 64, 1)'
+                             
                         ],
                         borderWidth: 1
                     }]
@@ -400,7 +644,7 @@ $('#filter-bln2, #filter-tahun2').change(function() {
 });
 
 // end chart per raport pendidikan
-        $('#filter-pengawas').select2();
+        
         $('#filter-bln').select2();
         $('#filter-tahun').select2();
    
@@ -447,12 +691,12 @@ function fetchChartData(month = 'all', year = 'all') {
                         label: 'Jumlah Rencana Kerja',
                         data: rencanaCounts,
                         backgroundColor: [
-                            'rgba(75, 192, 192, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'
+
+                            'rgba(153, 102, 255, 0.2)'
                         ],
                         borderColor: [
-                            'rgba(75, 192, 192, 1)', 'rgba(255, 159, 64, 1)', 'rgba(153, 102, 255, 1)',
-                            'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'
+
+                             'rgba(153, 102, 255, 1)'
                         ],
                         borderWidth: 1
                     }]
@@ -484,11 +728,13 @@ $('#filter-bln, #filter-tahun').change(function() {
     fetchChartData(month, year);
 });
 
-
+$('#filter-bln-last').select2();
+$('#filter-tahun-last').select2();
+$('#filter-pengawas').select2();
 let umpanbalikChartInstance = null;
 
-function fetchChartData2(pengawas = 'all') {
-    fetch(`{{ route('admin.chartData2') }}?pengawas=${pengawas}`)
+function fetchChartData2(month = 'all', year = 'all',pengawas = 'all') {
+    fetch(`{{ route('admin.chartData2') }}?bln=${month}&tahun=${year}&pengawas=${pengawas}`)
         .then(response => response.json())
         .then(data => {
             // Check if data is empty
@@ -521,43 +767,36 @@ function fetchChartData2(pengawas = 'all') {
             // Set up the chart and assign it to umpanbalikChartInstance
             const ctx = document.getElementById('umpanbalikChart').getContext('2d');
             umpanbalikChartInstance = new Chart(ctx, {
-                type: 'bar',
+                type: 'bar',  // Keep type as 'bar'
                 data: {
                     labels: pengawasNames,
                     datasets: [{
                         label: 'Jumlah Umpan Balik',
                         data: rencanaCounts,
                         backgroundColor: [
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)'
+                            'rgba(255, 99, 132, 0.2)'
                         ],
                         borderColor: [
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)'
+                            'rgba(255, 99, 132, 1)'
                         ],
                         borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true,
+                    indexAxis: 'y', // This makes the bar chart horizontal
                     scales: {
                         y: {
                             beginAtZero: true,
                             title: {
-                                display: true,
-                                text: 'Jumlah Umpan Balik'
+                                display: false,
+                                text: 'Rencana Kerja'
                             }
                         },
                         x: {
                             title: {
                                 display: true,
-                                text: 'Pengawas'
+                                text: 'Jumlah Umpan Balik'
                             }
                         }
                     }
@@ -567,13 +806,17 @@ function fetchChartData2(pengawas = 'all') {
         .catch(error => console.error('Error fetching chart data:', error));
 }
 
+
 // Initial chart load with no filters (all data)
 fetchChartData2();
 
 // Event listener for filter changes
-$('#filter-pengawas').change(function() {
+$('#filter-bln-last, #filter-tahun-last , #filter-pengawas').change(function() {
+    
     const pengawas = $('#filter-pengawas').val();
-    fetchChartData2(pengawas);
+    const month = $('#filter-bln-last').val();
+    const year = $('#filter-tahun-last').val();
+    fetchChartData2(month, year,pengawas);
 });
 
 $('#filter-pengawas2').select2();
@@ -582,10 +825,10 @@ let spiderChartInstance;
 
 // Define category colors
 const categoryColors = {
-    interaksi: 'rgba(54, 162, 235, 0.2)', // Light blue
-    suasana: 'rgba(255, 99, 132, 0.2)', // Light red
-    materi: 'rgba(75, 192, 192, 0.2)', // Light green
-    komunikasi: 'rgba(153, 102, 255, 0.2)', // Light purple
+    kemampuan_berinteraksi: 'rgba(54, 162, 235, 0.2)', // Light blue
+    menciptakan_suasana: 'rgba(255, 99, 132, 0.2)', // Light red
+    penguasaan_materi: 'rgba(75, 192, 192, 0.2)', // Light green
+    kemampuan_komunikasi: 'rgba(153, 102, 255, 0.2)', // Light purple
     ketepatan_waktu: 'rgba(255, 159, 64, 0.2)' // Light orange
 };
 
@@ -602,20 +845,20 @@ function fetchSpiderWebData(pengawas = 'all') {
 
             // Prepare dataset for the chart
             const dataset = {
-                label: `Pengawas ${pengawas === 'all' ? 'All' : pengawas}`,
+                label: `Pengawas `,
                 data: [
-                    data.interaksi,
-                    data.suasana,
-                    data.materi,
-                    data.komunikasi,
+                    data.kemampuan_berinteraksi,
+                    data.menciptakan_suasana,
+                    data.penguasaan_materi,
+                    data.kemampuan_komunikasi,
                     data.ketepatan_waktu
                 ],
                 fill: true,
                 backgroundColor: [
-                    categoryColors.interaksi,
-                    categoryColors.suasana,
-                    categoryColors.materi,
-                    categoryColors.komunikasi,
+                    categoryColors.kemampuan_berinteraksi,
+                    categoryColors.menciptakan_suasana,
+                    categoryColors.penguasaan_materi,
+                    categoryColors.kemampuan_komunikasi,
                     categoryColors.ketepatan_waktu
                 ],
                 borderColor: [
@@ -647,7 +890,7 @@ function fetchSpiderWebData(pengawas = 'all') {
             spiderChartInstance = new Chart(ctx, {
                 type: 'radar',
                 data: {
-                    labels: ['Interaksi', 'Suasana', 'Materi', 'Komunikasi', 'Ketepatan Waktu'],
+                    labels: ['Kemampuan berinteraksi', 'Menciptakan Suasana', 'Penguasaan Materi', 'Kemampuan Komunikasi', 'Ketepatan Waktu'],
                     datasets: [dataset]
                 },
                 options: {

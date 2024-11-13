@@ -70,50 +70,31 @@ class MastertupoksiController extends Controller
     public function store(Request $request){
         // dd($request->post());die;
   
-            $model = new mastertupoksi();
-            $model->tahun_ajaran = $request->tahun_ajaran;
-            $model->semester = $request->semester;
-            $model->kegiatan = $request->kegiatan;
-            $model->urutan = $request->urutan;
-
-            if($request->is_sub == 'sub'){
-                $model->id_kegiatan = $request->id_kegiatan;
-            }
-
+            $model = new Kategory();
+            $model->nama = $request->nama;
+            $model->type = 'Pelaporan';
             $model->save();
 
         
-            return redirect()->route('mastertupoksi.index')->with('success', 'mastertupoksi created successfully');
+            return redirect()->route('mastertupoksi.index')->with('success', 'Kategori Program created successfully');
     }
 
     public function edit($id){
-        $models = User::where('id',$id)->first();
-        return view('pengawas.edit',compact('models'));
+        $models = Kategory::where('id',$id)->first();
+        return view('mastertupoksi.edit',compact('models'));
     }
 
      public function hapus($id){
-         $user = User::where('id',$id)->delete();
-        return redirect()->back()->with('success', 'pengawas Delete successfully');
+         $user = Kategory::where('id',$id)->delete();
+        return redirect()->back()->with('success', 'Kategori Program Delete successfully');
     }
 
     public function update(Request $request){
-         $user = User::where('id',$request->id)->first();
-         $user->jenjang_jabatan = $request->jenjang_jabatan;
-         $user->pangkat = $request->pangkat;
-         $user->gol_ruang = $request->gol_ruang;
-       
-               $user->no_telp = $request->no_telp;
-            $user->kota = $request->kota;
-            $user->alamat_lengkap = $request->alamat_lengkap;
-            $user->kode_area = $request->kode_area;
+         $user = Kategory::where('id',$request->id)->first();
+         $user->nama = $request->nama;
              $user->save();
 
-        if(isset($request->password)){
-            $user->password = Hash::make($request->password);
-            $user->update();
-        }
-
-        return redirect()->route('pengawas.index',$request->id)->with('success', 'pengawas update successfully');
+        return redirect()->route('mastertupoksi.index',$request->id)->with('success', 'Kategori Program update successfully');
     }
 
     public function getkegiatan(Request $request)

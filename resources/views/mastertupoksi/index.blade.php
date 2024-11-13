@@ -14,7 +14,7 @@
                             </div>
                             <div class="col-6 d-flex justify-content-end">
                                 <div class="btn-group" role="group" aria-label="Basic example">
-                                    <a class="btn btn-primary waves-effect waves-light" href="{{ route('admin.add') }}">
+                                    <a class="btn btn-primary waves-effect waves-light" href="{{ route('mastertupoksi.add') }}">
                                         <i class="fas fa-plus" aria-hidden="true"></i>&nbsp;Kategori Program
                                     </a>
                                 </div>

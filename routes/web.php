@@ -52,6 +52,8 @@ Route::get('/dashboard', 'AdminController@index')->name('admin.index')->middlewa
 Route::get('/chart-data', 'AdminController@chartData')->name('admin.chartData')->middleware(['auth']);
 Route::get('/chart-data2', 'AdminController@chartData2')->name('admin.chartData2')->middleware(['auth']);
 Route::get('/chartDataRaportPendidikan', 'AdminController@chartDataRaportPendidikan')->name('admin.chartDataRaportPendidikan')->middleware(['auth']);
+Route::get('/chartTerkonfirmasi', 'AdminController@chartTerkonfirmasi')->name('admin.chartTerkonfirmasi')->middleware(['auth']);
+Route::get('/chartpie', 'AdminController@chartpie')->name('admin.chartpie')->middleware(['auth']);
 
 Route::get('/spider-web-data', 'AdminController@getSpiderWebData')->name('admin.spiderWebData')->middleware(['auth']);
 

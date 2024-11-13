@@ -1,28 +1,11 @@
-@extends('layouts.master')
-@section('title','Pengawas')
-@section('subjudul','add Pengawas')
-@section('breadcrumbs')
-<li class="breadcrumb-item text-sm"><a class="opacity-5 text-white" href="javascript:;">add Pengawas</a></li>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css">
-
-<style>
-#data-table_info{
-   font-size: 12px;
-}
-#data-table_paginate{
-   font-size: 12px;
-}
-#data-table tbody tr {
-    font-size: 12px; /* Adjust the font size to your desired value */
-}
-
-</style>
-@endsection
+@extends('layouts.admin.home')
+@section('title', 'Add  Pengawas')
+@section('titelcard', 'Add  Pengawas')
 @section ('content')
  <div class="container-fluid py-2">
  
 
-       <div class="row">
+       <div class="row g-3">
          <div class="col-12">
           <div class="card mb-4">
             <div class="card-header pb-0 p-3">
@@ -51,7 +34,7 @@
     </div>
 @endif
 
-                     <form action="{{ route('masterpengawas.store') }}"
+                     <form class="row g-3" action="{{ route('masterpengawas.store') }}"
                         method="POST"
                         enctype="multipart/form-data">
                      @csrf
@@ -61,15 +44,6 @@
                      </div>
 
                      
-                     <div class="form-group">
-                        <label for="kabupaten_id">Wilayah Kabupaten </label>
-                        <select name="kabupaten_id" id="kabupaten_id" class="form-control select2" required>
-                          
-                           @foreach ($wilayah as $item)
-                              <option value="{{  $item->id }}">{{  $item->nama_kabupaten }}</option>
-                           @endforeach
-                            </select>
-                     </div>
                      <div class="form-group">
                         <label for="nip">NIP</label>
                         <input type="text" class="form-control" name="nip" id="nip" placeholder="NIP">
@@ -137,7 +111,7 @@
 
 
 
-                     <button type="submit" class="btn btn-sm btn-success">
+                     <button type="submit" class="btn btn-primary me-sm-3 me-1">
                         <i class="fa fa-save"></i>   Save
                         </button>
                     

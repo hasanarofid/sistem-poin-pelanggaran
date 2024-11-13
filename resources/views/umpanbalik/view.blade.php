@@ -152,7 +152,7 @@
                               <div class="form-group">
                                   <label>{{ $item->pertanyaan }}</label>
                                   @if($item->type_input === 'radiobutton')
-                                    <?php $options = explode(',', $item->jawaban); ?>
+                                    <?php $options = explode(';', $item->jawaban); ?>
                                     @foreach($options as $option)
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="{{ 'jawaban_' . $item->id }}" value="{{ $option }}">
@@ -186,7 +186,7 @@
                               <div class="form-group">
                                   <label>{{ $item->pertanyaan }}</label>
                                   @if($item->type_input === 'radiobutton')
-                                    <?php $options = explode(',', $item->jawaban); ?>
+                                    <?php $options = explode(';', $item->jawaban); ?>
                                     @foreach($options as $option)
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="{{ 'jawaban_' . $item->id }}" value="{{ $option }}">
@@ -220,7 +220,7 @@
                               <div class="form-group">
                                   <label>{{ $item->pertanyaan }}</label>
                                   @if($item->type_input === 'radiobutton')
-                                    <?php $options = explode(',', $item->jawaban); ?>
+                                    <?php $options = explode(';', $item->jawaban); ?>
                                     @foreach($options as $option)
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="{{ 'jawaban_' . $item->id }}" value="{{ $option }}">

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\UmpanbalikT;
 use Illuminate\Database\Eloquent\Model;
 
 class TanggapanUmpanbalikT extends Model

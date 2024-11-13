@@ -135,21 +135,36 @@ class AdminController extends Controller
 
     public function chartData2(Request $request)
     {
+        $month = $request->input('bln', 'all');
+        $year = $request->input('tahun', 'all');
         $pengawas = $request->input('pengawas', 'all');
-        $query = UmpanbalikT::with('pengawasnama')
-        ->selectRaw('id_pengawas, COUNT(*) as total')
-        ->groupBy('id_pengawas');
+
+        $query = UmpanbalikT::with('pengawasnama','rencanakerja')
+        ->selectRaw('id_pelaporan, COUNT(*) as total')
+        ->whereHas('tanggapanUmpanBalik')
+        ->groupBy('id_pelaporan');
 
          // Apply the year filter
          if ($pengawas !== 'all') {
             $query->where('id_pengawas', $pengawas);
         }
+    
+
+         // Apply the month and year filters on the related rencanakerja table
+    $query->whereHas('rencanakerja', function ($q) use ($month, $year) {
+        if ($month !== 'all') {
+            $q->where('bulan', $month);
+        }
+        if ($year !== 'all') {
+            $q->where('tahun_ajaran', $year);
+        }
+    });
 
          // Get the results
          $data = $query->get()
          ->map(function ($item) {
              return [
-                'pengawas' => $item->pengawasnama ? $item->pengawasnama->name : 'Unknown',
+                'pengawas' => $item->rencanakerja ? $item->rencanakerja->nama_program_kerja : 'Unknown',
                 'total' => $item->total
              ];
          });
@@ -191,70 +206,71 @@ class AdminController extends Controller
 
     // spider web
     public function getSpiderWebData(Request $request)
-        {
-            $pengawasId = $request->input('pengawas', 'all');
-
-            // Define the query to calculate averages
-            $query = TanggapanUmpanbalikT::selectRaw(
-                'AVG(
-                    CASE jawaban_5
-                        WHEN "Sangat Baik" THEN 4
-                        WHEN "Baik" THEN 3
-                        WHEN "Cukup" THEN 2
-                        WHEN "Kurang" THEN 1
-                        WHEN "Sangat Kurang" THEN 0
-                    END
-                ) as interaksi, 
-                AVG(
-                    CASE jawaban_6
-                        WHEN "Sangat Baik" THEN 4
-                        WHEN "Baik" THEN 3
-                        WHEN "Cukup" THEN 2
-                        WHEN "Kurang" THEN 1
-                        WHEN "Sangat Kurang" THEN 0
-                    END
-                ) as suasana, 
-                AVG(
-                    CASE jawaban_7
-                        WHEN "Sangat Baik" THEN 4
-                        WHEN "Baik" THEN 3
-                        WHEN "Cukup" THEN 2
-                        WHEN "Kurang" THEN 1
-                        WHEN "Sangat Kurang" THEN 0
-                    END
-                ) as materi, 
-                AVG(
-                    CASE jawaban_8
-                        WHEN "Sangat Baik" THEN 4
-                        WHEN "Baik" THEN 3
-                        WHEN "Cukup" THEN 2
-                        WHEN "Kurang" THEN 1
-                        WHEN "Sangat Kurang" THEN 0
-                    END
-                ) as komunikasi, 
-                AVG(
-                    CASE jawaban_9
-                        WHEN "Sangat Baik" THEN 4
-                        WHEN "Baik" THEN 3
-                        WHEN "Cukup" THEN 2
-                        WHEN "Kurang" THEN 1
-                        WHEN "Sangat Kurang" THEN 0
-                    END
-                ) as ketepatan_waktu'
-            )
-            ->join('umpanbalik_t as ut', 'ut.id', '=', 'tanggapan_umpanbalik_t.id_umpanbalik')
-            ->join('rencakakerja_t as rt', 'rt.id', '=', 'ut.id_pelaporan');
-
-            // Apply filter based on pengawasId, if specified
-            if ($pengawasId !== 'all') {
-                $query->where('rt.id_pengawas', $pengawasId);
-            }
-
-            // Execute the query to retrieve the averages
-            $data = $query->first();
-
-            return response()->json($data);
+    {
+        $pengawasId = $request->input('pengawas', 'all');
+    
+        // Define the query to calculate averages
+        $query = TanggapanUmpanbalikT::selectRaw(
+            'AVG(
+                CASE jawaban_5
+                    WHEN "Sangat Baik" THEN 4
+                    WHEN "Baik" THEN 3
+                    WHEN "Cukup" THEN 2
+                    WHEN "Kurang" THEN 1
+                    WHEN "Sangat Kurang" THEN 0
+                END
+            ) as kemampuan_berinteraksi, 
+            AVG(
+                CASE jawaban_6
+                    WHEN "Sangat Baik" THEN 4
+                    WHEN "Baik" THEN 3
+                    WHEN "Cukup" THEN 2
+                    WHEN "Kurang" THEN 1
+                    WHEN "Sangat Kurang" THEN 0
+                END
+            ) as menciptakan_suasana, 
+            AVG(
+                CASE jawaban_7
+                    WHEN "Sangat Baik" THEN 4
+                    WHEN "Baik" THEN 3
+                    WHEN "Cukup" THEN 2
+                    WHEN "Kurang" THEN 1
+                    WHEN "Sangat Kurang" THEN 0
+                END
+            ) as penguasaan_materi, 
+            AVG(
+                CASE jawaban_8
+                    WHEN "Sangat Baik" THEN 4
+                    WHEN "Baik" THEN 3
+                    WHEN "Cukup" THEN 2
+                    WHEN "Kurang" THEN 1
+                    WHEN "Sangat Kurang" THEN 0
+                END
+            ) as kemampuan_komunikasi,
+              AVG(
+                CASE jawaban_9
+                    WHEN "Sangat Baik" THEN 4
+                    WHEN "Baik" THEN 3
+                    WHEN "Cukup" THEN 2
+                    WHEN "Kurang" THEN 1
+                    WHEN "Sangat Kurang" THEN 0
+                END
+            ) as ketepatan_waktu'
+        )
+        ->join('umpanbalik_t as ut', 'ut.id', '=', 'tanggapan_umpanbalik_t.id_umpanbalik')
+        ->join('rencakakerja_t as rt', 'rt.id', '=', 'ut.id_pelaporan');
+    
+        // Apply filter based on pengawasId, if specified
+        if ($pengawasId !== 'all') {
+            $query->where('rt.id_pengawas', $pengawasId);
         }
+    
+        // Execute the query to retrieve the averages
+        $data = $query->first();
+    
+        return response()->json($data);
+    }
+    
 
 
 
@@ -262,6 +278,85 @@ class AdminController extends Controller
     public function data()
     {
         return view('adminNew.data');
+    }
+
+    // chart terkonfirmasi
+    public function chartTerkonfirmasi(Request $request)
+    {
+        $month = $request->input('bln', 'all');
+        $year = $request->input('tahun', 'all');
+
+        $query = UmpanbalikT::with('pengawasnama','tanggapanUmpanBalik')
+        ->whereHas('tanggapanUmpanBalik') // hanya ambil yang sudah ada tanggapan
+        ->selectRaw('id_pengawas, COUNT(*) as total')
+        ->groupBy('id_pengawas');
+
+        // Apply the month filter
+        if ($month !== 'all') {
+            $query->where('bulan', $month);
+        }
+
+        // Apply the year filter
+        if ($year !== 'all') {
+            $query->where('tahun_ajaran', $year);
+        }
+
+        // Get the results
+        $data = $query->get()
+            ->map(function ($item) {
+                return [
+                    'pengawas' => $item->pengawasnama ? $item->pengawasnama->name : 'Unknown',
+                    'total' => $item->total
+                ];
+            });
+
+        // Return the data as JSON
+        return response()->json($data); // Return JSON data for use in the view
+    }
+
+    // chart pie
+    public function chartpie(Request $request)
+    {
+        $pengawas = $request->input('pengawas', 'all');
+    
+        // Buat query untuk menghitung jumlah masing-masing jenis jawaban di jawaban_4
+        $query = TanggapanUmpanbalikT::selectRaw("
+                COUNT(CASE WHEN jawaban_4 = 'Ya, melakukan pendampingan di Sekolah' THEN 1 END) as sekolah,
+                COUNT(CASE WHEN jawaban_4 = 'Ya, melakukan pendampingan secara virtual' THEN 1 END) as by_virtual,
+                COUNT(CASE WHEN jawaban_4 = 'Ya, pendampingan digabungkan dengan sekolah lain' THEN 1 END) as gabungan,
+                COUNT(CASE WHEN jawaban_4 = 'Tidak melakukan pendampingan' THEN 1 END) as tidak
+            ")
+            ->join('umpanbalik_t as ut', 'ut.id', '=', 'tanggapan_umpanbalik_t.id_umpanbalik')
+            ->join('rencakakerja_t as rt', 'rt.id', '=', 'ut.id_pelaporan');
+    
+        // Tambahkan filter untuk pengawas jika ada
+        if ($pengawas !== 'all') {
+            $query->where('rt.id_pengawas', $pengawas);
+        }
+    
+        // Ambil hasil dan bentuk ulang data untuk output JSON
+        $data = $query->first(); // Mengambil hasil sebagai satu baris karena kita hanya menghitung jumlah
+    
+        $result = [
+            [
+                'jawaban' => 'Hadir',
+                'total' => $data->sekolah,
+            ],
+            [
+                'jawaban' => 'Hadir Virtual',
+                'total' => $data->by_virtual,
+            ],
+            [
+                'jawaban' => 'Hadir Dikumpulkan',
+                'total' => $data->gabungan,
+            ],
+            [
+                'jawaban' => 'Tidak Hadir',
+                'total' => $data->tidak,
+            ],
+        ];
+    
+        return response()->json($result);
     }
 
     /** get data */

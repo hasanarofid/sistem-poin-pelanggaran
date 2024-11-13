@@ -31,7 +31,7 @@ class JenisprogramController extends Controller
                         if($row->status == 1){
                             $status = '<span class="badge bg-label-success m-1" >Active</span>';
                         }else{
-                            $status = '<span class="badge bg-label-warning m-1" >InActive</span>';
+                            $status = '<span class="badge bg-label-danger m-1" >InActive</span>';
                         }
                             return $status;
                     })
@@ -63,49 +63,32 @@ class JenisprogramController extends Controller
         // dd($request->post());die;
   
             $model = new JenisProgram();
-            $model->tahun_ajaran = $request->tahun_ajaran;
-            $model->semester = $request->semester;
-            $model->kegiatan = $request->kegiatan;
-            $model->urutan = $request->urutan;
-
-            if($request->is_sub == 'sub'){
-                $model->id_kegiatan = $request->id_kegiatan;
-            }
+            $model->nama = $request->nama;
+            $model->status = $request->status;
 
             $model->save();
 
         
-            return redirect()->route('jenisprogram.index')->with('success', 'JenisProgram created successfully');
+            return redirect()->route('jenisprogram.index')->with('success', 'Jenis Program created successfully');
     }
 
     public function edit($id){
         $models = JenisProgram::where('id',$id)->first();
-        return view('pengawas.edit',compact('models'));
+        return view('jenisprogram.edit',compact('models'));
     }
 
      public function hapus($id){
          $user = JenisProgram::where('id',$id)->delete();
-        return redirect()->back()->with('success', 'pengawas Delete successfully');
+        return redirect()->back()->with('success', 'Jenis Program Delete successfully');
     }
 
     public function update(Request $request){
-         $user = JenisProgram::where('id',$request->id)->first();
-         $user->jenjang_jabatan = $request->jenjang_jabatan;
-         $user->pangkat = $request->pangkat;
-         $user->gol_ruang = $request->gol_ruang;
-       
-               $user->no_telp = $request->no_telp;
-            $user->kota = $request->kota;
-            $user->alamat_lengkap = $request->alamat_lengkap;
-            $user->kode_area = $request->kode_area;
-             $user->save();
-
-        if(isset($request->password)){
-            $user->password = Hash::make($request->password);
-            $user->update();
-        }
-
-        return redirect()->route('pengawas.index',$request->id)->with('success', 'pengawas update successfully');
+        // dd($request->status);
+         $model = JenisProgram::where('id',$request->id)->first();
+         $model->nama = $request->nama;
+         $model->status = $request->status;
+         $model->save();
+        return redirect()->route('jenisprogram.index',$request->id)->with('success', 'Jenis Program update successfully');
     }
 
     public function getkegiatan(Request $request)

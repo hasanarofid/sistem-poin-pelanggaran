@@ -167,16 +167,8 @@ class PegawasMController extends Controller
     /** add data pengawas */
     public function add(){
         //  $wilayah = Kabupaten::get();
-        $kelompok_kabupaten = Kabupaten::find(Auth::user()->kabupaten_id)->kelompok_kabupaten;
-               
-        $wilayah = Kabupaten::select('nama_kabupaten', DB::raw('MAX(id) as id'),
-         DB::raw('COUNT(*) as total'))
-        ->groupBy('nama_kabupaten')
-        ->where('kelompok_kabupaten',$kelompok_kabupaten)
-        ->get();
-    
         // dd($wilayah);
-         return view('pengawas.add',compact('wilayah'));
+         return view('pengawas.add');
     }
 
      /** add data pengawas */

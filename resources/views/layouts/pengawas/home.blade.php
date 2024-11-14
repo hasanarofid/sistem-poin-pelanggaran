@@ -8,12 +8,15 @@ lang="{{ str_replace('_', '-', app()->getLocale()) }}"
   data-template="vertical-menu-template-no-customizer"
 >
   <head>
+    @php
+    $profile = App\ProfileMarket::find(1);
+@endphp
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
       <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Pengawas Home | Sistem Modip</title>
-    <meta name="description" content="Pengawas" />
+      <title>@yield('title') | {{ $profile->title }}</title>
+      <meta name="description" content="Pengawas" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('logomodip.jpeg') }}" />
@@ -195,7 +198,8 @@ lang="{{ str_replace('_', '-', app()->getLocale()) }}"
   
               <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
                 
-  
+                <h4 style="margin-top: 15px">@yield('titelcard')</h4>
+
                 <ul class="navbar-nav flex-row align-items-center ms-auto">
                  
                   @php

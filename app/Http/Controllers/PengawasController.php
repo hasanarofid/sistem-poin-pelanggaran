@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RencanaKerjaT;
+use App\Models\UmpanbalikT;
 use App\Profile;
 use App\User;
 use Illuminate\Http\Request;
@@ -18,7 +20,71 @@ class PengawasController extends Controller
         // Periksa apakah pengguna adalah pengawas
         if (Auth::user()->role == "Pengawas") {
             // Pengguna sudah login dan adalah pengawas, lanjutkan ke halaman pengawas
-            return view('dashboard_pengawas.home');
+            $tahunini = date('Y');  // Current year
+            $monthNamesIndo = [
+                1 => 'Januari', 
+                2 => 'Februari', 
+                3 => 'Maret', 
+                4 => 'April', 
+                5 => 'Mei', 
+                6 => 'Juni', 
+                7 => 'Juli', 
+                8 => 'Agustus', 
+                9 => 'September', 
+                10 => 'Oktober', 
+                11 => 'November', 
+                12 => 'Desember'
+            ];
+            for ($i = 0; $i < 12; $i++) {
+                $timestamp = strtotime("+$i month");
+                $monthNumber = date('n', $timestamp);
+                $months[] = [
+                    'value' => $monthNumber,                // Month number (1-12)
+                    'name' => $monthNamesIndo[$monthNumber] // Full month name in Indonesian
+                ];
+            }
+            $bulanini = $months[0]['name'];
+            $totalRencankerja = RencanaKerjaT::where('bulan',$bulanini)
+            ->where('tahun_ajaran',$tahunini)
+            ->where('id_pengawas',Auth::user()->id)
+            ->count();
+
+
+
+            $sekolahdilayani = UmpanbalikT::with('pengawasnama', 'rencanakerja')
+                ->selectRaw('id_pelaporan, COUNT(id_user) as total')
+                ->whereHas('pengawasnama', function ($query) {
+                    $query->where('id_pengawas', Auth::user()->id);
+                })
+                ->whereHas('tanggapanUmpanBalik')
+                ->whereHas('rencanakerja', function ($query) use ($bulanini, $tahunini) {
+                    $query->where('bulan', $bulanini)
+                        ->where('tahun_ajaran', $tahunini);
+                })
+                ->groupBy('id_pelaporan')
+                ->count();
+
+                $listsekolahdilayani = UmpanbalikT::with('pengawasnama', 'rencanakerja')
+                ->whereHas('pengawasnama', function ($query) {
+                    $query->where('id_pengawas', Auth::user()->id);
+                })
+                ->whereHas('tanggapanUmpanBalik')
+                ->whereHas('rencanakerja', function ($query) use ($bulanini, $tahunini) {
+                    $query->where('bulan', $bulanini)
+                        ->where('tahun_ajaran', $tahunini);
+                })
+                ->get();
+
+                // dd($sekolahdilayani);
+
+            // dd($totalRencankerja);
+            return view('dashboard_pengawas.home',
+            compact(
+                'totalRencankerja',
+                'sekolahdilayani',
+                'listsekolahdilayani'
+                )
+        );
         } else {
             // Pengguna sudah login, namun bukan pengawas, arahkan ke halaman 403 Forbidden
             abort(403);

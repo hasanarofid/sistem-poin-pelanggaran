@@ -1,5 +1,6 @@
 @extends('layouts.pengawas.home')
-@section('title','Login')
+@section('title', 'Profile')
+@section('titelcard', 'Profile')
 @section('content')
 <div class="content-wrapper">
     <!-- Content -->
@@ -95,37 +96,79 @@
           <!-- Profile Overview -->
           <div class="card mb-4">
             <div class="card-body">
-              <p class="card-text text-uppercase">Aktifitas Terbaru</p>
+              <p class="card-text text-uppercase">Rencana Kerja Bulan ini</p>
               <ul class="list-unstyled mb-0">
                 <li class="d-flex align-items-center mb-3">
-                  <i class="ti ti-check"></i><span class="fw-bold mx-2">Task Compiled:</span> <span>13.5k</span>
+                  <i class="ti ti-check"></i><span class="fw-bold mx-2"> Rencana:</span> <span> {{ $totalRencankerja }} </span>
                 </li>
                 <li class="d-flex align-items-center mb-3">
-                  <i class="ti ti-layout-grid"></i><span class="fw-bold mx-2">Projects Compiled:</span>
-                  <span>146</span>
+                  <i class="ti ti-layout-grid"></i><span class="fw-bold mx-2">Sekolah yang dilayani:</span>
+                  <span>{{ $sekolahdilayani }}</span>
                 </li>
                 <li class="d-flex align-items-center">
-                  <i class="ti ti-users"></i><span class="fw-bold mx-2">Connections:</span> <span>897</span>
+                  <i class="ti ti-users"></i><span class="fw-bold mx-2">List Rencana Kerja:</span> 
                 </li>
               </ul>
+              <br>
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>No</th>
+                        <th>Nama Program</th>
+                      </tr>                  
+                    </thead>
+                    <tbody>
+                      @php
+                          $no = 1;
+                      @endphp
+                      @foreach ($listsekolahdilayani as $item)
+                      <tr>
+                        <td> {{ $no++}} </td>
+                        <td> {{ $item->rencanakerja->nama_program_kerja}} </td>
+                      </tr>
+                      @endforeach
+                    </tbody>
+                 
+                  
+                  </table>
+                </div>
+
+
             </div>
           </div>
 
           <div class="card mb-4">
             <div class="card-body">
-              <p class="card-text text-uppercase">Daftar Sekolah Binaan</p>
-              <ul class="list-unstyled mb-0">
-                <li class="d-flex align-items-center mb-3">
-                  <i class="ti ti-check"></i><span class="fw-bold mx-2">Task Compiled:</span> <span>13.5k</span>
-                </li>
-                <li class="d-flex align-items-center mb-3">
-                  <i class="ti ti-layout-grid"></i><span class="fw-bold mx-2">Projects Compiled:</span>
-                  <span>146</span>
-                </li>
-                <li class="d-flex align-items-center">
-                  <i class="ti ti-users"></i><span class="fw-bold mx-2">Connections:</span> <span>897</span>
-                </li>
-              </ul>
+              <p class="card-text text-uppercase">Daftar Sekolah Binaan Bulan Ini</p>
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>Nama Sekolah</th>
+                  </tr>                  
+                </thead>
+                <tbody>
+                  @php
+                      $no = 1;
+                  @endphp
+                  @foreach ($listsekolahdilayani as $item)
+                  @php
+                        $sekolahIds = explode(',', $item->rencanakerja->sekolah_id);
+                        $sekolahs = App\SekolahM::whereIn('id', $sekolahIds)->get();
+
+                  @endphp
+                  @foreach ($sekolahs as $sekolah)
+                  <tr>
+                    <td> {{ $no++}} </td>
+                    <td> {{ $sekolah->nama_sekolah}} </td>
+                  </tr>
+                  @endforeach                 
+                  @endforeach
+                </tbody>
+             
+              
+              </table>
             </div>
           </div>
           <!--/ Profile Overview -->
@@ -137,7 +180,10 @@
               <h5 class="card-action-title mb-0">Kinerja</h5>
             </div>
             <div class="card-body pb-0">
-             
+              {{-- chart --}}
+
+
+              {{-- end chart --}}
             </div>
           </div>
           <!--/ Activity Timeline -->

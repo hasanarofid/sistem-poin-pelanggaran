@@ -23,9 +23,17 @@ class SaranperbaikanController extends Controller
         if ($request->ajax()) {
 
     
-            $post = TanggapanUmpanbalikT::latest()->get();
+            $pengawas = $request->input('pengawas', 'all');
+
+            $post = TanggapanUmpanbalikT::with('umpanBalikT')->latest();
+          
+            $post->whereHas('umpanBalikT', function ($q) use ($pengawas) {
+                if ($pengawas !== 'all') {
+                    $q->where('id_pengawas', $pengawas);
+                }
+            });
        
-               return Datatables::of($post)
+               return Datatables::of($post->get())
                        ->addIndexColumn()
                
                     ->addColumn('nama_sekolah', function($row) {

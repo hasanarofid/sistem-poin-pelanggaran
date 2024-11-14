@@ -26,6 +26,28 @@
   
               
               <div class="app-card-body px-4 w-100">
+
+                <div class="row mb-3">
+                  <div class="col-md-4">
+                      <label for="filter-pengawas">Filter by Pengawas:</label>
+                      <select
+                      id="filter-pengawas"
+                      name="pengawas"
+                      class="select2 form-select"
+                      required
+                  >
+                      <option value="all">All</option> <!-- Option to show all records -->
+                      @foreach ($listPengawas as $item)
+                          <option value="{{ $item->id }}">{{ $item->name.' - '.$item->nip }}</option>
+                      @endforeach
+                  </select>
+                  
+                  </div>
+
+                  
+                  
+              </div>
+
                   <div class="table-responsive">
                       <table class="table table-bordered table-striped" id="dataTable">
                           <thead>
@@ -64,12 +86,22 @@
 
 <script>
   $(document).ready(function () {
+    $('#filter-pengawas').select2();
 
-    var table = $('#dataTable').DataTable({
+    $('#filter-pengawas').change(function () {
+    $('#dataTable').DataTable().ajax.reload(); // Reload the table when filter changes
+});
+
+ $('#dataTable').DataTable({
      
         processing: true,
         serverSide: true,
-        ajax: "{{ route('dokumentasipendampingan.getdata') }}",
+        ajax: {
+                url: "{{ route('dokumentasipendampingan.getdata') }}",
+                data: function(d) {
+                         d.pengawas = $('#filter-pengawas').val();
+                 }
+            },
         columns: [
             {data: 'DT_RowIndex', name: 'DT_RowIndex'},
             {data: 'tanggal', name: 'tanggal'},

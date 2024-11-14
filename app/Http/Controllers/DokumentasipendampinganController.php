@@ -23,10 +23,17 @@ class DokumentasipendampinganController extends Controller
     public function getdata(Request $request){
         if ($request->ajax()) {
 
+            $pengawas = $request->input('pengawas', 'all');
+
+            $post = TanggapanUmpanbalikT::with('umpanBalikT')->latest();
+          
+            $post->whereHas('umpanBalikT', function ($q) use ($pengawas) {
+                if ($pengawas !== 'all') {
+                    $q->where('id_pengawas', $pengawas);
+                }
+            });
     
-            $post = TanggapanUmpanbalikT::latest()->get();
-       
-               return Datatables::of($post)
+               return Datatables::of($post->get())
                        ->addIndexColumn()
                        ->addColumn('tanggal', function($row){
                         return $row->created_at->format('d M Y h:i:s');

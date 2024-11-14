@@ -72,6 +72,9 @@
 .hide {
     display: none !important;
 }
+label {
+            font-weight: bold;
+        }
 
     </style>
   </head>
@@ -111,143 +114,164 @@
             <div class="container-xxl flex-grow-1 container-p-y">
               <h3 class="text-center">Umpan Balik Pelaksanaan Pendampingan / Supervisi Pengawas Sekolah Provinsi Banten</h3>
 
-                <div class="container ">
-                        <form id="multiStepForm" action="{{ route('kirimumpanbalik') }}" method="POST">
-                          @csrf
-                          <input type="hidden" name="id_umpanbalik" value="{{ $model->id }}">
-                          <div id="form1" class="formStep">
-                            <div class="card">
-                              <div class="card-body">
+              <div class="container">
+                <form id="multiStepForm" action="#" method="POST">
+                    @csrf
+                    <input type="hidden" name="id_umpanbalik" value="{{ $model->id }}">
+                    
+                    <!-- Form Step 1 -->
+                    <div id="form1" class="formStep">
+                        <div class="card">
+                            <div class="card-body">
                                 <div class="form-group">
                                     <label for="name1">Nama Pengawas</label>
                                     <input type="text" value="{{ $pengawas->name }}" disabled class="form-control" id="name1" placeholder="pengawas">
                                 </div>
-                              </div>
-                            </div>
-                              <br>
-                              <div class="card">
-                              <div class="card-body">
-                              <div class="form-group">
-                                  <label for="email1">Tanggal Kedatangan Pengawas</label>
-                                  <input type="date"  disabled class="form-control" value="{{ $pelaporan->tgl_pendampingan }}">
-                              </div>
-                              </div>
-                            </div>
-
-                          </div>
-                          <div id="form2" class="formStep" style="display: none;">
-                            <div class="card">
-                                <div class="card-header bg-primary ">
-                                    <h5 class="card-title text-white">Aspek Pelaksanaan Pendampingan</h5>
-                                </div>
-                                <div class="card-body">
-                                  <br>
-                                    <p class="card-text">Bagian ini untuk mengetahui pendapat saudara tentang pelaksanaan pendampingan</p>
-                                </div>
-                            </div>
-                            <br>
-                              @foreach($umpanBalikM as $item)
-                              <div class="card">
-                                <div class="card-body">
-                              <div class="form-group">
-                                  <label>{{ $item->pertanyaan }}</label>
-                                  @if($item->type_input === 'radiobutton')
-                                    <?php $options = explode(';', $item->jawaban); ?>
-                                    @foreach($options as $option)
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="{{ 'jawaban_' . $item->id }}" value="{{ $option }}">
-                                            <label class="form-check-label">{{ $option }}</label>
-                                        </div>
-                                    @endforeach
-                                  @else
-                                      <textarea  class="form-control" name="{{ 'jawaban_' . $item->id }}"></textarea>
-                                  @endif
-                              </div>
-                              </div>
-                            </div>
-                              <br>
-                              @endforeach
-                          </div>
-                          <br>
-                          <div id="form3" class="formStep" style="display: none;">
-                            <div class="card">
-                                <div class="card-header bg-primary ">
-                                    <h5 class="card-title text-white">Aspek Kompetensi Supervisor</h5>
-                                </div>
-                                <div class="card-body">
-                                  <br>
-                                    <p class="card-text">Pada bagian kami ingin mengetahui pendapat saudara perihal aspek kepribadian supervisor</p>
-                                </div>
-                            </div>
-                            <br>
-                              @foreach($umpanBalikM2 as $item)
-                              <div class="card">
-                                <div class="card-body">
-                              <div class="form-group">
-                                  <label>{{ $item->pertanyaan }}</label>
-                                  @if($item->type_input === 'radiobutton')
-                                    <?php $options = explode(';', $item->jawaban); ?>
-                                    @foreach($options as $option)
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="{{ 'jawaban_' . $item->id }}" value="{{ $option }}">
-                                            <label class="form-check-label">{{ $option }}</label>
-                                        </div>
-                                    @endforeach
-                                  @else
-                                      <textarea  class="form-control" name="{{ 'jawaban_' . $item->id }}"></textarea>
-                                  @endif
-                              </div>
-                              </div>
-                            </div>
-                              <br>
-                              @endforeach
-                          </div>
-                          <br>
-                          <div id="form4" class="formStep" style="display: none;">
-                            <div class="card">
-                              <div class="card-header bg-primary ">
-                                  <h5 class="card-title text-white">Aspek Lainnya</h5>
-                              </div>
-                              <div class="card-body">
-                                <br>
-                                  <p class="card-text">Pada bagian ini kami ingin mengetahui saran masukan dan kebutuhan layanan pengawas sekolah di masa mendatang</p>
-                              </div>
-                            </div>
-                            <br>
-                              @foreach($umpanBalikM3 as $item)
-                              <div class="card">
-                                <div class="card-body">
-                              <div class="form-group">
-                                  <label>{{ $item->pertanyaan }}</label>
-                                  @if($item->type_input === 'radiobutton')
-                                    <?php $options = explode(';', $item->jawaban); ?>
-                                    @foreach($options as $option)
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="{{ 'jawaban_' . $item->id }}" value="{{ $option }}">
-                                            <label class="form-check-label">{{ $option }}</label>
-                                        </div>
-                                    @endforeach
-                                  @else
-                                      <textarea  class="form-control" name="{{ 'jawaban_' . $item->id }}"></textarea>
-                                  @endif
-                              </div>
-                              </div>
-                            </div>
-                              <br>
-                              @endforeach
-                          </div>
-                          <div class="row mt-3">
-                            <div class="col text-left">
-                                <button type="button" class="btn btn-primary" id="prevBtn" >Previous</button>
-                            </div>
-                            <div class="col text-end">
-                                <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
-                                {{-- <button type="submit" class="btn btn-success" id="submitBtn" >Submit</button> --}}
                             </div>
                         </div>
-
-                      </form>
-                  </div>
+                        <br>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="email1">Tanggal Kedatangan Pengawas</label>
+                                    <input type="date" disabled class="form-control" value="{{ $tangapan->tanggal_kedatangan }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <!-- Form Step 2 (Aspek Pelaksanaan Pendampingan) -->
+                    <div id="form2" class="formStep" style="display: none;">
+                        <div class="card">
+                            <div class="card-header bg-primary">
+                                <h5 class="card-title text-white">Aspek Pelaksanaan Pendampingan</h5>
+                            </div>
+                            <div class="card-body">
+                                <br>
+                                <p class="card-text">Bagian ini untuk mengetahui pendapat saudara tentang pelaksanaan pendampingan</p>
+                            </div>
+                        </div>
+                        <br>
+                        @foreach($umpanBalikM as $item)
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>{{ $item->pertanyaan }}</label>
+                                        @if($item->type_input === 'radiobutton')
+                                            <?php $options = explode(';', $item->jawaban); ?>
+                                            @foreach($options as $option)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="{{ 'jawaban_' . $item->id }}" value="{{ $option }}"
+                                                        @if($tangapan && $tangapan->{'jawaban_' . $item->id} == $option) checked @endif>
+                                                    <label class="form-check-label">{{ $option }}</label>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <textarea class="form-control" name="{{ 'jawaban_' . $item->id }}">{{ $tangapan->{'jawaban_' . $item->id} ?? '' }}</textarea>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                        @endforeach
+                    </div>
+            
+                    <!-- Form Step 3 (Aspek Kompetensi Supervisor) -->
+                    <div id="form3" class="formStep" style="display: none;">
+                        <div class="card">
+                            <div class="card-header bg-primary">
+                                <h5 class="card-title text-white">Aspek Kompetensi Supervisor</h5>
+                            </div>
+                            <div class="card-body">
+                                <br>
+                                <p class="card-text">Pada bagian kami ingin mengetahui pendapat saudara perihal aspek kepribadian supervisor</p>
+                            </div>
+                        </div>
+                        <br>
+                        @foreach($umpanBalikM2 as $item)
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>{{ $item->pertanyaan }}</label>
+                                        @if($item->type_input === 'radiobutton')
+                                            <?php $options = explode(';', $item->jawaban); ?>
+                                            @foreach($options as $option)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="{{ 'jawaban_' . $item->id }}" value="{{ $option }}"
+                                                        @if($tangapan && $tangapan->{'jawaban_' . $item->id} == $option) checked @endif>
+                                                    <label class="form-check-label">{{ $option }}</label>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <textarea class="form-control" name="{{ 'jawaban_' . $item->id }}">{{ $tangapan->{'jawaban_' . $item->id} ?? '' }}</textarea>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                        @endforeach
+                    </div>
+            
+                    <!-- Form Step 4 (Aspek Lainnya) -->
+                    <div id="form4" class="formStep" style="display: none;">
+                        <div class="card">
+                            <div class="card-header bg-primary">
+                                <h5 class="card-title text-white">Aspek Lainnya</h5>
+                            </div>
+                            <div class="card-body">
+                                <br>
+                                <p class="card-text">Pada bagian ini kami ingin mengetahui saran masukan dan kebutuhan layanan pengawas sekolah di masa mendatang</p>
+                            </div>
+                        </div>
+                        <br>
+                        @foreach($umpanBalikM3 as $item)
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label>{{ $item->pertanyaan }}</label>
+                                        @if($item->type_input === 'radiobutton')
+                                            <?php $options = explode(';', $item->jawaban); ?>
+                                            @foreach($options as $option)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="{{ 'jawaban_' . $item->id }}" value="{{ $option }}"
+                                                        @if($tangapan && $tangapan->{'jawaban_' . $item->id} == $option) checked @endif>
+                                                    <label class="form-check-label">{{ $option }}</label>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            <textarea class="form-control" name="{{ 'jawaban_' . $item->id }}">{{ $tangapan->{'jawaban_' . $item->id} ?? '' }}</textarea>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                        @endforeach
+            
+                        <!-- Photo -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="foto">Uploaded Foto</label>
+                                    <br>
+                                    <img id="imagePreview" class="img-fluid" style="max-width: 500px;" 
+                                    src="{{ route('umpanbalikfoto', $tangapan->foto) }}" alt="Uploaded Foto" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <!-- Navigation Buttons -->
+                    <div class="row mt-3">
+                        <div class="col text-left">
+                            <button type="button" class="btn btn-primary" id="prevBtn">Previous</button>
+                        </div>
+                        <div class="col text-end">
+                            <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
                   
             </div>
             <!--/ Content -->

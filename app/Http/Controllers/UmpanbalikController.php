@@ -116,14 +116,19 @@ class UmpanbalikController extends Controller
         $umpanBalikM = UmpanbalikM::where('aspek','pendampingan')->orderBy('urutan')->get();
         $umpanBalikM2 = UmpanbalikM::where('aspek','kompetensi')->orderBy('urutan')->get();
         $umpanBalikM3 = UmpanbalikM::where('aspek','lainnya')->orderBy('urutan')->get();
+        $asepek = AspekProgram::get();
 
+        $tangapan = TanggapanUmpanbalikT::where('id_umpanbalik',$model->id)->first();
+        // dd($tangapan->tanggal_kedatangan);
         return view('umpanbalik.view',compact(
             'pengawas',
             'model',
             'umpanBalikM',
             'umpanBalikM2',
             'umpanBalikM3',
-            'pelaporan'
+            'pelaporan',
+            'tangapan',
+            'asepek'
         ));
     }
 

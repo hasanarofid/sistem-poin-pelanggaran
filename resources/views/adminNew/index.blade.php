@@ -639,7 +639,7 @@ fetchChartDataRaportPendidikan();
 // Event listener for filter changes
 $('#filter-bln2, #filter-tahun2').change(function() {
     const month = $('#filter-bln2').val();
-    const year = $('#filter-bln2').val();
+    const year = $('#filter-tahun2').val();
     fetchChartDataRaportPendidikan(month, year);
 });
 

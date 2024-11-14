@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\GuruM;
 use App\Models\RencanaKerjaT;
 use App\Models\UmpanbalikT;
 use App\SekolahM;
@@ -31,12 +32,15 @@ class ListumpanbalikController extends Controller
                     })
                     ->addColumn('pengawas', function($row){
                         $user = User::where('id',$row->id_pengawas)->first();
-                        // dd($row->id_user);
                         return $user->nip.' - '.$user->name;
+                    })
+                    ->addColumn('kepala_sekolah', function($row){
+                        $cariguru = GuruM::findorFail($row->id_user);
+                        return $cariguru->nama;
                     })
                     ->addColumn('sasaran', function($row){
                         $rencana = RencanaKerjaT::find($row->id_pelaporan);
-                        return $rencana->aspekprogram->nama;
+                        return !empty($rencana) ? $rencana->nama_program_kerja : '-';
                     })
                     ->addColumn('tanggapan', function($row){
                         $tanggapan = TanggapanUmpanbalikT::where('id_umpanbalik',$row->id)->first();
@@ -49,25 +53,27 @@ class ListumpanbalikController extends Controller
 
                     })
                     ->addColumn('nama_sekolah', function($row) {
-                        $rencana = RencanaKerjaT::find($row->id_pelaporan);
-                        $sekolahIds = explode(',', $rencana->sekolah_id);
-                        $sekolahs = SekolahM::whereIn('id', $sekolahIds)->get();
-            
-                        $nama_sekolah = '';
-                        foreach ($sekolahs as $sekolah) {
-                            $nama_sekolah .= '<span class="badge bg-label-primary m-1" data-sekolah2="' . $sekolah->nama_sekolah . '">' . $sekolah->nama_sekolah . '</span> ';
-                        }
-                        return $nama_sekolah;
+                        $cariguru = GuruM::findorFail($row->id_user);
+                        $sekolahs = SekolahM::findorFail($cariguru->sekolah_id);
+                        return $sekolahs->nama_sekolah;
                     })
    
                ->addColumn('action', function($row){
-                $fullUrl = url('umpan-balik-view/' . $row->generate_url);
-      
-                              $btn = '<a target="_blanck" href="'.$fullUrl.'"   class="btn btn-sm bg-warning text-white " > <i class="fa fa-view"></i> view</a>';
-                           
-                               return $btn;
+
+                // Check if the response has been given
+    $tanggapan = TanggapanUmpanbalikT::where('id_umpanbalik', $row->id)->first();
+    $fullUrl = url('umpan-balik-view/' . $row->generate_url);
+
+    // If 'Belum diberi tanggapan', disable the button
+    if (!$tanggapan) {
+        $btn = '<a href="#" class="btn btn-sm bg-warning text-white disabled" style="pointer-events: none;" > <i class="fa fa-eye"></i> Belum diberi tanggapan</a>';
+    } else {
+        $btn = '<a target="_blank" href="'.$fullUrl.'" class="btn btn-sm bg-primary text-white" > <i class="fa fa-eye"></i> View</a>';
+    }
+    return $btn;
                        })
-                       ->rawColumns(['action','sasaran','tanggal','pengawas','nama_sekolah','tanggapan'])
+
+                       ->rawColumns(['action','sasaran','kepala_sekolah','nama_sekolah','tanggal','pengawas','tanggapan'])
                        ->make(true);
            }
     }

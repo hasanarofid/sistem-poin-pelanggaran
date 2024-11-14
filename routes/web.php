@@ -435,3 +435,21 @@ Route::get('favicon/{filename?}', function ($filename) {
     $response->header("Content-Type", $type);
     return $response;
 })->name('favicon');
+
+
+Route::get('umpanbalikfoto/{filename}', function ($filename) {
+    $path = storage_path('app/public/umpanbalik/' . $filename);
+
+    if (!File::exists($path)) {
+        Log::error('Image file not found: ' . $path);
+        abort(404);
+    }
+
+    $file = File::get($path);
+    $type = File::mimeType($path);
+
+    $response = Response::make($file, 200);
+    $response->header("Content-Type", $type);
+
+    return $response;
+})->name('umpanbalikfoto');

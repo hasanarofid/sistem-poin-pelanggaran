@@ -114,6 +114,24 @@ Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->group(function 
         Route::get('/hapus-listumpanbalik{id}', 'ListumpanbalikController@hapus')->name('listumpanbalik.hapus');
     });
 
+    Route::prefix('dokumentasipendampingan')->group(function () {
+        Route::get('/', 'DokumentasipendampinganController@index')->name('dokumentasipendampingan.index');
+        Route::get('/get-dokumentasipendampingan', 'DokumentasipendampinganController@getdata')->name('dokumentasipendampingan.getdata');
+    });
+
+
+    Route::prefix('saranperbaikan')->group(function () {
+        Route::get('/', 'SaranperbaikanController@index')->name('saranperbaikan.index');
+        Route::get('/get-saranperbaikan', 'SaranperbaikanController@getdata')->name('saranperbaikan.getdata');
+    });
+
+    Route::prefix('layanandibutuhkan')->group(function () {
+        Route::get('/', 'LayanandibutuhkanController@index')->name('layanandibutuhkan.index');
+        Route::get('/get-layanandibutuhkan', 'LayanandibutuhkanController@getdata')->name('layanandibutuhkan.getdata');
+    });
+
+
+
     Route::prefix('mastertupoksi')->group(function () {
         Route::get('/', 'MastertupoksiController@index')->name('mastertupoksi.index');
         Route::get('/get-mastertupoksi', 'MastertupoksiController@getdata')->name('mastertupoksi.getdata');

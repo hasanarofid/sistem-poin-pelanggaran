@@ -95,7 +95,10 @@
             </a>
         </li>
 
-        <li class="menu-item {{ ( request()->is('superadmin/masterpengawas*') || request()->is('superadmin/sekolah*')  || request()->is('superadmin/guru*')   ) ? 'active open' : '' }}">
+        <li class="menu-item {{ ( request()->is('superadmin/listumpanbalik*') 
+        || request()->is('superadmin/dokumentasipendampingan*') 
+         || request()->is('superadmin/saranperbaikan*') 
+          || request()->is('superadmin/layanandibutuhkan*')   ) ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
               <i class="menu-icon tf-icons fa-solid fas fa-thumbs-up"></i>
               <div data-i18n="Master Data">Umpan Balik</div>
@@ -109,6 +112,29 @@
                         {{-- <i class="menu-icon tf-icons ti ti-user"></i> --}}
                         <i class="menu-icon tf-icons fa-solid fas fa-thumbs-up"></i>
                         <div data-i18n="Profile">List Umpan Balik</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ (request()->is('superadmin/dokumentasipendampingan*')) ? 'active' : '' }}">
+                    <a href="{{ route('dokumentasipendampingan.index') }}" class="menu-link">
+                        {{-- <i class="menu-icon tf-icons ti ti-user"></i> --}}
+                        <i class="menu-icon tf-icons fa-solid fas fa-thumbs-up"></i>
+                        <div data-i18n="Profile">Dokumentasi Pendampingan</div>
+                    </a>
+                </li>
+
+                <li class="menu-item {{ (request()->is('superadmin/saranperbaikan*')) ? 'active' : '' }}">
+                    <a href="{{ route('saranperbaikan.index') }}" class="menu-link">
+                        {{-- <i class="menu-icon tf-icons ti ti-user"></i> --}}
+                        <i class="menu-icon tf-icons fa-solid fas fa-thumbs-up"></i>
+                        <div data-i18n="Profile">Saran Perbaikan</div>
+                    </a>
+                </li>
+
+                <li class="menu-item {{ (request()->is('superadmin/layanandibutuhkan*')) ? 'active' : '' }}">
+                    <a href="{{ route('layanandibutuhkan.index') }}" class="menu-link">
+                        {{-- <i class="menu-icon tf-icons ti ti-user"></i> --}}
+                        <i class="menu-icon tf-icons fa-solid fas fa-thumbs-up"></i>
+                        <div data-i18n="Profile">Layanan yang dibutuhkan</div>
                     </a>
                 </li>
                 

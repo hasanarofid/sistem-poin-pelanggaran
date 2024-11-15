@@ -286,20 +286,29 @@ class AdminController extends Controller
         $month = $request->input('bln', 'all');
         $year = $request->input('tahun', 'all');
 
-        $query = UmpanbalikT::with('pengawasnama','tanggapanUmpanBalik')
+        $query = UmpanbalikT::with('pengawasnama','tanggapanUmpanBalik','rencanakerja')
         ->whereHas('tanggapanUmpanBalik') // hanya ambil yang sudah ada tanggapan
         ->selectRaw('id_pengawas, COUNT(*) as total')
         ->groupBy('id_pengawas');
 
         // Apply the month filter
-        if ($month !== 'all') {
-            $query->where('bulan', $month);
-        }
+        // if ($month !== 'all') {
+        //     $query->where('bulan', $month);
+        // }
 
-        // Apply the year filter
-        if ($year !== 'all') {
-            $query->where('tahun_ajaran', $year);
+        // // Apply the year filter
+        // if ($year !== 'all') {
+        //     $query->where('tahun_ajaran', $year);
+        // }
+                // Apply the month and year filters on the related rencanakerja table
+    $query->whereHas('rencanakerja', function ($q) use ($month, $year) {
+        if ($month !== 'all') {
+            $q->where('bulan', $month);
         }
+        if ($year !== 'all') {
+            $q->where('tahun_ajaran', $year);
+        }
+    });
 
         // Get the results
         $data = $query->get()

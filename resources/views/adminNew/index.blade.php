@@ -556,7 +556,7 @@ fetchChartTerkonfrim();
 $('#filter-bln3, #filter-tahun3').change(function() {
     const month = $('#filter-bln3').val();
     const year = $('#filter-tahun3').val();
-    fetchChartDataRaportPendidikan(month, year);
+    fetchChartTerkonfrim(month, year);
 });
 
 

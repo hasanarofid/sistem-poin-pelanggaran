@@ -23,15 +23,57 @@
             <div class="app-card-body px-4 w-100">
               <div class="row mb-3">
                 <div class="col-md-4">
-                  <label for="filter-pengawas">Filter by Pengawas:</label>
-                  <select id="filter-pengawas" name="pengawas" class="select2 form-select" required>
-                    <option value="all">All</option>
+                    <label for="filter-pengawas">Filter by Pengawas:</label>
+                    <select
+                    id="filter-pengawas"
+                    name="pengawas"
+                    class="select2 form-select"
+                    required
+                >
+                    <option value="all">All</option> <!-- Option to show all records -->
                     @foreach ($listPengawas as $item)
-                      <option value="{{ $item->id }}">{{ $item->name.' - '.$item->nip }}</option>
+                        <option value="{{ $item->id }}">{{ $item->name.' - '.$item->nip }}</option>
                     @endforeach
-                  </select>
+                </select>
+                
                 </div>
-              </div>
+
+                <div class="col-md-4">
+                    <label for="filter-pengawas">Filter Bulan:</label>
+                    <select
+                    id="filter-bln"
+                    name="bln"
+                    class="select2 form-select"
+                    required
+                >
+                    <option value="all">All</option> <!-- Option to show all records -->
+                    @foreach($months as $month)
+                        <option value="{{ $month['name'] }}">
+                            {{ $month['name'] }}
+                        </option>
+                    @endforeach
+                </select>
+                
+                </div>
+                <div class="col-md-4">
+                    <label for="filter-tahun">Filter Tahun:</label>
+                    <select
+                        id="filter-tahun"
+                        name="tahun"
+                        class="select2 form-select"
+                        required
+                    >
+                        <option value="all">All</option> <!-- Option to show all records -->
+                        @foreach($years as $year)
+                            <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
+                                {{ $year }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                
+            </div>
 
               <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="dataTable">
@@ -63,17 +105,31 @@
 <script>
   $(document).ready(function () {
     $('#filter-pengawas').select2();
+        $('#filter-bln').select2();
+        $('#filter-tahun').select2();
     $('#filter-pengawas').change(function () {
         $('#dataTable').DataTable().ajax.reload();
     });
 
+
+$('#filter-bln').change(function () {
+    $('#dataTable').DataTable().ajax.reload(); // Reload the table when filter changes
+});
+
+
+$('#filter-tahun').change(function () {
+    $('#dataTable').DataTable().ajax.reload(); // Reload the table when filter changes
+});
+
     $('#dataTable').DataTable({
         processing: true,
-        serverSide: true,
+        serverSide: false,
         ajax: {
           url: "{{ route('dokumentasipendampingan.getdata') }}",
           data: function(d) {
             d.pengawas = $('#filter-pengawas').val();
+            d.bln = $('#filter-bln').val();
+            d.tahun = $('#filter-tahun').val();
           }
         },
         columns: [
@@ -98,6 +154,9 @@
             exportOptions: {
               columns: [0, 1, 3, 4, 5,6] // Sertakan kolom foto2 meskipun tersembunyi
             },
+            modifier: {
+                    page: 'all' // Ekspor semua halaman
+                },
             customize: function (doc) {
               // Customizing columns
               doc.content[1].table.widths = ['10%', '20%', '20%', '20%', '15%', '15%'];
@@ -110,8 +169,8 @@
                 const fotoBase64 = tableBody[i][2].text;  // Foto disembunyikan di kolom foto3
                 tableBody[i][2] = {
                   image: fotoBase64,
-                  width: 50,    // Adjust width as needed
-                  height: 50,   // Adjust height as needed
+                  width: 100,    // Adjust width as needed
+                  height: 100,   // Adjust height as needed
                 };
               }
             }

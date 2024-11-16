@@ -51,18 +51,7 @@ class PengawasController extends Controller
 
 
 
-            $sekolahdilayani = UmpanbalikT::with('pengawasnama', 'rencanakerja')
-                ->selectRaw('id_pelaporan, COUNT(id_user) as total')
-                ->whereHas('pengawasnama', function ($query) {
-                    $query->where('id_pengawas', Auth::user()->id);
-                })
-                ->whereHas('tanggapanUmpanBalik')
-                ->whereHas('rencanakerja', function ($query) use ($bulanini, $tahunini) {
-                    $query->where('bulan', $bulanini)
-                        ->where('tahun_ajaran', $tahunini);
-                })
-                ->groupBy('id_pelaporan')
-                ->count();
+         
 
                 $listsekolahdilayani = UmpanbalikT::with('pengawasnama', 'rencanakerja')
                 ->whereHas('pengawasnama', function ($query) {
@@ -74,6 +63,13 @@ class PengawasController extends Controller
                         ->where('tahun_ajaran', $tahunini);
                 })
                 ->get();
+
+                $sekolahdilayani = 0;
+                foreach ($listsekolahdilayani as $value) {
+                    $sekolahIds = explode(',', $value->rencanakerja->sekolah_id);
+                    $sekolahdilayani += count($sekolahIds);
+                }
+              
 
                 // dd($sekolahdilayani);
 

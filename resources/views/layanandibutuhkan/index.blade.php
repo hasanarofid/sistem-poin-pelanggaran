@@ -91,7 +91,7 @@ $('#dataTable').DataTable().ajax.reload(); // Reload the table when filter chang
 $('#dataTable').DataTable({
  
     processing: true,
-    serverSide: true,
+    serverSide: false,
     ajax: {
             url: "{{ route('layanandibutuhkan.getdata') }}",
             data: function(d) {
@@ -102,6 +102,23 @@ $('#dataTable').DataTable({
             {data: 'DT_RowIndex', name: 'DT_RowIndex'},
             {data: 'nama_sekolah', name: 'nama_sekolah'},
             {data: 'layanan', name: 'layanan'},
+        ],
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'pdfHtml5',
+                text: '<i class="fas fa-file-pdf"></i> Export PDF',
+                className: 'btn btn-danger',
+                title: 'List Layanan yang dibutuhkan',
+                orientation: 'landscape',
+                pageSize: 'A4',
+                exportOptions: {
+                  columns: [0, 1,2], // Ekspor semua kolom yang terlihat
+                    modifier: {
+                        page: 'all' // Ekspor semua halaman
+                    }
+                }
+            }
         ]
     });
   });

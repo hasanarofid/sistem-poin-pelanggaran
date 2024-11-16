@@ -16,23 +16,87 @@ use Illuminate\Support\Facades\File;
 class DokumentasipendampinganController extends Controller
 {
     public function index(){
-        $listPengawas = User::where('role','pengawas')->get();
 
-        return view('dokumentasipendampingan.index',compact('listPengawas'));
+        $currentMonth = date('n'); // Numeric representation of the current month (1-12)
+        $currentYear = date('Y');  // Current year
+        $years = range($currentYear - 5, $currentYear + 5);
+         $months = [];
+        
+        // Array of month names in Indonesian
+        $monthNamesIndo = [
+            1 => 'Januari', 
+            2 => 'Februari', 
+            3 => 'Maret', 
+            4 => 'April', 
+            5 => 'Mei', 
+            6 => 'Juni', 
+            7 => 'Juli', 
+            8 => 'Agustus', 
+            9 => 'September', 
+            10 => 'Oktober', 
+            11 => 'November', 
+            12 => 'Desember'
+        ];
+        
+        // Generate the current and next 11 months in Indonesian
+        for ($i = 0; $i < 12; $i++) {
+            $timestamp = strtotime("+$i month");
+            $monthNumber = date('n', $timestamp);
+            $months[] = [
+                'value' => $monthNumber,                // Month number (1-12)
+                'name' => $monthNamesIndo[$monthNumber] // Full month name in Indonesian
+            ];
+        }
+
+        $listPengawas = User::where('role','pengawas')->get();
+     
+        return view('dokumentasipendampingan.index',compact('listPengawas',
+        'months',
+        'currentYear',    
+        'years', 
+    ));
     }
 
     public function getdata(Request $request){
         if ($request->ajax()) {
 
             $pengawas = $request->input('pengawas', 'all');
-
-            $post = TanggapanUmpanbalikT::with('umpanBalikT')->latest();
-          
+            $tahun = $request->input('tahun', 'all');
+            $bln = $request->input('bln', 'all');
+            $monthNamesIndo = [
+                'Januari' => 1,
+                'Februari' => 2,
+                'Maret' => 3,
+                'April' => 4,
+                'Mei' => 5,
+                'Juni' => 6,
+                'Juli' => 7,
+                'Agustus' => 8,
+                'September' => 9,
+                'Oktober' => 10,
+                'November' => 11,
+                'Desember' => 12
+            ];
+            
+            // Cek apakah nama bulan sesuai dengan bulan yang diterima dalam bahasa Indonesia
+            $monthNumber = isset($monthNamesIndo[$bln]) ? $monthNamesIndo[$bln] : 'all';
+            
+            $post = TanggapanUmpanbalikT::with('umpanBalikT','umpanBalikT.rencanakerja')->latest();
+             // Apply filter for 'bln' (bulan)
+             if ($bln !== 'all') {
+                $post->whereMonth('created_at', $monthNumber);
+            }
+            if ($tahun !== 'all') {
+                $post->whereYear('created_at', $tahun);
+            }
+            
+            
             $post->whereHas('umpanBalikT', function ($q) use ($pengawas) {
                 if ($pengawas !== 'all') {
                     $q->where('id_pengawas', $pengawas);
                 }
             });
+
     
                 return Datatables::of($post->get())
                 ->addIndexColumn()

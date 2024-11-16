@@ -52,9 +52,9 @@
 
       <!-- User Profile Content -->
       <div class="row">
-        <div class="col-xl-4 col-lg-5 col-md-5">
+        <div class="col-xl-6 col-lg-5 col-md-5">
           <!-- About User -->
-          <div class="card mb-4">
+          <div class="card mb-2">
             <div class="card-body">
               <small class="card-text text-uppercase">About</small>
               <ul class="list-unstyled mb-4 mt-3">
@@ -94,7 +94,7 @@
           </div>
           <!--/ About User -->
           <!-- Profile Overview -->
-          <div class="card mb-4">
+          <div class="card mb-2">
             <div class="card-body">
               <p class="card-text text-uppercase">Rencana Kerja Bulan ini</p>
               <ul class="list-unstyled mb-0">
@@ -116,6 +116,7 @@
                       <tr>
                         <th>No</th>
                         <th>Nama Program</th>
+                        <th>Total Sekolah</th>
                       </tr>                  
                     </thead>
                     <tbody>
@@ -123,9 +124,17 @@
                           $no = 1;
                       @endphp
                       @foreach ($listsekolahdilayani as $item)
+                      @php
+                      $sekolahIds = explode(',', $item->rencanakerja->sekolah_id);
+                      $sekolahs = count($sekolahIds);
+
+                @endphp
+                      {{-- $sekolahIds = explode(',', $value->rencanakerja->sekolah_id);
+                      $sekolahdilayani += count($sekolahIds); --}}
                       <tr>
                         <td> {{ $no++}} </td>
                         <td> {{ $item->rencanakerja->nama_program_kerja}} </td>
+                        <td>{{ $sekolahs }}</td>
                       </tr>
                       @endforeach
                     </tbody>
@@ -138,7 +147,7 @@
             </div>
           </div>
 
-          <div class="card mb-4">
+          <div class="card mb-2">
             <div class="card-body">
               <p class="card-text text-uppercase">Daftar Sekolah Binaan Bulan Ini</p>
               <table class="table table-bordered">
@@ -173,7 +182,7 @@
           </div>
           <!--/ Profile Overview -->
         </div>
-        <div class="col-xl-8 col-lg-7 col-md-7">
+        <div class="col-xl-6 col-lg-6 col-md-6">
           <!-- Activity Timeline -->
           <div class="card card-action mb-4">
             <div class="card-header align-items-center">

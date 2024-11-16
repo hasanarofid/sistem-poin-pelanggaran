@@ -138,12 +138,17 @@ class PegawasMController extends Controller
 
 
                     ->addColumn('action', function($row){
-   
-                           $btn = '<a href="'.route('masterpengawas.edit',$row->id).'" data-toggle="tooltip"  class="edit btn btn-primary btn-sm editPost">Edit</a>';
+                        $user = Auth::user();
+                        if ($user && $user->role == 'Super Admin') {
+                            $btn = '<a href="'.route('masterpengawas.edit',$row->id).'" data-toggle="tooltip"  class="edit btn btn-primary btn-sm editPost">Edit</a>';
                            $btn = $btn.' <a href="'.route('masterpengawas.hapus',$row->id).'" data-toggle="tooltip" data-toggle="modal" data-target="#confirmDeleteModal"    data-original-title="Delete" class="btn btn-danger btn-sm deletePost">Delete</a>';
                            $btn = $btn.' <a href="'.route('masterpengawas.setSekolahBinaan',$row->id).'"  class="btn btn-info btn-sm deletePost">Add Sekolah Binaan</a>';
     
                             return $btn;
+                        } else {
+                            return ''; // Tidak menampilkan tombol aksi jika bukan Super Admin
+                        }
+                          
                     })
                     ->rawColumns(['no_telp','alamat','action','foto','kabupaten','binaan'])
                     ->make(true);

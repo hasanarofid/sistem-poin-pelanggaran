@@ -1,5 +1,6 @@
 @extends('layouts.pengawas.home')
-@section('title','Login')
+@section('title', 'Data Pengawas')
+@section('titelcard', 'Data Pengawas')
 @section('content')
 
 <div class="content-wrapper">
@@ -40,17 +41,20 @@
                                     <tbody>
                                         @php $no = 1; @endphp
                                         @foreach ($groupedBinaan as $group)
-                                            @foreach ($group['sekolahs'] as $index => $sekolah)
-                                                <tr class="{{ $index === 0 ? 'group-start' : '' }}">
-                                                    @if ($index === 0)
-                                                        <td rowspan="{{ count($group['sekolahs']) }}">{{ $no++ }}</td>
-                                                        <td rowspan="{{ count($group['sekolahs']) }}">{{ $group['pengawas']->name }}</td>
-                                                        <td rowspan="{{ count($group['sekolahs']) }}">{{ $group['pengawas']->profile->no_telp }}</td>
-                                                    @endif
-                                                    <td>{{ $sekolah->nama_sekolah }}</td>
-                                                </tr>
-                                            @endforeach
+                                        @foreach ($group['sekolahs'] as $index => $sekolah)
+                                            <tr class="{{ $index === 0 ? 'group-start' : '' }}">
+                                                @if ($index === 0)
+                                                    <td rowspan="{{ count($group['sekolahs']) }}">{{ $no++ }}</td>
+                                                    <td rowspan="{{ count($group['sekolahs']) }}">{{ $group['pengawas']->name }}</td>
+                                                    <td rowspan="{{ count($group['sekolahs']) }}">{{ $group['pengawas']->profile->no_telp }}</td>
+                                                @endif
+                                                <!-- Cek apakah $sekolah bukan null dan memiliki properti nama_sekolah -->
+                                                <td>{{ $sekolah->nama_sekolah ?? 'Tidak ada nama sekolah' }}</td>
+                                            </tr>
                                         @endforeach
+                                    @endforeach
+                                    
+
                                     </tbody>
                                 </table>
                                 <br>

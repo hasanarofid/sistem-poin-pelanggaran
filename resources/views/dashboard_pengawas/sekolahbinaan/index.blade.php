@@ -1,5 +1,6 @@
 @extends('layouts.pengawas.home')
-@section('title','Login')
+@section('title', 'Data Sekolah Binaan')
+@section('titelcard', 'Data Sekolah Binaan')
 @section('content')
 <div class="content-wrapper">
     <!-- Content -->

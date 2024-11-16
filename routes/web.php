@@ -57,12 +57,44 @@ Route::get('/chartpie', 'AdminController@chartpie')->name('admin.chartpie')->mid
 
 Route::get('/spider-web-data', 'AdminController@getSpiderWebData')->name('admin.spiderWebData')->middleware(['auth']);
 
+// Route::get('/', 'AdminController@index')
+//     ->name('admin.index')
+//     ->middleware(['auth', 'checkSuperadminOrStakeholder']);
+
+// Route::get('/dashboard', 'AdminController@index')
+//     ->name('admin.index')
+//     ->middleware(['auth', 'checkSuperadminOrStakeholder']);
+
+// Route::get('/chart-data', 'AdminController@chartData')
+//     ->name('admin.chartData')
+//     ->middleware(['auth', 'checkSuperadminOrStakeholder']);
+
+// Route::get('/chart-data2', 'AdminController@chartData2')
+//     ->name('admin.chartData2')
+//     ->middleware(['auth', 'checkSuperadminOrStakeholder']);
+
+// Route::get('/chartDataRaportPendidikan', 'AdminController@chartDataRaportPendidikan')
+//     ->name('admin.chartDataRaportPendidikan')
+//     ->middleware(['auth', 'checkSuperadminOrStakeholder']);
+
+// Route::get('/chartTerkonfirmasi', 'AdminController@chartTerkonfirmasi')
+//     ->name('admin.chartTerkonfirmasi')
+//     ->middleware(['auth', 'checkSuperadminOrStakeholder']);
+
+// Route::get('/chartpie', 'AdminController@chartpie')
+//     ->name('admin.chartpie')
+//     ->middleware(['auth', 'checkSuperadminOrStakeholder']);
+
+// Route::get('/spider-web-data', 'AdminController@getSpiderWebData')
+//     ->name('admin.spiderWebData')
+//     ->middleware(['auth', 'checkSuperadminOrStakeholder']);
+
 // end panel dashboard admin
 // umpan balik
 
 
 // route penel dashboard for superadmin
-Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->group(function () {
+Route::prefix('superadmin')->middleware(['auth', 'checkSuperadminOrStakeholder'])->group(function () {
     // route menu admin 
     Route::prefix('admin')->group(function () {
         Route::get('/data', 'AdminController@data')->name('admin.data');
@@ -316,11 +348,38 @@ Route::prefix('superadmin')->middleware(['auth', 'superadmin'])->group(function 
 
 // route halaman pengawas
 Route::middleware(['web', 'pengawas'])->group(function () {
+
+    
     Route::get('/pengawas', 'PengawasController@index')->name('pengawas.index');
     Route::get('/editprofile', 'PengawasController@editprofile')->name('pengawas.editprofile');
     Route::post('/updateprofile', 'PengawasController@updateprofile')->name('pengawas.updateprofile');
     Route::post('/ubahpassword', 'PengawasController@ubahpassword')->name('pengawas.ubahpassword');
+    Route::get('/chart-data-pengawas', 'PengawasController@chartData')->name('pengawas.chartData');
+    Route::get('/chart-data2-pengawas', 'PengawasController@chartData2')->name('pengawas.chartData2');
+    Route::get('/dashboard', 'PengawasController@dashboard')->name('pengawas.dashboard');
+    Route::get('/spider-web-data-pengawas', 'PengawasController@getSpiderWebDataPengawas')->name('pengawas.spiderWebData');
+    Route::get('/chartTerkonfirmasi-pengawas', 'PengawasController@chartTerkonfirmasiPengawas')->name('pengawas.chartTerkonfirmasi');
+    Route::get('/chartDataRaportPendidikan-pengawas', 'PengawasController@chartDataRaportPendidikan')->name('pengawas.chartDataRaportPendidikan');
+    Route::get('/chartpie-pengawas', 'PengawasController@chartpie')->name('pengawas.chartpie');
 
+
+    Route::prefix('pengawas/listumpanbalik')->group(function () { // tambahkan prefix pengawas
+        Route::get('/', 'ListumpanbalikController@indexpengawas')->name('pengawas.listumpanbalik.index');
+        Route::get('/get-listumpanbalik', 'ListumpanbalikController@getdatapengawas')->name('pengawas.listumpanbalik.getdata');
+    });
+
+    Route::prefix('pengawas/dokumentasipendampingan')->group(function () {
+        Route::get('/', 'DokumentasipendampinganController@indexpengawas')->name('pengawas.dokumentasipendampingan.index');
+        Route::get('/get-dokumentasipendampingan', 'DokumentasipendampinganController@getdatapengawas')->name('pengawas.dokumentasipendampingan.getdata');
+    });
+
+
+    Route::prefix('pengawas/layanandibutuhkan')->group(function () {
+        Route::get('/', 'LayanandibutuhkanController@indexpengawas')->name('pengawas.layanandibutuhkan.index');
+        Route::get('/get-layanandibutuhkan', 'LayanandibutuhkanController@getdatapengawas')->name('pengawas.layanandibutuhkan.getdata');
+    });
+    
+    
     // route panel menu pengawas rencanakerja
     Route::prefix('rencanakerja')->group(function () {
         Route::get('/', 'RencanaKerjaController@index')->name('pengawas.rencanakerja');

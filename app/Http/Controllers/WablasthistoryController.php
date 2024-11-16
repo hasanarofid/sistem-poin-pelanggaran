@@ -48,9 +48,15 @@ class WablasthistoryController extends Controller
                         : '<span class="badge bg-label-danger m-1">Belum Kirim WA Blast</span>';
                 })
                 ->addColumn('action', function($row) {
-                    return '<a id="sendWaButton-' . $row->rencana_kerja_id . '" onclick="kirimWaBlast(' . $row->rencana_kerja_id . ')" class="btn btn-sm bg-success text-white">
-                                <i class="fa fa-envelope"></i> Kirim Wa
-                            </a>';
+                    $user = Auth::user();
+                    if ($user && $user->role == 'Super Admin') {
+                        return '<a id="sendWaButton-' . $row->rencana_kerja_id . '" onclick="kirimWaBlast(' . $row->rencana_kerja_id . ')" class="btn btn-sm bg-success text-white">
+                        <i class="fa fa-envelope"></i> Kirim Wa
+                    </a>';
+                    } else {
+                        return ''; // Tidak menampilkan tombol aksi jika bukan Super Admin
+                    }
+                    
                 })
                 ->rawColumns(['rencana', 'kepalasekolah', 'status', 'action'])
                 ->make(true);

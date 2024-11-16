@@ -50,11 +50,16 @@ class GuruMController extends Controller
                                return !empty($row->sekolah->nama_sekolah) ? $row->sekolah->nama_sekolah: '-';
                     })
                     ->addColumn('action', function($row){
-   
-                        $btn = '<a href="'.route('guru.edit',$row->id).'" data-toggle="tooltip"  class="edit btn btn-primary btn-sm editPost">Edit</a>';
-                        $btn = $btn.' <a href="'.route('guru.hapus',$row->id).'" data-toggle="tooltip" data-toggle="modal" data-target="#confirmDeleteModal"    data-original-title="Delete" class="btn btn-danger btn-sm deletePost">Delete</a>';
- 
-                         return $btn;
+                        $user = Auth::user();
+                        if ($user && $user->role == 'Super Admin') {
+                            $btn = '<a href="'.route('guru.edit',$row->id).'" data-toggle="tooltip"  class="edit btn btn-primary btn-sm editPost">Edit</a>';
+                            $btn = $btn.' <a href="'.route('guru.hapus',$row->id).'" data-toggle="tooltip" data-toggle="modal" data-target="#confirmDeleteModal"    data-original-title="Delete" class="btn btn-danger btn-sm deletePost">Delete</a>';
+     
+                             return $btn;
+                        } else {
+                            return ''; // Tidak menampilkan tombol aksi jika bukan Super Admin
+                        }
+                       
                  })
                     ->rawColumns(['nama_sekolah','action'])
                     ->make(true);

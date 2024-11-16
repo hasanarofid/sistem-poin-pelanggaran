@@ -97,32 +97,15 @@ lang="{{ str_replace('_', '-', app()->getLocale()) }}"
                   <div data-i18n="Profile">Profile</div>
                 </a>
               </li>
-              <!-- Dashboards -->
-              <li class="menu-item {{ ( request()->is('rencanakerja') || request()->is('activitas') || request()->is('masterumpanbalik') ) ? 'active open' : '' }} " >
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
+
+              <li class="menu-item {{ ( request()->is('dashboard') ) ? 'active' : '' }}">
+                <a href="{{ route('pengawas.dashboard') }}" class="menu-link">
                   <i class="menu-icon tf-icons ti ti-smart-home"></i>
-                  <div data-i18n="Dashboards">Dashboards</div>
-                  <div class="badge bg-label-primary rounded-pill ms-auto">3</div>
+                  <div data-i18n="Profile">Dashboards</div>
                 </a>
-                <ul class="menu-sub ">
-                  <li class="menu-item {{ (request()->is('rencanakerja')) ? 'active' : '' }}">
-                    <a href="{{ route('pengawas.rencanakerja') }}" class="menu-link">
-                      <div data-i18n="Rencana Kerja">Rencana Kerja</div>
-                    </a>
-                  </li>
-                  <li class="menu-item {{ (request()->is('activitas')) ? 'active' : '' }}">
-                    <a href="{{ route('pengawas.activitas') }}" class="menu-link">
-                      <div data-i18n="Activitas">Activitas</div>
-                    </a>
-                  </li>
-                  <li class="menu-item {{ (request()->is('masterumpanbalik')) ? 'active' : '' }}">
-                    <a href="{{ route('pengawas.masterumpanbalik') }}" class="menu-link">
-                      <div data-i18n="Umpan Balik">Umpan Balik</div>
-                    </a>
-                  </li>
-                </ul>
               </li>
-  
+              <!-- Dashboards -->
+        
               <!-- Layouts -->
               <li class="menu-item {{ ( request()->is('sekolahbinaan') || request()->is('datapengawas')   ) ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -160,12 +143,50 @@ lang="{{ str_replace('_', '-', app()->getLocale()) }}"
                   <div data-i18n="Pelaporan">Pelaporan</div>
                 </a>
               </li> --}}
-              <li class="menu-item {{ (request()->is('umpanbalik')) ? 'active' : '' }}">
+              {{-- <li class="menu-item {{ (request()->is('umpanbalik')) ? 'active' : '' }}">
                 <a href="{{ route('pengawas.umpanbalik') }}" class="menu-link">
                   <i class="menu-icon tf-icons ti ti-calendar"></i>
                   <div data-i18n="Umpan Balik">Umpan Balik</div>
                 </a>
-              </li>
+              </li> --}}
+
+              <li class="menu-item {{ ( request()->is('pengawas/listumpanbalik*') 
+                || request()->is('pengawas/dokumentasipendampingan*') 
+                 || request()->is('pengawas/saranperbaikan*') 
+                  || request()->is('pengawas/layanandibutuhkan*')   ) ? 'active open' : '' }}">
+                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                      <i class="menu-icon tf-icons fa-solid fas fa-thumbs-up"></i>
+                      <div data-i18n="Master Data">Umpan Balik</div>
+                    </a>
+        
+                    <ul class="menu-sub">
+                     
+                       
+                        <li class="menu-item {{ (request()->is('pengawas/listumpanbalik*')) ? 'active' : '' }}">
+                            <a href="{{ route('pengawas.listumpanbalik.index') }}" class="menu-link">
+                                {{-- <i class="menu-icon tf-icons ti ti-user"></i> --}}
+                                <i class="menu-icon tf-icons fa-solid fas fa-thumbs-up"></i>
+                                <div data-i18n="Profile">List Umpan Balik</div>
+                            </a>
+                        </li>
+                        <li class="menu-item {{ (request()->is('pengawas/dokumentasipendampingan*')) ? 'active' : '' }}">
+                            <a href="{{ route('pengawas.dokumentasipendampingan.index') }}" class="menu-link">
+                                {{-- <i class="menu-icon tf-icons ti ti-user"></i> --}}
+                                <i class="menu-icon tf-icons fa-solid fas fa-thumbs-up"></i>
+                                <div data-i18n="Profile">Dokumentasi Pendampingan</div>
+                            </a>
+                        </li>
+        
+                        <li class="menu-item {{ (request()->is('pengawas/layanandibutuhkan*')) ? 'active' : '' }}">
+                            <a href="{{ route('pengawas.layanandibutuhkan.index') }}" class="menu-link">
+                                {{-- <i class="menu-icon tf-icons ti ti-user"></i> --}}
+                                <i class="menu-icon tf-icons fa-solid fas fa-thumbs-up"></i>
+                                <div data-i18n="Profile">Layanan yang dibutuhkan</div>
+                            </a>
+                        </li>
+                        
+                    </ul>
+                  </li>
               
               <li class="menu-item">
                 <a class="menu-link" href="{{ route('pengawas.logout') }}"

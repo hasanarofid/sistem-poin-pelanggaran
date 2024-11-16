@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\RencanaKerjaT;
 use App\Models\UmpanbalikT;
 use App\Profile;
+use App\TanggapanUmpanbalikT;
 use App\User;
 use Illuminate\Http\Request;
 use Auth;
@@ -74,8 +75,41 @@ class PengawasController extends Controller
                 // dd($sekolahdilayani);
 
             // dd($totalRencankerja);
+            $currentYear2 = date('Y');  // Current year
+            $years2 = range($currentYear2 - 5, $currentYear2 + 5);
+            $months2 = [];
+        
+            // Array of month names in Indonesian
+            $monthNamesIndo2 = [
+                1 => 'Januari', 
+                2 => 'Februari', 
+                3 => 'Maret', 
+                4 => 'April', 
+                5 => 'Mei', 
+                6 => 'Juni', 
+                7 => 'Juli', 
+                8 => 'Agustus', 
+                9 => 'September', 
+                10 => 'Oktober', 
+                11 => 'November', 
+                12 => 'Desember'
+            ];
+            
+            // Generate the current and next 11 months in Indonesian
+            for ($i = 0; $i < 12; $i++) {
+                $timestamp = strtotime("+$i month");
+                $monthNumber = date('n', $timestamp);
+                $months2[] = [
+                    'value' => $monthNumber,                // Month number (1-12)
+                    'name' => $monthNamesIndo2[$monthNumber] // Full month name in Indonesian
+                ];
+            }
+
             return view('dashboard_pengawas.home',
             compact(
+                'months2',
+                'currentYear2',    
+                'years2',  
                 'totalRencankerja',
                 'sekolahdilayani',
                 'listsekolahdilayani'
@@ -150,5 +184,301 @@ class PengawasController extends Controller
     
         return redirect()->back()->with('success_pass', 'Password berhasil diubah.');
     }
+
+
+
+    public function chartData(Request $request)
+    {
+        $month = $request->input('bln', 'all');
+        $year = $request->input('tahun', 'all');
+
+        $query = RencanaKerjaT::with('pengawasnama')
+        ->selectRaw('id_pengawas, COUNT(*) as total')
+        ->where('id_pengawas', Auth::user()->id)
+        ->groupBy('id_pengawas');
+
+        // Apply the month filter
+        if ($month !== 'all') {
+            $query->where('bulan', $month);
+        }
+
+        // Apply the year filter
+        if ($year !== 'all') {
+            $query->where('tahun_ajaran', $year);
+        }
+
+        // Get the results
+        $data = $query->get()
+            ->map(function ($item) {
+                return [
+                    'pengawas' => $item->pengawasnama ? $item->pengawasnama->name : 'Unknown',
+                    'total' => $item->total
+                ];
+            });
+
+        // Return the data as JSON
+        return response()->json($data); // Return JSON data for use in the view
+    }
+
+
+    public function chartData2(Request $request)
+    {
+        $month = $request->input('bln', 'all');
+        $year = $request->input('tahun', 'all');
+        $pengawas = $request->input('pengawas', 'all');
+
+        $query = UmpanbalikT::with('pengawasnama','rencanakerja')
+        ->selectRaw('id_pelaporan, COUNT(*) as total')
+        ->whereHas('tanggapanUmpanBalik')
+        ->where('id_pengawas', Auth::user()->id)
+        ->groupBy('id_pelaporan');
+
+         // Apply the year filter
+         if ($pengawas !== 'all') {
+            $query->where('id_pengawas', $pengawas);
+        }
+    
+
+         // Apply the month and year filters on the related rencanakerja table
+    $query->whereHas('rencanakerja', function ($q) use ($month, $year) {
+        if ($month !== 'all') {
+            $q->where('bulan', $month);
+        }
+        if ($year !== 'all') {
+            $q->where('tahun_ajaran', $year);
+        }
+    });
+
+         // Get the results
+         $data = $query->get()
+         ->map(function ($item) {
+             return [
+                'pengawas' => $item->rencanakerja ? $item->rencanakerja->nama_program_kerja : 'Unknown',
+                'total' => $item->total
+             ];
+         });
+         return response()->json($data);
+    }
+
+    public function dashboard(){
+        $currentMonth = date('n'); // Numeric representation of the current month (1-12)
+        $currentYear = date('Y');  // Current year
+        $years = range($currentYear - 5, $currentYear + 5);
+         $months = [];
+        
+        // Array of month names in Indonesian
+        $monthNamesIndo = [
+            1 => 'Januari', 
+            2 => 'Februari', 
+            3 => 'Maret', 
+            4 => 'April', 
+            5 => 'Mei', 
+            6 => 'Juni', 
+            7 => 'Juli', 
+            8 => 'Agustus', 
+            9 => 'September', 
+            10 => 'Oktober', 
+            11 => 'November', 
+            12 => 'Desember'
+        ];
+        
+        // Generate the current and next 11 months in Indonesian
+        for ($i = 0; $i < 12; $i++) {
+            $timestamp = strtotime("+$i month");
+            $monthNumber = date('n', $timestamp);
+            $months[] = [
+                'value' => $monthNumber,                // Month number (1-12)
+                'name' => $monthNamesIndo[$monthNumber] // Full month name in Indonesian
+            ];
+        }
+
+        return view('dashboard_pengawas.dashboard',
+        compact(
+            'months',
+            'currentYear',    
+            'years'
+            )
+        );
+
+
+    }
+
+      // spider web
+      public function getSpiderWebDataPengawas(Request $request)
+      {
+
+          // Define the query to calculate averages
+          $query = TanggapanUmpanbalikT::selectRaw(
+              'AVG(
+                  CASE jawaban_5
+                      WHEN "Sangat Baik" THEN 4
+                      WHEN "Baik" THEN 3
+                      WHEN "Cukup" THEN 2
+                      WHEN "Kurang" THEN 1
+                      WHEN "Sangat Kurang" THEN 0
+                  END
+              ) as kemampuan_berinteraksi, 
+              AVG(
+                  CASE jawaban_6
+                      WHEN "Sangat Baik" THEN 4
+                      WHEN "Baik" THEN 3
+                      WHEN "Cukup" THEN 2
+                      WHEN "Kurang" THEN 1
+                      WHEN "Sangat Kurang" THEN 0
+                  END
+              ) as menciptakan_suasana, 
+              AVG(
+                  CASE jawaban_7
+                      WHEN "Sangat Baik" THEN 4
+                      WHEN "Baik" THEN 3
+                      WHEN "Cukup" THEN 2
+                      WHEN "Kurang" THEN 1
+                      WHEN "Sangat Kurang" THEN 0
+                  END
+              ) as penguasaan_materi, 
+              AVG(
+                  CASE jawaban_8
+                      WHEN "Sangat Baik" THEN 4
+                      WHEN "Baik" THEN 3
+                      WHEN "Cukup" THEN 2
+                      WHEN "Kurang" THEN 1
+                      WHEN "Sangat Kurang" THEN 0
+                  END
+              ) as kemampuan_komunikasi,
+                AVG(
+                  CASE jawaban_9
+                      WHEN "Sangat Baik" THEN 4
+                      WHEN "Baik" THEN 3
+                      WHEN "Cukup" THEN 2
+                      WHEN "Kurang" THEN 1
+                      WHEN "Sangat Kurang" THEN 0
+                  END
+              ) as ketepatan_waktu'
+          )
+          ->join('umpanbalik_t as ut', 'ut.id', '=', 'tanggapan_umpanbalik_t.id_umpanbalik')
+          ->join('rencakakerja_t as rt', 'rt.id', '=', 'ut.id_pelaporan')
+          ->where('rt.id_pengawas', Auth::user()->id);
+      
+        
+      
+          // Execute the query to retrieve the averages
+          $data = $query->first();
+      
+          return response()->json($data);
+      }
+
+      public function chartTerkonfirmasiPengawas(Request $request)
+    {
+        $month = $request->input('bln', 'all');
+        $year = $request->input('tahun', 'all');
+
+        $query = UmpanbalikT::with('pengawasnama','tanggapanUmpanBalik','rencanakerja')
+        ->whereHas('tanggapanUmpanBalik') // hanya ambil yang sudah ada tanggapan
+        ->selectRaw('id_pengawas, COUNT(*) as total')
+        ->where('id_pengawas',Auth::user()->id)
+        ->groupBy('id_pengawas');
+                // Apply the month and year filters on the related rencanakerja table
+        $query->whereHas('rencanakerja', function ($q) use ($month, $year) {
+            if ($month !== 'all') {
+                $q->where('bulan', $month);
+            }
+            if ($year !== 'all') {
+                $q->where('tahun_ajaran', $year);
+            }
+        });
+
+        // Get the results
+        $data = $query->get()
+            ->map(function ($item) {
+                return [
+                    'pengawas' => $item->pengawasnama ? $item->pengawasnama->name : 'Unknown',
+                    'total' => $item->total
+                ];
+            });
+
+        // Return the data as JSON
+        return response()->json($data); // Return JSON data for use in the view
+    }
+
+     // chartDataRaportPendidikan
+     public function chartDataRaportPendidikan(Request $request)
+     {
+         $month = $request->input('bln', 'all');
+         $year = $request->input('tahun', 'all');
+ 
+         $query = RencanaKerjaT::with('aspekprogram')
+         ->selectRaw('aspekprogram_id, COUNT(*) as total')
+         ->where('id_pengawas',Auth::user()->id)
+         ->groupBy('aspekprogram_id');
+ 
+         // Apply the month filter
+         if ($month !== 'all') {
+             $query->where('bulan', $month);
+         }
+ 
+         // Apply the year filter
+         if ($year !== 'all') {
+             $query->where('tahun_ajaran', $year);
+         }
+ 
+         // Get the results
+         $data = $query->get()
+             ->map(function ($item) {
+                 return [
+                     'aspekprogram' => $item->aspekprogram ? $item->aspekprogram->nama : 'Unknown',
+                     'total' => $item->total
+                 ];
+             });
+ 
+         // Return the data as JSON
+         return response()->json($data); // Return JSON data for use in the view
+     }
+
+      // chart pie
+    public function chartpie(Request $request)
+    {
+        $pengawas = $request->input('pengawas', 'all');
+    
+        // Buat query untuk menghitung jumlah masing-masing jenis jawaban di jawaban_4
+        $query = TanggapanUmpanbalikT::selectRaw("
+                COUNT(CASE WHEN jawaban_4 = 'Ya, melakukan pendampingan di Sekolah' THEN 1 END) as sekolah,
+                COUNT(CASE WHEN jawaban_4 = 'Ya, melakukan pendampingan secara virtual' THEN 1 END) as by_virtual,
+                COUNT(CASE WHEN jawaban_4 = 'Ya, pendampingan digabungkan dengan sekolah lain' THEN 1 END) as gabungan,
+                COUNT(CASE WHEN jawaban_4 = 'Tidak melakukan pendampingan' THEN 1 END) as tidak
+            ")
+            ->join('umpanbalik_t as ut', 'ut.id', '=', 'tanggapan_umpanbalik_t.id_umpanbalik')
+            ->join('rencakakerja_t as rt', 'rt.id', '=', 'ut.id_pelaporan')
+            ->where('rt.id_pengawas',Auth::user()->id);
+    
+        // Tambahkan filter untuk pengawas jika ada
+        // if ($pengawas !== 'all') {
+        //     $query->where('rt.id_pengawas', $pengawas);
+        // }
+    
+        // Ambil hasil dan bentuk ulang data untuk output JSON
+        $data = $query->first(); // Mengambil hasil sebagai satu baris karena kita hanya menghitung jumlah
+    
+        $result = [
+            [
+                'jawaban' => 'Hadir',
+                'total' => $data->sekolah,
+            ],
+            [
+                'jawaban' => 'Hadir Virtual',
+                'total' => $data->by_virtual,
+            ],
+            [
+                'jawaban' => 'Hadir Dikumpulkan',
+                'total' => $data->gabungan,
+            ],
+            [
+                'jawaban' => 'Tidak Hadir',
+                'total' => $data->tidak,
+            ],
+        ];
+    
+        return response()->json($result);
+    }
+
 
 }

@@ -16,7 +16,7 @@
                 <div data-i18n="Profile">Dashboard</div>
             </a>
         </li>
-        @if (Auth::user()->role == 'Super Admin')
+        @if (Auth::user()->role == 'Super Admin' || Auth::user()->role == 'Stakeholder')
 
           <!-- master data -->
           <li class="menu-item {{ ( request()->is('superadmin/mastertupoksi*') || request()->is('superadmin/jenisprogram*')  || request()->is('superadmin/aspekprogram*')   ) ? 'active open' : '' }}">

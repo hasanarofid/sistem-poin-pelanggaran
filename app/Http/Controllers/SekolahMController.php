@@ -49,11 +49,16 @@ class SekolahMController extends Controller
             return Datatables::of($post)
                     ->addIndexColumn()
                     ->addColumn('action', function($row){
-   
-                        $btn = '<a href="'.route('sekolah.edit',$row->id).'" data-toggle="tooltip"  class="edit btn btn-primary btn-sm editPost">Edit</a>';
-                        $btn = $btn.' <a href="'.route('sekolah.hapus',$row->id).'" data-toggle="tooltip" data-toggle="modal" data-target="#confirmDeleteModal"    data-original-title="Delete" class="btn btn-danger btn-sm deletePost">Delete</a>';
- 
-                         return $btn;
+                        $user = Auth::user();
+                        if ($user && $user->role == 'Super Admin') {
+                            $btn = '<a href="'.route('sekolah.edit',$row->id).'" data-toggle="tooltip"  class="edit btn btn-primary btn-sm editPost">Edit</a>';
+                            $btn = $btn.' <a href="'.route('sekolah.hapus',$row->id).'" data-toggle="tooltip" data-toggle="modal" data-target="#confirmDeleteModal"    data-original-title="Delete" class="btn btn-danger btn-sm deletePost">Delete</a>';
+     
+                             return $btn;
+                        } else {
+                            return ''; // Tidak menampilkan tombol aksi jika bukan Super Admin
+                        }
+                       
                  })
                     ->rawColumns(['action'])
                     ->make(true);

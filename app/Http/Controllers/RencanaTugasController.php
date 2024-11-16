@@ -121,9 +121,16 @@ class RencanaTugasController extends Controller
                         : '<span class="badge bg-label-danger m-1">Belum Kirim WA Blast</span>';
                 })
                 ->addColumn('action', function($row) {
-                    return '<a id="sendWaButton-' . $row->id . '" onclick="kirimWaBlast(' . $row->id . ')" class="btn btn-sm bg-success text-white">
-                                <i class="fa fa-envelope"></i> Kirim Wa
-                            </a>';
+                    $user = Auth::user();
+                    if ($user && $user->role == 'Super Admin') {
+                        return '<a id="sendWaButton-' . $row->id . '" onclick="kirimWaBlast(' . $row->id . ')" class="btn btn-sm bg-success text-white">
+                        <i class="fa fa-envelope"></i> Kirim Wa
+                    </a>';
+                    } else {
+                        return ''; // Tidak menampilkan tombol aksi jika bukan Super Admin
+                    }
+                   
+                    
                 })
                 ->rawColumns(['pengawas', 'nama_kategori', 'nama_jenis', 'nama_aspek', 'nama_sekolah', 'status', 'action'])
                 ->make(true);

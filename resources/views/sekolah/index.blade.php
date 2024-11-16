@@ -14,11 +14,13 @@
                               <h6 class="mb-0">Tabel  Sekolah</h6>
                           </div>
                           <div class="col-6 d-flex justify-content-end">
+                            @if (Auth::user()->role == 'Super Admin')
                             <div class="btn-group" role="group" aria-label="Basic example">
                               <a  class="btn btn-sm bg-primary text-white " href="{{  route('sekolah.add')  }}"><i class="fas fa-plus" aria-hidden="true"></i> Add </a>
                               <a  class="btn btn-sm bg-info text-white" href="{{  route('sekolah.import')  }}" >  <i class="fa fa-file-excel-o" aria-hidden="true"></i> Import</a>
                               <a class="btn btn-sm  bg-success text-white " target="_blank" href="{{  route('sekolah.excelcontoh')  }}"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Contoh</a>
                            </div>
+                           @endif
                           </div>
                       </div>
                   </div>

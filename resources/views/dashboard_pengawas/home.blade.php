@@ -182,21 +182,119 @@
           </div>
           <!--/ Profile Overview -->
         </div>
-        <div class="col-xl-6 col-lg-6 col-md-6">
-          <!-- Activity Timeline -->
-          <div class="card card-action mb-4">
-            <div class="card-header align-items-center">
-              <h5 class="card-action-title mb-0">Kinerja</h5>
-            </div>
-            <div class="card-body pb-0">
+        <div class="col-xl-6 col-lg-10 col-md-10 mb-3">
+          <h5 class="title">Kinerja</h5>
+          
               {{-- chart --}}
+              <div class="col-lg-12 mb-3">
+                <div class="card">
+                  <div class="card-header pb-0 p-1">
+                    <h6 class="mb-0">Grafik Jumlah Rencana per bulan </h6>
+                  </div>
+                      <div class="card-body p-3">
+                          <div class="row mb-3">
+                             
+  
+                              <div class="col-md-6">
+                                  <label for="filter-pengawas">Filter Bulan:</label>
+                                  <select
+                                  id="filter-bln"
+                                  name="bln"
+                                  class="select2 form-select"
+                                  required
+                              >
+                                  <option value="all">All</option> <!-- Option to show all records -->
+                                  @foreach($months2 as $month)
+                                      <option value="{{ $month['name'] }}">
+                                          {{ $month['name'] }}
+                                      </option>
+                                  @endforeach
+                              </select>
+                              
+                              </div>
+
+                              <div class="col-md-6">
+                                  <label for="filter-tahun">Filter Tahun:</label>
+                                  <select
+                                      id="filter-tahun"
+                                      name="tahun"
+                                      class="select2 form-select"
+                                      required
+                                  >
+                                      <option value="all">All</option> <!-- Option to show all records -->
+                                      @foreach($years2 as $year)
+                                          <option value="{{ $year }}" {{ $year == $currentYear2 ? 'selected' : '' }}>
+                                              {{ $year }}
+                                          </option>
+                                      @endforeach
+                                  </select>
+                                  
+                              
+                              </div>
+                              
+                          </div>
+                          <canvas id="pengawasChart"></canvas> <!-- Canvas for the chart -->
+                      </div>
+                </div>
+              </div>
+
+
+              <div class="col-lg-12">
+                <div class="card">
+                  <div class="card-header pb-0 p-1">
+                    <h6 class="mb-0">Grafik Umpan Balik  direspon per Bulan </h6>
+                  </div>
+                      <div class="card-body p-3">
+                        <div class="row mb-2">
+
+                            <div class="col-md-6 ">
+                                <label for="filter-pengawas">Bulan:</label>
+                                <select
+                                id="filter-bln-last"
+                                name="bln"
+                                class="select2 form-select"
+                                required
+                            >
+                                <option value="all">All</option> <!-- Option to show all records -->
+                                @foreach($months2 as $month)
+                                    <option value="{{ $month['name'] }}">
+                                        {{ $month['name'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="filter-tahun-last">Filter Tahun:</label>
+                                <select
+                                    id="filter-tahun-last"
+                                    name="tahun"
+                                    class="select2 form-select"
+                                    required
+                                >
+                                    <option value="all">All</option> <!-- Option to show all records -->
+                                    @foreach($years2 as $year)
+                                        <option value="{{ $year }}" {{ $year == $currentYear2 ? 'selected' : '' }}>
+                                            {{ $year }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                
+                            
+                            </div>
+                          
+                        
+                            
+                            
+                        </div>
+                        <canvas id="umpanbalikChart"></canvas> <!-- Canvas for the chart -->
+                      </div>
+                </div>
+            </div>
 
 
               {{-- end chart --}}
-            </div>
-          </div>
-          <!--/ Activity Timeline -->
-         
         
         </div>
       </div>
@@ -209,3 +307,189 @@
     <div class="content-backdrop fade"></div>
   </div>
 @endsection
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library -->
+@section('script')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+        
+        $('#filter-bln').select2();
+        $('#filter-tahun').select2();
+   
+        let pengawasChartInstance = null;
+
+function fetchChartData(month = 'all', year = 'all') {
+    fetch(`{{ route('pengawas.chartData') }}?bln=${month}&tahun=${year}`)
+        .then(response => response.json())
+        .then(data => {
+            // Check if data is empty
+            if (!data || data.length === 0) {
+                console.warn('No data available for the chart');
+                
+                // Destroy the existing chart instance if it exists
+                if (pengawasChartInstance) {
+                    pengawasChartInstance.destroy();
+                }
+
+                // Display a "No data available" message in the canvas
+                const ctx = document.getElementById('pengawasChart').getContext('2d');
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear previous content
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data available for the chart', ctx.canvas.width / 2, ctx.canvas.height / 2);
+
+                return; // Exit early as there’s no data to display in the chart
+            }
+
+            const pengawasNames = data.map(item => item.pengawas);
+            const rencanaCounts = data.map(item => item.total);
+
+            // Destroy the existing chart instance if it exists
+            if (pengawasChartInstance) {
+                pengawasChartInstance.destroy();
+            }
+
+            // Set up the chart and assign it to pengawasChartInstance
+            const ctx = document.getElementById('pengawasChart').getContext('2d');
+            pengawasChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: pengawasNames,
+                    datasets: [{
+                        label: 'Jumlah Rencana Kerja',
+                        data: rencanaCounts,
+                        backgroundColor: [
+
+                            'rgba(153, 102, 255, 0.2)'
+                        ],
+                        borderColor: [
+
+                             'rgba(153, 102, 255, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Jumlah Rencana Kerja' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Pengawas' }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching chart data:', error));
+}
+
+// Initial chart load with no filters (all data)
+fetchChartData();
+
+// Event listener for filter changes
+$('#filter-bln, #filter-tahun').change(function() {
+    const month = $('#filter-bln').val();
+    const year = $('#filter-tahun').val();
+    fetchChartData(month, year);
+});
+
+$('#filter-bln-last').select2();
+$('#filter-tahun-last').select2();
+$('#filter-pengawas').select2();
+let umpanbalikChartInstance = null;
+
+function fetchChartData2(month = 'all', year = 'all') {
+    fetch(`{{ route('pengawas.chartData2') }}?bln=${month}&tahun=${year}`)
+        .then(response => response.json())
+        .then(data => {
+            // Check if data is empty
+            if (!data || data.length === 0) {
+                console.warn('No data available for the chart');
+                
+                // Destroy the existing chart instance if it exists
+                if (umpanbalikChartInstance) {
+                    umpanbalikChartInstance.destroy();
+                }
+
+                // Display a "No data available" message in the canvas
+                const ctx = document.getElementById('umpanbalikChart').getContext('2d');
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear previous content
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('No data available for the chart', ctx.canvas.width / 2, ctx.canvas.height / 2);
+
+                return; // Exit early as there’s no data to display in the chart
+            }
+
+            const pengawasNames = data.map(item => item.pengawas);
+            const rencanaCounts = data.map(item => item.total);
+
+            // Destroy the existing chart instance if it exists
+            if (umpanbalikChartInstance) {
+                umpanbalikChartInstance.destroy();
+            }
+
+            // Set up the chart and assign it to umpanbalikChartInstance
+            const ctx = document.getElementById('umpanbalikChart').getContext('2d');
+            umpanbalikChartInstance = new Chart(ctx, {
+                type: 'bar',  // Keep type as 'bar'
+                data: {
+                    labels: pengawasNames,
+                    datasets: [{
+                        label: 'Jumlah Umpan Balik',
+                        data: rencanaCounts,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y', // This makes the bar chart horizontal
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: false,
+                                text: 'Rencana Kerja'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Jumlah Umpan Balik'
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching chart data:', error));
+}
+
+
+// Initial chart load with no filters (all data)
+fetchChartData2();
+
+// Event listener for filter changes
+$('#filter-bln-last, #filter-tahun-last').change(function() {
+    
+    const month = $('#filter-bln-last').val();
+    const year = $('#filter-tahun-last').val();
+    fetchChartData2(month, year);
+});
+
+});
+
+
+
+</script>
+

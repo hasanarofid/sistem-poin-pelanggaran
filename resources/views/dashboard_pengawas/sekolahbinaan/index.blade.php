@@ -37,6 +37,8 @@
                     <tr>
                       <th>No</th>
                       <th>Sekolah</th>
+                      <th>Nama Kepala Sekolah</th>
+                      <th>No Telp/whatsapp</th>
                     </tr>                  
                   </thead>
                   <tbody>
@@ -44,9 +46,12 @@
                         $no = 1;
                     @endphp
                     @foreach ($binaan as $sekolah)
+                    {{-- {{  dd($sekolah->sekolah->kepalaSekolahSatu) }} --}}
                       <tr>
                         <td>{{ $no++ }}</td>
                         <td>{{ $sekolah->sekolah->nama_sekolah }} </td>
+                        <td>{{ !empty( $sekolah->sekolah->kepalaSekolahSatu->nama) ?  $sekolah->sekolah->kepalaSekolahSatu->nama : '-' }} </td>
+                        <td>{{ !empty($sekolah->sekolah->kepalaSekolahSatu->no_telp) ? $sekolah->sekolah->kepalaSekolahSatu->no_telp : '-' }} </td>
                       </tr>
                     @endforeach
                   </tbody>

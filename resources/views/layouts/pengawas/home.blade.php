@@ -105,9 +105,19 @@ lang="{{ str_replace('_', '-', app()->getLocale()) }}"
                 </a>
               </li>
               <!-- Dashboards -->
-        
-              <!-- Layouts -->
+              <li class="menu-item {{ (request()->is('sekolahbinaan')) ? 'active' : '' }}">
+                <a href="{{ route('pengawas.sekolahbinaan') }}" class="menu-link">
+                  <i class="menu-icon tf-icons ti ti-layout-sidebar"></i>
+                  <div data-i18n="Data Sekolah Binaan">Data Sekolah Binaan</div>
+                </a>
+              </li>
+              {{-- <!-- Layouts -->
               <li class="menu-item {{ ( request()->is('sekolahbinaan') || request()->is('datapengawas')   ) ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                  <i class="menu-icon tf-icons ti ti-layout-sidebar"></i>
+                  <div data-i18n="Master Data">Master Data</div>
+                </a>
+
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                   <i class="menu-icon tf-icons ti ti-layout-sidebar"></i>
                   <div data-i18n="Master Data">Master Data</div>
@@ -125,7 +135,7 @@ lang="{{ str_replace('_', '-', app()->getLocale()) }}"
                     </a>
                   </li>
                 </ul>
-              </li>
+              </li> --}}
   
               <!-- Apps & Pages -->
               <li class="menu-header small text-uppercase">

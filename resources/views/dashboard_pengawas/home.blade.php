@@ -125,7 +125,7 @@
                       @endphp
                       @foreach ($listsekolahdilayani as $item)
                       @php
-                      $sekolahIds = explode(',', $item->rencanakerja->sekolah_id);
+                      $sekolahIds = explode(',', $item->sekolah_id);
                       $sekolahs = count($sekolahIds);
 
                 @endphp
@@ -133,7 +133,7 @@
                       $sekolahdilayani += count($sekolahIds); --}}
                       <tr>
                         <td> {{ $no++}} </td>
-                        <td> {{ $item->rencanakerja->nama_program_kerja}} </td>
+                        <td> {{ $item->nama_program_kerja}} </td>
                         <td>{{ $sekolahs }}</td>
                       </tr>
                       @endforeach
@@ -163,7 +163,7 @@
                   @endphp
                   @foreach ($listsekolahdilayani as $item)
                   @php
-                        $sekolahIds = explode(',', $item->rencanakerja->sekolah_id);
+                        $sekolahIds = explode(',', $item->sekolah_id);
                         $sekolahs = App\SekolahM::whereIn('id', $sekolahIds)->get();
 
                   @endphp
@@ -189,50 +189,10 @@
               <div class="col-lg-12 mb-3">
                 <div class="card">
                   <div class="card-header pb-0 p-1">
-                    <h6 class="mb-0">Grafik Jumlah Rencana per bulan </h6>
+                    <h6 class="mb-0">Grafik Jumlah Rencana 6 bulan terakhir </h6>
                   </div>
                       <div class="card-body p-3">
-                          <div class="row mb-3">
-                             
-  
-                              <div class="col-md-6">
-                                  <label for="filter-pengawas">Filter Bulan:</label>
-                                  <select
-                                  id="filter-bln"
-                                  name="bln"
-                                  class="select2 form-select"
-                                  required
-                              >
-                                  <option value="all">All</option> <!-- Option to show all records -->
-                                  @foreach($months2 as $month)
-                                      <option value="{{ $month['name'] }}">
-                                          {{ $month['name'] }}
-                                      </option>
-                                  @endforeach
-                              </select>
-                              
-                              </div>
-
-                              <div class="col-md-6">
-                                  <label for="filter-tahun">Filter Tahun:</label>
-                                  <select
-                                      id="filter-tahun"
-                                      name="tahun"
-                                      class="select2 form-select"
-                                      required
-                                  >
-                                      <option value="all">All</option> <!-- Option to show all records -->
-                                      @foreach($years2 as $year)
-                                          <option value="{{ $year }}" {{ $year == $currentYear2 ? 'selected' : '' }}>
-                                              {{ $year }}
-                                          </option>
-                                      @endforeach
-                                  </select>
-                                  
-                              
-                              </div>
-                              
-                          </div>
+                        
                           <canvas id="pengawasChart"></canvas> <!-- Canvas for the chart -->
                       </div>
                 </div>
@@ -242,52 +202,10 @@
               <div class="col-lg-12">
                 <div class="card">
                   <div class="card-header pb-0 p-1">
-                    <h6 class="mb-0">Grafik Umpan Balik  direspon per Bulan </h6>
+                    <h6 class="mb-0">Grafik Umpan Balik  direspon 6 bulan terakhir </h6>
                   </div>
                       <div class="card-body p-3">
-                        <div class="row mb-2">
-
-                            <div class="col-md-6 ">
-                                <label for="filter-pengawas">Bulan:</label>
-                                <select
-                                id="filter-bln-last"
-                                name="bln"
-                                class="select2 form-select"
-                                required
-                            >
-                                <option value="all">All</option> <!-- Option to show all records -->
-                                @foreach($months2 as $month)
-                                    <option value="{{ $month['name'] }}">
-                                        {{ $month['name'] }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="filter-tahun-last">Filter Tahun:</label>
-                                <select
-                                    id="filter-tahun-last"
-                                    name="tahun"
-                                    class="select2 form-select"
-                                    required
-                                >
-                                    <option value="all">All</option> <!-- Option to show all records -->
-                                    @foreach($years2 as $year)
-                                        <option value="{{ $year }}" {{ $year == $currentYear2 ? 'selected' : '' }}>
-                                            {{ $year }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                
-                            
-                            </div>
-                          
-                        
-                            
-                            
-                        </div>
+                       
                         <canvas id="umpanbalikChart"></canvas> <!-- Canvas for the chart -->
                       </div>
                 </div>
@@ -319,73 +237,69 @@ document.addEventListener('DOMContentLoaded', function() {
    
         let pengawasChartInstance = null;
 
-function fetchChartData(month = 'all', year = 'all') {
-    fetch(`{{ route('pengawas.chartData') }}?bln=${month}&tahun=${year}`)
-        .then(response => response.json())
-        .then(data => {
-            // Check if data is empty
-            if (!data || data.length === 0) {
-                console.warn('No data available for the chart');
-                
+        function fetchChartData(month = 'all', year = 'all') {
+        fetch(`{{ route('pengawas.chartData') }}?bln=${month}&tahun=${year}`)
+            .then(response => response.json())
+            .then(data => {
+                // Check if data is empty
+                if (!data || data.length === 0) {
+                    console.warn('No data available for the chart');
+                    
+                    // Destroy the existing chart instance if it exists
+                    if (pengawasChartInstance) {
+                        pengawasChartInstance.destroy();
+                    }
+
+                    // Display a "No data available" message in the canvas
+                    const ctx = document.getElementById('pengawasChart').getContext('2d');
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear previous content
+                    ctx.font = '16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('No data available for the chart', ctx.canvas.width / 2, ctx.canvas.height / 2);
+
+                    return; // Exit early as there’s no data to display in the chart
+                }
+
+                // Use labels and datasets from response data
+                const labels = data.labels; // Nama bulan dalam bahasa Indonesia
+                const rencanaCounts = data.datasets[0].data; // Data jumlah rencana
+
                 // Destroy the existing chart instance if it exists
                 if (pengawasChartInstance) {
                     pengawasChartInstance.destroy();
                 }
 
-                // Display a "No data available" message in the canvas
+                // Set up the chart and assign it to pengawasChartInstance
                 const ctx = document.getElementById('pengawasChart').getContext('2d');
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear previous content
-                ctx.font = '16px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText('No data available for the chart', ctx.canvas.width / 2, ctx.canvas.height / 2);
-
-                return; // Exit early as there’s no data to display in the chart
-            }
-
-            const pengawasNames = data.map(item => item.pengawas);
-            const rencanaCounts = data.map(item => item.total);
-
-            // Destroy the existing chart instance if it exists
-            if (pengawasChartInstance) {
-                pengawasChartInstance.destroy();
-            }
-
-            // Set up the chart and assign it to pengawasChartInstance
-            const ctx = document.getElementById('pengawasChart').getContext('2d');
-            pengawasChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: pengawasNames,
-                    datasets: [{
-                        label: 'Jumlah Rencana Kerja',
-                        data: rencanaCounts,
-                        backgroundColor: [
-
-                            'rgba(153, 102, 255, 0.2)'
-                        ],
-                        borderColor: [
-
-                             'rgba(153, 102, 255, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Jumlah Rencana Kerja' }
-                        },
-                        x: {
-                            title: { display: true, text: 'Pengawas' }
+                pengawasChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels, // Nama bulan
+                        datasets: [{
+                            label: 'Jumlah Rencana Kerja',
+                            data: rencanaCounts, // Data jumlah rencana
+                            backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: { display: true, text: 'Jumlah Rencana Kerja' }
+                            },
+                            x: {
+                                title: { display: true, text: 'Bulan' }
+                            }
                         }
                     }
-                }
-            });
-        })
-        .catch(error => console.error('Error fetching chart data:', error));
-}
+                });
+            })
+            .catch(error => console.error('Error fetching chart data:', error));
+    }
+
 
 // Initial chart load with no filters (all data)
 fetchChartData();
@@ -402,12 +316,12 @@ $('#filter-tahun-last').select2();
 $('#filter-pengawas').select2();
 let umpanbalikChartInstance = null;
 
-function fetchChartData2(month = 'all', year = 'all') {
-    fetch(`{{ route('pengawas.chartData2') }}?bln=${month}&tahun=${year}`)
+function fetchChartData2() {
+    fetch(`{{ route('pengawas.chartData2') }}`)
         .then(response => response.json())
         .then(data => {
-            // Check if data is empty
-            if (!data || data.length === 0) {
+            // Check if data is empty or not properly structured
+            if (!data || data.datasets.length === 0) {
                 console.warn('No data available for the chart');
                 
                 // Destroy the existing chart instance if it exists
@@ -425,8 +339,9 @@ function fetchChartData2(month = 'all', year = 'all') {
                 return; // Exit early as there’s no data to display in the chart
             }
 
-            const pengawasNames = data.map(item => item.pengawas);
-            const rencanaCounts = data.map(item => item.total);
+            // Assuming `data` has the necessary structure for labels and datasets
+            const labels = data.labels || []; // The months or other labels
+            const rencanaCounts = data.datasets[0].data || []; // The data for the bars
 
             // Destroy the existing chart instance if it exists
             if (umpanbalikChartInstance) {
@@ -438,10 +353,10 @@ function fetchChartData2(month = 'all', year = 'all') {
             umpanbalikChartInstance = new Chart(ctx, {
                 type: 'bar',  // Keep type as 'bar'
                 data: {
-                    labels: pengawasNames,
+                    labels: labels,  // Use dynamic labels (months or other categories)
                     datasets: [{
                         label: 'Jumlah Umpan Balik',
-                        data: rencanaCounts,
+                        data: rencanaCounts,  // The actual data values
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.2)'
                         ],
@@ -458,8 +373,8 @@ function fetchChartData2(month = 'all', year = 'all') {
                         y: {
                             beginAtZero: true,
                             title: {
-                                display: false,
-                                text: 'Rencana Kerja'
+                                display: true,
+                                text: 'Pengawas'  // Title for the Y-axis
                             }
                         },
                         x: {
@@ -472,12 +387,21 @@ function fetchChartData2(month = 'all', year = 'all') {
                 }
             });
         })
-        .catch(error => console.error('Error fetching chart data:', error));
-}
+        .catch(error => {
+            console.error('Error fetching chart data:', error);
 
+            // Handle the error gracefully
+            const ctx = document.getElementById('umpanbalikChart').getContext('2d');
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Error loading data', ctx.canvas.width / 2, ctx.canvas.height / 2);
+        });
+}
 
 // Initial chart load with no filters (all data)
 fetchChartData2();
+
 
 // Event listener for filter changes
 $('#filter-bln-last, #filter-tahun-last').change(function() {

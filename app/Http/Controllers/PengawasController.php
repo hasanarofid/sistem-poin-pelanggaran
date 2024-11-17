@@ -50,26 +50,33 @@ class PengawasController extends Controller
             ->where('id_pengawas',Auth::user()->id)
             ->count();
 
+            $listsekolahdilayani = RencanaKerjaT::where('bulan',$bulanini)
+            ->where('tahun_ajaran',$tahunini)
+            ->where('id_pengawas',Auth::user()->id)
+            ->get();
+
 
 
          
 
-                $listsekolahdilayani = UmpanbalikT::with('pengawasnama', 'rencanakerja')
-                ->whereHas('pengawasnama', function ($query) {
-                    $query->where('id_pengawas', Auth::user()->id);
-                })
-                ->whereHas('tanggapanUmpanBalik')
-                ->whereHas('rencanakerja', function ($query) use ($bulanini, $tahunini) {
-                    $query->where('bulan', $bulanini)
-                        ->where('tahun_ajaran', $tahunini);
-                })
-                ->get();
+                // $listsekolahdilayani = UmpanbalikT::with('pengawasnama', 'rencanakerja')
+                // ->whereHas('pengawasnama', function ($query) {
+                //     $query->where('id_pengawas', Auth::user()->id);
+                // })
+                // ->whereHas('tanggapanUmpanBalik')
+                // ->whereHas('rencanakerja', function ($query) use ($bulanini, $tahunini) {
+                //     $query->where('bulan', $bulanini)
+                //         ->where('tahun_ajaran', $tahunini);
+                // })
+                // ->get();
 
                 $sekolahdilayani = 0;
                 foreach ($listsekolahdilayani as $value) {
-                    $sekolahIds = explode(',', $value->rencanakerja->sekolah_id);
+                    // $sekolahIds = explode(',', $value->rencanakerja->sekolah_id);
+                    $sekolahIds = explode(',', $value->sekolah_id);
                     $sekolahdilayani += count($sekolahIds);
                 }
+                // dd($sekolahdilayani);
               
 
                 // dd($sekolahdilayani);
@@ -188,76 +195,178 @@ class PengawasController extends Controller
 
 
     public function chartData(Request $request)
-    {
-        $month = $request->input('bln', 'all');
-        $year = $request->input('tahun', 'all');
+{
+    $month = $request->input('bln', 'all');
+    $year = $request->input('tahun', 'all');
 
-        $query = RencanaKerjaT::with('pengawasnama')
-        ->selectRaw('id_pengawas, COUNT(*) as total')
-        ->where('id_pengawas', Auth::user()->id)
-        ->groupBy('id_pengawas');
+    // Daftar nama bulan dalam bahasa Indonesia
+    $monthNamesIndo2 = [
+        1 => 'Januari', 
+        2 => 'Februari', 
+        3 => 'Maret', 
+        4 => 'April', 
+        5 => 'Mei', 
+        6 => 'Juni', 
+        7 => 'Juli', 
+        8 => 'Agustus', 
+        9 => 'September', 
+        10 => 'Oktober', 
+        11 => 'November', 
+        12 => 'Desember'
+    ];
 
-        // Apply the month filter
-        if ($month !== 'all') {
-            $query->where('bulan', $month);
-        }
-
-        // Apply the year filter
-        if ($year !== 'all') {
-            $query->where('tahun_ajaran', $year);
-        }
-
-        // Get the results
-        $data = $query->get()
-            ->map(function ($item) {
-                return [
-                    'pengawas' => $item->pengawasnama ? $item->pengawasnama->name : 'Unknown',
-                    'total' => $item->total
-                ];
-            });
-
-        // Return the data as JSON
-        return response()->json($data); // Return JSON data for use in the view
+    // Hitung 6 bulan terakhir
+    $dates = [];
+    for ($i = 0; $i < 6; $i++) {
+        $date = now()->subMonths($i);
+        $dates[] = [
+            'month' => $date->month,
+            'month_name' => $monthNamesIndo2[$date->month],
+            'year' => $date->year,
+            'total' => 0 // Default value to 0
+        ];
     }
+
+    // Query data berdasarkan bulan dan tahun untuk 6 bulan terakhir
+    $query = RencanaKerjaT::with('pengawasnama')
+        ->selectRaw('id_pengawas, bulan, tahun_ajaran, COUNT(*) as total')
+        ->where('id_pengawas', Auth::user()->id)
+        ->where(function($q) use ($dates) {
+            foreach ($dates as $date) {
+                $q->orWhere(function($subQuery) use ($date) {
+                    $subQuery->where('bulan', $date['month_name'])
+                             ->where('tahun_ajaran', $date['year']);
+                });
+            }
+        })
+        ->groupBy('id_pengawas', 'bulan', 'tahun_ajaran')
+        ->get();
+        // dd($query);
+
+    // Mapkan hasil query ke array $dates
+    foreach ($query as $item) {
+        foreach ($dates as &$date) {
+            if ($date['month_name'] == $item->bulan && $date['year'] == $item->tahun_ajaran) {
+                $date['total'] = $item->total;
+            }
+        }
+    }
+
+    // Buat data dalam format yang diperlukan oleh chart.js
+    $chartData = [
+        'labels' => array_column($dates, 'month_name'), // Nama bulan dalam bahasa Indonesia
+        'datasets' => [
+            [
+                'label' => 'Jumlah Rencana Kerja',
+                'data' => array_column($dates, 'total'), // Nilai total dari setiap bulan
+                'backgroundColor' => 'rgba(153, 102, 255, 0.2)',
+                'borderColor' => 'rgba(153, 102, 255, 1)',
+                'borderWidth' => 1
+            ]
+        ]
+    ];
+
+    return response()->json($chartData);
+}
+
 
 
     public function chartData2(Request $request)
     {
-        $month = $request->input('bln', 'all');
-        $year = $request->input('tahun', 'all');
-        $pengawas = $request->input('pengawas', 'all');
+       // Daftar nama bulan dalam bahasa Indonesia
+// Daftar nama bulan dalam bahasa Indonesia
+$monthNamesIndo2 = [
+    1 => 'Januari', 
+    2 => 'Februari', 
+    3 => 'Maret', 
+    4 => 'April', 
+    5 => 'Mei', 
+    6 => 'Juni', 
+    7 => 'Juli', 
+    8 => 'Agustus', 
+    9 => 'September', 
+    10 => 'Oktober', 
+    11 => 'November', 
+    12 => 'Desember'
+];
 
-        $query = UmpanbalikT::with('pengawasnama','rencanakerja')
-        ->selectRaw('id_pelaporan, COUNT(*) as total')
-        ->whereHas('tanggapanUmpanBalik')
-        ->where('id_pengawas', Auth::user()->id)
-        ->groupBy('id_pelaporan');
+// Hitung 6 bulan terakhir
+$dates = [];
+for ($i = 0; $i < 6; $i++) {
+    $date = now()->subMonths($i);
+    $dates[] = [
+        'month' => $date->month,
+        'month_name' => $monthNamesIndo2[$date->month],
+        'year' => $date->year,
+        'total' => 0 // Nilai default ke 0
+    ];
+}
+// Ambil 6 bulan terakhir berdasarkan created_at
+$startDate = now()->subMonths(5)->startOfMonth();
+$endDate = now()->endOfMonth();
 
-         // Apply the year filter
-         if ($pengawas !== 'all') {
-            $query->where('id_pengawas', $pengawas);
-        }
-    
+// Query utama
+$query = UmpanbalikT::with('pengawasnama', 'rencanakerja') // pastikan relasi rencanakerja sudah ada
+    ->selectRaw('id_pelaporan, rencakakerja_t.bulan, rencakakerja_t.tahun_ajaran, COUNT(*) as total') // Pastikan kolom bulan dan tahun_ajaran diambil dari tabel rencakakerja_t
+    ->join('rencakakerja_t', 'umpanbalik_t.id_pelaporan', '=', 'rencakakerja_t.id') // Join dengan tabel rencakakerja_t
+    ->join('tanggapan_umpanbalik_t', 'tanggapan_umpanbalik_t.id_umpanbalik', '=', 'umpanbalik_t.id') // Join dengan tabel rencakakerja_t
+    // ->whereHas('tanggapanUmpanBalik')
+    ->whereBetween('umpanbalik_t.created_at', [$startDate, $endDate])
+    ->where('umpanbalik_t.id_pengawas', Auth::user()->id)
+    // ->whereHas('rencanakerja', function($q) use ($dates) {
+    //     foreach ($dates as $date) {
+    //         $q->orWhere(function($subQuery) use ($date) {
+    //             $subQuery->where('rencakakerja_t.bulan', $date['month_name']) // Kolom bulan dari tabel rencakakerja_t
+    //                      ->where('rencakakerja_t.tahun_ajaran', $date['year']); // Kolom tahun_ajaran dari tabel rencakakerja_t
+    //         });
+    //     }
+    // })
+    ->groupBy('id_pelaporan', 'rencakakerja_t.bulan', 'rencakakerja_t.tahun_ajaran') // Pengelompokan berdasarkan bulan dan tahun_ajaran dari tabel rencanakerja_t
+    ->get();
 
-         // Apply the month and year filters on the related rencanakerja table
-    $query->whereHas('rencanakerja', function ($q) use ($month, $year) {
-        if ($month !== 'all') {
-            $q->where('bulan', $month);
+// Mapkan hasil query ke array $dates
+foreach ($query as $item) {
+    foreach ($dates as &$date) {
+        if ($date['month_name'] == $item->bulan && $date['year'] == $item->tahun_ajaran) {
+            $date['total'] = $item->total;
         }
-        if ($year !== 'all') {
-            $q->where('tahun_ajaran', $year);
-        }
-    });
+    }
+}
+
+// Buat data dalam format yang diperlukan oleh chart.js
+$chartData = [
+    'labels' => array_column($dates, 'month_name'), // Nama bulan dalam bahasa Indonesia
+    'datasets' => [
+        [
+            'label' => 'Jumlah Umpan Balik',
+            'data' => array_column($dates, 'total'), // Nilai total dari setiap bulan
+            'backgroundColor' => 'rgba(153, 102, 255, 0.2)',
+            'borderColor' => 'rgba(153, 102, 255, 1)',
+            'borderWidth' => 1
+        ]
+    ]
+];
+
+// Menambahkan data rencanakerja ke chart
+foreach ($query as $item) {
+    // Jika ada data untuk program kerja, tambahkan ke data chart
+    $chartData['datasets'][0]['rencanakerja'][] = $item->rencanakerja ? $item->rencanakerja->nama_program_kerja : 'Unknown';
+}
+
+return response()->json($chartData);
+
+
+
 
          // Get the results
-         $data = $query->get()
-         ->map(function ($item) {
-             return [
-                'pengawas' => $item->rencanakerja ? $item->rencanakerja->nama_program_kerja : 'Unknown',
-                'total' => $item->total
-             ];
-         });
-         return response()->json($data);
+        //  $data = $query->get()
+        //  ->map(function ($item) {
+        //      return [
+        //         'pengawas' => $item->rencanakerja ? $item->rencanakerja->nama_program_kerja : 'Unknown',
+        //         'total' => $item->total
+        //      ];
+        //  });
+        //  return response()->json($data);
     }
 
     public function dashboard(){
@@ -369,35 +478,113 @@ class PengawasController extends Controller
 
       public function chartTerkonfirmasiPengawas(Request $request)
     {
-        $month = $request->input('bln', 'all');
-        $year = $request->input('tahun', 'all');
+        $monthNamesIndo2 = [
+            1 => 'Januari', 
+            2 => 'Februari', 
+            3 => 'Maret', 
+            4 => 'April', 
+            5 => 'Mei', 
+            6 => 'Juni', 
+            7 => 'Juli', 
+            8 => 'Agustus', 
+            9 => 'September', 
+            10 => 'Oktober', 
+            11 => 'November', 
+            12 => 'Desember'
+        ];
+        
+        // Hitung 6 bulan terakhir
+        $dates = [];
+        for ($i = 0; $i < 6; $i++) {
+            $date = now()->subMonths($i);
+            $dates[] = [
+                'month' => $date->month,
+                'month_name' => $monthNamesIndo2[$date->month],
+                'year' => $date->year,
+                'total' => 0 // Nilai default ke 0
+            ];
+        }
+
 
         $query = UmpanbalikT::with('pengawasnama','tanggapanUmpanBalik','rencanakerja')
+         ->selectRaw('umpanbalik_t.id_pengawas, rencakakerja_t.bulan, rencakakerja_t.tahun_ajaran, COUNT(*) as total')
+        ->join('rencakakerja_t', 'umpanbalik_t.id_pelaporan', '=', 'rencakakerja_t.id')
         ->whereHas('tanggapanUmpanBalik') // hanya ambil yang sudah ada tanggapan
-        ->selectRaw('id_pengawas, COUNT(*) as total')
-        ->where('id_pengawas',Auth::user()->id)
-        ->groupBy('id_pengawas');
+        ->where('umpanbalik_t.id_pengawas',Auth::user()->id)
+         ->whereHas('rencanakerja', function($q) use ($dates) {
+            foreach ($dates as $date) {
+                $q->orWhere(function($subQuery) use ($date) {
+                    $subQuery->where('rencakakerja_t.bulan', $date['month_name']) // Kolom bulan dari tabel rencakakerja_t
+                             ->where('rencakakerja_t.tahun_ajaran', $date['year']); // Kolom tahun_ajaran dari tabel rencakakerja_t
+                });
+            }
+        })
+        ->groupBy('umpanbalik_t.id_pengawas', 'rencakakerja_t.bulan', 'rencakakerja_t.tahun_ajaran')
+        ->get();
+       
+        foreach ($query as $item) {
+            foreach ($dates as &$date) {
+                if ($date['month_name'] == $item->bulan && $date['year'] == $item->tahun_ajaran) {
+                    $date['total'] = $item->total;
+                }
+            }
+        }
+        
+        // Buat data dalam format yang diperlukan oleh chart.js
+        $chartData = [
+            'labels' => array_column($dates, 'month_name'), // Nama bulan dalam bahasa Indonesia
+            'datasets' => [
+                [
+                    'label' => 'Jumlah Umpan Balik',
+                    'data' => array_column($dates, 'total'), // Nilai total dari setiap bulan
+                    'backgroundColor' => 'rgba(153, 102, 255, 0.2)',
+                    'borderColor' => 'rgba(153, 102, 255, 1)',
+                    'borderWidth' => 1
+                ]
+            ]
+        ];
+        
+        // Menambahkan data rencanakerja ke chart
+        foreach ($query as $item) {
+            // Jika ada data untuk program kerja, tambahkan ke data chart
+            $chartData['datasets'][0]['pengawas'][] = $item->pengawasnama ? $item->pengawasnama->name : 'Unknown';
+        }
+        // dd($chartData);
+        // ->selectRaw('id_pelaporan, rencakakerja_t.bulan, rencakakerja_t.tahun_ajaran, COUNT(*) as total') // Pastikan kolom bulan dan tahun_ajaran diambil dari tabel rencakakerja_t
+        // ->join('rencakakerja_t', 'umpanbalik_t.id_pelaporan', '=', 'rencakakerja_t.id') // Join dengan tabel rencakakerja_t
+        // ->whereHas('tanggapanUmpanBalik')
+        // ->where('rencakakerja_t.id_pengawas', Auth::user()->id)
+        // ->whereHas('rencanakerja', function($q) use ($dates) {
+        //     foreach ($dates as $date) {
+        //         $q->orWhere(function($subQuery) use ($date) {
+        //             $subQuery->where('rencakakerja_t.bulan', $date['month_name']) // Kolom bulan dari tabel rencakakerja_t
+        //                      ->where('rencakakerja_t.tahun_ajaran', $date['year']); // Kolom tahun_ajaran dari tabel rencakakerja_t
+        //         });
+        //     }
+        // })
+        // ->groupBy('id_pelaporan', 'rencakakerja_t.bulan', 'rencakakerja_t.tahun_ajaran') // Pengelompokan berdasarkan bulan dan tahun_ajaran dari tabel rencanakerja_t
+        // ->get();
                 // Apply the month and year filters on the related rencanakerja table
-        $query->whereHas('rencanakerja', function ($q) use ($month, $year) {
-            if ($month !== 'all') {
-                $q->where('bulan', $month);
-            }
-            if ($year !== 'all') {
-                $q->where('tahun_ajaran', $year);
-            }
-        });
+        // $query->whereHas('rencanakerja', function ($q) use ($month, $year) {
+        //     if ($month !== 'all') {
+        //         $q->where('bulan', $month);
+        //     }
+        //     if ($year !== 'all') {
+        //         $q->where('tahun_ajaran', $year);
+        //     }
+        // });
 
         // Get the results
-        $data = $query->get()
-            ->map(function ($item) {
-                return [
-                    'pengawas' => $item->pengawasnama ? $item->pengawasnama->name : 'Unknown',
-                    'total' => $item->total
-                ];
-            });
+        // $data = $query->get()
+        //     ->map(function ($item) {
+        //         return [
+        //             'pengawas' => $item->pengawasnama ? $item->pengawasnama->name : 'Unknown',
+        //             'total' => $item->total
+        //         ];
+        //     });
 
         // Return the data as JSON
-        return response()->json($data); // Return JSON data for use in the view
+        return response()->json($chartData); // Return JSON data for use in the view
     }
 
      // chartDataRaportPendidikan

@@ -37,8 +37,6 @@
                                 <th>Kepala Sekolah </th>
                                 <th>Program Kerja</th>
                                 <th>Status</th>
-                                <th>Preview</th>
-                                {{-- <th>#</th> --}}
                             </tr>
                           </thead>
                       </table>
@@ -81,8 +79,7 @@
             {data: 'nama_sekolah', name: 'nama_sekolah'},
             {data: 'kepala_sekolah', name: 'kepala_sekolah'},
             {data: 'sasaran', name: 'sasaran'},
-            {data: 'tanggapan', name: 'tanggapan'},
-            {data: 'action', name: 'action', orderable: false, searchable: false},
+            {data: 'tanggapan', name: 'tanggapan'}
         ]
     });
   });

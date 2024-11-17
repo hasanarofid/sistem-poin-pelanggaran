@@ -20,6 +20,35 @@
                 </div>
             </div>
             {{-- end spider web --}}
+             {{-- begin pie web --}}
+             <div class="col-lg-6">
+                <div class="card">
+                  <div class="card-header pb-0 p-3">
+                    <h6 class="mb-0"> Realisasi Pelaksanaan Pendampingan </h6>
+                  </div>
+                      <div class="card-body p-3">
+                       
+                        <canvas id="piePengawas"></canvas> <!-- Canvas for the chart -->
+                      </div>
+                </div>
+            </div>
+            {{-- end pie web --}}
+
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-lg-6">
+                <div class="card">
+                  <div class="card-header pb-0 p-3">
+                    <h6 class="mb-0">Grafik Jumlah Pendampingan Terkonfirmasi 6 bulan terakhir </h6>
+                  </div>
+                      <div class="card-body p-3">
+                     
+                        <canvas id="chartKonfrim"></canvas> <!-- Canvas for the chart -->
+                      </div>
+                </div>
+            </div>
+
             {{-- begin rapot pendidikan chart --}}
             <div class="col-lg-6">
                 <div class="card">
@@ -73,75 +102,7 @@
                 </div>
             </div>
             {{-- end rapot pendidikan chart --}}
-        </div>
-
-        <div class="row mt-4">
-            <div class="col-lg-6">
-                <div class="card">
-                  <div class="card-header pb-0 p-3">
-                    <h6 class="mb-0">Grafik Jumlah Pendampingan Terkonfirmasi </h6>
-                  </div>
-                      <div class="card-body p-3">
-                        <div class="row mb-3">
-                           
-
-                            <div class="col-md-6">
-                                <label for="filter-pengawas">Filter Bulan:</label>
-                                <select
-                                id="filter-bln3"
-                                name="bln"
-                                class="select2 form-select"
-                                required
-                            >
-                                <option value="all">All</option> <!-- Option to show all records -->
-                                @foreach($months as $month)
-                                    <option value="{{ $month['name'] }}">
-                                        {{ $month['name'] }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="filter-tahun">Filter Tahun:</label>
-                                <select
-                                    id="filter-tahun3"
-                                    name="tahun"
-                                    class="select2 form-select"
-                                    required
-                                >
-                                    <option value="all">All</option> <!-- Option to show all records -->
-                                    @foreach($years as $year)
-                                        <option value="{{ $year }}" {{ $year == $currentYear ? 'selected' : '' }}>
-                                            {{ $year }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                
-                            
-                            </div>
-                            
-                        </div>
-                        <canvas id="chartKonfrim"></canvas> <!-- Canvas for the chart -->
-                      </div>
-                </div>
-            </div>
-
-            {{-- begin pie web --}}
-            <div class="col-lg-6">
-                <div class="card">
-                  <div class="card-header pb-0 p-3">
-                    <h6 class="mb-0"> Realisasi Pelaksanaan Pendampingan </h6>
-                  </div>
-                      <div class="card-body p-3">
-                       
-                        <canvas id="piePengawas"></canvas> <!-- Canvas for the chart -->
-                      </div>
-                </div>
-            </div>
-            {{-- end pie web --}}
-
+           
         </div>
 
     </div>
@@ -280,8 +241,11 @@ function fetchChartTerkonfrim(month = 'all', year = 'all') {
                 return; // Exit early as there’s no data to display in the chart
             }
 
-            const pengawasNames = data.map(item => item.pengawas);
-            const rencanaCounts = data.map(item => item.total);
+            // const pengawasNames = data.map(item => item.pengawas);
+            // const rencanaCounts = data.map(item => item.total);
+
+            const labels = data.labels; // Nama bulan dalam bahasa Indonesia
+                const rencanaCounts = data.datasets[0].data;
 
             // Destroy the existing chart instance if it exists
             if (terkomfrimChartInstance) {
@@ -293,7 +257,7 @@ function fetchChartTerkonfrim(month = 'all', year = 'all') {
             terkomfrimChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: pengawasNames,
+                    labels: labels,
                     datasets: [{
                         label: 'Jumlah Pendampingan',
                         data: rencanaCounts,

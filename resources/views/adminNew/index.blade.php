@@ -11,9 +11,9 @@
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <h5 class="card-title mb-1 pt-2">Total Sekolah</h5>
                                 <div class="badge p-2 rounded">
-                                    <button type="button" class="btn btn-icon btn-success waves-effect waves-light">
+                                    <a href="{{ route('sekolah.index') }}" class="btn btn-icon btn-success waves-effect waves-light">
                                         <span class="ti ti-school"></span>
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                             <h4 class="mb-0">{{ $total_sekolah }}</h4>
@@ -26,9 +26,9 @@
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <h5 class="card-title mb-1 pt-2">Total Pengawas</h5>
                                 <div class="badge p-2 rounded">
-                                    <button type="button" class="btn btn-icon btn-info waves-effect waves-light">
+                                    <a href="{{ route('masterpengawas.index') }}" class="btn btn-icon btn-info waves-effect waves-light">
                                         <span class="ti ti-user"></span>
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                             <h4 class="mb-0">{{ $total_pengawas }}</h4>
@@ -41,9 +41,9 @@
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <h5 class="card-title mb-1 pt-2">Total Rencana Kerja</h5>
                                 <div class="badge p-2 rounded">
-                                    <button type="button" class="btn btn-icon btn-danger waves-effect waves-light">
+                                    <a href="{{ route('rencanatugas.index') }}"  class="btn btn-icon btn-danger waves-effect waves-light">
                                         <span class="ti ti-eye"></span>
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                             <h4 class="mb-0">{{ $total_rencankerja }}</h4>
@@ -56,9 +56,9 @@
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <h5 class="card-title mb-1 pt-2">Total Umpan Balik</h5>
                                 <div class="badge p-2 rounded">
-                                    <button type="button" class="btn btn-icon btn-primary waves-effect waves-light">
+                                    <a href="{{ route('listumpanbalik.index') }}" class="btn btn-icon btn-primary waves-effect waves-light">
                                         <span class="ti ti-briefcase"></span>
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                             <h4 class="mb-0">{{ $total_umpanbalik }}</h4>
@@ -733,70 +733,59 @@ $('#filter-tahun-last').select2();
 $('#filter-pengawas').select2();
 let umpanbalikChartInstance = null;
 
-function fetchChartData2(month = 'all', year = 'all',pengawas = 'all') {
+function fetchChartData2(month = 'all', year = 'all', pengawas = 'all') {
     fetch(`{{ route('admin.chartData2') }}?bln=${month}&tahun=${year}&pengawas=${pengawas}`)
         .then(response => response.json())
         .then(data => {
-            // Check if data is empty
             if (!data || data.length === 0) {
-                console.warn('No data available for the chart');
-                
-                // Destroy the existing chart instance if it exists
-                if (umpanbalikChartInstance) {
-                    umpanbalikChartInstance.destroy();
-                }
-
-                // Display a "No data available" message in the canvas
+                if (umpanbalikChartInstance) umpanbalikChartInstance.destroy();
                 const ctx = document.getElementById('umpanbalikChart').getContext('2d');
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear previous content
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 ctx.font = '16px Arial';
                 ctx.textAlign = 'center';
                 ctx.fillText('No data available for the chart', ctx.canvas.width / 2, ctx.canvas.height / 2);
-
-                return; // Exit early as there’s no data to display in the chart
+                return;
             }
 
-            const pengawasNames = data.map(item => item.pengawas);
-            const rencanaCounts = data.map(item => item.total);
+            const rencanaKerjaLabels = data.map(item => item.rencana_kerja);
+            const totalSekolahData = data.map(item => item.total_sekolah);
+            const totalResponData = data.map(item => item.total_respon);
 
-            // Destroy the existing chart instance if it exists
-            if (umpanbalikChartInstance) {
-                umpanbalikChartInstance.destroy();
-            }
+            if (umpanbalikChartInstance) umpanbalikChartInstance.destroy();
 
-            // Set up the chart and assign it to umpanbalikChartInstance
             const ctx = document.getElementById('umpanbalikChart').getContext('2d');
             umpanbalikChartInstance = new Chart(ctx, {
-                type: 'bar',  // Keep type as 'bar'
+                type: 'bar',
                 data: {
-                    labels: pengawasNames,
-                    datasets: [{
-                        label: 'Jumlah Umpan Balik',
-                        data: rencanaCounts,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
+                    labels: rencanaKerjaLabels,
+                    datasets: [
+                        {
+                            label: 'Jumlah Ditanggapi',
+                            data: totalSekolahData,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Jumlah Umpan Balik',
+                            data: totalResponData,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
-                    indexAxis: 'y', // This makes the bar chart horizontal
+                    indexAxis: 'y',
                     scales: {
                         y: {
-                            beginAtZero: true,
-                            title: {
-                                display: false,
-                                text: 'Rencana Kerja'
-                            }
+                            beginAtZero: true
                         },
                         x: {
                             title: {
                                 display: true,
-                                text: 'Jumlah Umpan Balik'
+                                text: 'Jumlah'
                             }
                         }
                     }
@@ -805,6 +794,7 @@ function fetchChartData2(month = 'all', year = 'all',pengawas = 'all') {
         })
         .catch(error => console.error('Error fetching chart data:', error));
 }
+
 
 
 // Initial chart load with no filters (all data)

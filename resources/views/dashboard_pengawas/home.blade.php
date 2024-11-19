@@ -152,32 +152,35 @@
               <p class="card-text text-uppercase">Daftar Sekolah Binaan Bulan Ini</p>
               <table class="table table-bordered">
                 <thead>
-                  <tr>
-                    <th>No</th>
-                    <th>Nama Sekolah</th>
-                  </tr>                  
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Sekolah</th>
+                    </tr>                  
                 </thead>
                 <tbody>
-                  @php
-                      $no = 1;
-                  @endphp
-                  @foreach ($listsekolahdilayani as $item)
-                  @php
-                        $sekolahIds = explode(',', $item->sekolah_id);
-                        $sekolahs = App\SekolahM::whereIn('id', $sekolahIds)->get();
-
-                  @endphp
-                  @foreach ($sekolahs as $sekolah)
-                  <tr>
-                    <td> {{ $no++}} </td>
-                    <td> {{ $sekolah->nama_sekolah}} </td>
-                  </tr>
-                  @endforeach                 
-                  @endforeach
+                    @php
+                        $no = 1;
+                        $displayedSekolahIds = []; // Array untuk melacak sekolah_id yang sudah ditampilkan
+                    @endphp
+                    @foreach ($listsekolahdilayani as $item)
+                        @php
+                            $sekolahIds = explode(',', $item->sekolah_id);
+                            $sekolahs = App\SekolahM::whereIn('id', $sekolahIds)->get();
+                        @endphp
+                        @foreach ($sekolahs as $sekolah)
+                            @if (!in_array($sekolah->id, $displayedSekolahIds))
+                                <tr>
+                                    <td>{{ $no++ }}</td>
+                                    <td>{{ $sekolah->nama_sekolah }}</td>
+                                </tr>
+                                @php
+                                    $displayedSekolahIds[] = $sekolah->id; // Tandai sekolah_id sebagai sudah ditampilkan
+                                @endphp
+                            @endif
+                        @endforeach                 
+                    @endforeach
                 </tbody>
-             
-              
-              </table>
+            </table>
             </div>
           </div>
           <!--/ Profile Overview -->

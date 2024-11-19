@@ -56,26 +56,20 @@ class PengawasController extends Controller
             ->get();
 
 
-
-         
-
-                // $listsekolahdilayani = UmpanbalikT::with('pengawasnama', 'rencanakerja')
-                // ->whereHas('pengawasnama', function ($query) {
-                //     $query->where('id_pengawas', Auth::user()->id);
-                // })
-                // ->whereHas('tanggapanUmpanBalik')
-                // ->whereHas('rencanakerja', function ($query) use ($bulanini, $tahunini) {
-                //     $query->where('bulan', $bulanini)
-                //         ->where('tahun_ajaran', $tahunini);
-                // })
-                // ->get();
-
-                $sekolahdilayani = 0;
-                foreach ($listsekolahdilayani as $value) {
-                    // $sekolahIds = explode(',', $value->rencanakerja->sekolah_id);
-                    $sekolahIds = explode(',', $value->sekolah_id);
-                    $sekolahdilayani += count($sekolahIds);
+            $sekolahdilayani = 0;
+            $uniqueSekolahIds = [];
+            
+            foreach ($listsekolahdilayani as $value) {
+                $sekolahIds = explode(',', $value->sekolah_id);
+            
+                foreach ($sekolahIds as $id) {
+                    // Cek apakah sekolah_id sudah pernah ditambahkan sebelumnya
+                    if (!in_array($id, $uniqueSekolahIds)) {
+                        $uniqueSekolahIds[] = $id; // Tambahkan sekolah_id ke daftar unik
+                        $sekolahdilayani++;        // Tambah hitungan sekolah dilayani
+                    }
                 }
+            }
                 // dd($sekolahdilayani);
               
 
@@ -306,32 +300,30 @@ $startDate = now()->subMonths(5)->startOfMonth();
 $endDate = now()->endOfMonth();
 
 // Query utama
-$query = UmpanbalikT::with('pengawasnama', 'rencanakerja') // pastikan relasi rencanakerja sudah ada
-    ->selectRaw('id_pelaporan, rencakakerja_t.bulan, rencakakerja_t.tahun_ajaran, COUNT(*) as total') // Pastikan kolom bulan dan tahun_ajaran diambil dari tabel rencakakerja_t
+$query = UmpanbalikT::with('pengawasnama', 'rencanakerja') // Pastikan relasi rencanakerja sudah ada
+    ->selectRaw('rencakakerja_t.bulan, rencakakerja_t.tahun_ajaran, COUNT(DISTINCT tanggapan_umpanbalik_t.id_umpanbalik) as total') // Hitung umpan balik yang sudah ditanggapi saja
     ->join('rencakakerja_t', 'umpanbalik_t.id_pelaporan', '=', 'rencakakerja_t.id') // Join dengan tabel rencakakerja_t
-    ->join('tanggapan_umpanbalik_t', 'tanggapan_umpanbalik_t.id_umpanbalik', '=', 'umpanbalik_t.id') // Join dengan tabel rencakakerja_t
-    // ->whereHas('tanggapanUmpanBalik')
+    ->join('tanggapan_umpanbalik_t', 'tanggapan_umpanbalik_t.id_umpanbalik', '=', 'umpanbalik_t.id') // Join dengan tanggapan_umpanbalik_t
     ->whereBetween('umpanbalik_t.created_at', [$startDate, $endDate])
     ->where('umpanbalik_t.id_pengawas', Auth::user()->id)
-    // ->whereHas('rencanakerja', function($q) use ($dates) {
-    //     foreach ($dates as $date) {
-    //         $q->orWhere(function($subQuery) use ($date) {
-    //             $subQuery->where('rencakakerja_t.bulan', $date['month_name']) // Kolom bulan dari tabel rencakakerja_t
-    //                      ->where('rencakakerja_t.tahun_ajaran', $date['year']); // Kolom tahun_ajaran dari tabel rencakakerja_t
-    //         });
-    //     }
-    // })
-    ->groupBy('id_pelaporan', 'rencakakerja_t.bulan', 'rencakakerja_t.tahun_ajaran') // Pengelompokan berdasarkan bulan dan tahun_ajaran dari tabel rencanakerja_t
+    ->groupBy('rencakakerja_t.bulan', 'rencakakerja_t.tahun_ajaran') // Pengelompokan berdasarkan bulan dan tahun_ajaran
     ->get();
+
+
+// Mapkan hasil query ke array $dates
+foreach ($dates as &$date) {
+    $date['total'] = 0; // Inisialisasi total agar ada default 0
+}
 
 // Mapkan hasil query ke array $dates
 foreach ($query as $item) {
     foreach ($dates as &$date) {
         if ($date['month_name'] == $item->bulan && $date['year'] == $item->tahun_ajaran) {
-            $date['total'] = $item->total;
+            $date['total'] += $item->total; // Set nilai total untuk bulan dan tahun yang sesuai
         }
     }
 }
+unset($date); // Bersihkan referensi variabel
 
 // Buat data dalam format yang diperlukan oleh chart.js
 $chartData = [
@@ -347,11 +339,8 @@ $chartData = [
     ]
 ];
 
-// Menambahkan data rencanakerja ke chart
-foreach ($query as $item) {
-    // Jika ada data untuk program kerja, tambahkan ke data chart
-    $chartData['datasets'][0]['rencanakerja'][] = $item->rencanakerja ? $item->rencanakerja->nama_program_kerja : 'Unknown';
-}
+// dd($chartData);
+
 
 return response()->json($chartData);
 

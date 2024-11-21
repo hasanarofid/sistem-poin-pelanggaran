@@ -138,7 +138,8 @@ class AdminController extends Controller
         $pengawas = $request->input('pengawas', 'all');
     
         $query = UmpanbalikT::with('pengawasnama', 'rencanakerja')
-            ->selectRaw('id_pelaporan, COUNT(DISTINCT tanggapan_umpanbalik_t.id_umpanbalik) as total_respon, COUNT(DISTINCT tanggapan_umpanbalik_t.id_umpanbalik) as total')
+            ->selectRaw('id_pelaporan, COUNT(DISTINCT umpanbalik_t.id) as total_respon, 
+            COUNT(DISTINCT tanggapan_umpanbalik_t.id_umpanbalik) as total')
             ->join('rencakakerja_t', 'umpanbalik_t.id_pelaporan', '=', 'rencakakerja_t.id')
             ->leftJoin('tanggapan_umpanbalik_t', 'tanggapan_umpanbalik_t.id_umpanbalik', '=', 'umpanbalik_t.id')
              ->groupBy('id_pelaporan');

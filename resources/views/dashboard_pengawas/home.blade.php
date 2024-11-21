@@ -214,6 +214,10 @@
                 </div>
             </div>
 
+            <div class="col-lg-12">
+              
+            </div>
+
 
               {{-- end chart --}}
         
@@ -317,90 +321,73 @@ $('#filter-bln, #filter-tahun').change(function() {
 $('#filter-bln-last').select2();
 $('#filter-tahun-last').select2();
 $('#filter-pengawas').select2();
+
+
 let umpanbalikChartInstance = null;
 
-function fetchChartData2() {
-    fetch(`{{ route('pengawas.chartData2') }}`)
+function fetchChartData2(month = 'all', year = 'all', pengawas = 'all') {
+    fetch(`{{ route('pengawas.chartData2') }}?bln=${month}&tahun=${year}&pengawas=${pengawas}`)
         .then(response => response.json())
         .then(data => {
-            // Check if data is empty or not properly structured
-            if (!data || data.datasets.length === 0) {
-                console.warn('No data available for the chart');
-                
-                // Destroy the existing chart instance if it exists
-                if (umpanbalikChartInstance) {
-                    umpanbalikChartInstance.destroy();
-                }
-
-                // Display a "No data available" message in the canvas
+            if (!data || data.length === 0) {
+                if (umpanbalikChartInstance) umpanbalikChartInstance.destroy();
                 const ctx = document.getElementById('umpanbalikChart').getContext('2d');
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear previous content
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
                 ctx.font = '16px Arial';
                 ctx.textAlign = 'center';
                 ctx.fillText('No data available for the chart', ctx.canvas.width / 2, ctx.canvas.height / 2);
-
-                return; // Exit early as there’s no data to display in the chart
+                return;
             }
 
-            // Assuming `data` has the necessary structure for labels and datasets
-            const labels = data.labels || []; // The months or other labels
-            const rencanaCounts = data.datasets[0].data || []; // The data for the bars
+            const rencanaKerjaLabels = data.map(item => item.rencana_kerja);
+            const totalSekolahData = data.map(item => item.total_sekolah);
+            const totalResponData = data.map(item => item.total_respon);
 
-            // Destroy the existing chart instance if it exists
-            if (umpanbalikChartInstance) {
-                umpanbalikChartInstance.destroy();
-            }
+            if (umpanbalikChartInstance) umpanbalikChartInstance.destroy();
 
-            // Set up the chart and assign it to umpanbalikChartInstance
             const ctx = document.getElementById('umpanbalikChart').getContext('2d');
             umpanbalikChartInstance = new Chart(ctx, {
-                type: 'bar',  // Keep type as 'bar'
+                type: 'bar',
                 data: {
-                    labels: labels,  // Use dynamic labels (months or other categories)
-                    datasets: [{
-                        label: 'Jumlah Umpan Balik',
-                        data: rencanaCounts,  // The actual data values
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
+                    labels: rencanaKerjaLabels,
+                    datasets: [
+                        {
+                            label: 'Jumlah Ditanggapi',
+                            data: totalSekolahData,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Jumlah Umpan Balik',
+                            data: totalResponData,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
-                    indexAxis: 'y', // This makes the bar chart horizontal
+                    indexAxis: 'y',
                     scales: {
                         y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Pengawas'  // Title for the Y-axis
-                            }
+                            beginAtZero: true
                         },
                         x: {
                             title: {
                                 display: true,
-                                text: 'Jumlah Umpan Balik'
+                                text: 'Jumlah'
                             }
                         }
                     }
                 }
             });
         })
-        .catch(error => {
-            console.error('Error fetching chart data:', error);
-
-            // Handle the error gracefully
-            const ctx = document.getElementById('umpanbalikChart').getContext('2d');
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            ctx.font = '16px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Error loading data', ctx.canvas.width / 2, ctx.canvas.height / 2);
-        });
+        .catch(error => console.error('Error fetching chart data:', error));
 }
+
+
 
 // Initial chart load with no filters (all data)
 fetchChartData2();

@@ -59,13 +59,53 @@
     <div class="content-backdrop fade"></div>
   </div>
 @endsection
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script> <!-- Include SweetAlert2 -->
 
 
 @section('script')
 
 
 <script>
+
+function kirimWaBlast(id) {
+    let button = $('#sendWaButton-' + id);  // Reference to the specific button
+
+    // Disable button and add a loading state
+    button.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Sending...');
+
+    $.ajax({
+        url: '{{ route("rencanatugas.kirimwa", ":id") }}'.replace(':id', id),
+        type: 'GET',
+        success: function(response) {
+            // Show success message with SweetAlert and re-enable button
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'WA message sent successfully!',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                // Reload DataTable after successful WA blast
+                $('#dataTable').DataTable().ajax.reload();
+            });
+            button.prop('disabled', false).html('<i class="fa fa-envelope"></i> Kirim Wa');
+        },
+        error: function(xhr, status, error) {
+            console.error(xhr.responseText);
+            // Show error message with SweetAlert and re-enable button
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to send WA message. Please try again.',
+                confirmButtonText: 'OK'
+            });
+            button.prop('disabled', false).html('<i class="fa fa-envelope"></i> Kirim Wa');
+        }
+    });
+}
+
   $(document).ready(function () {
+
+   
 
     var table = $('#dataTable').DataTable({
      

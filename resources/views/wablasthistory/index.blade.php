@@ -67,14 +67,14 @@
 
 <script>
 
-function kirimWaBlast(id) {
+function kirimWaBlast(id,id_sekolah) {
     let button = $('#sendWaButton-' + id);  // Reference to the specific button
 
     // Disable button and add a loading state
     button.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Sending...');
 
     $.ajax({
-        url: '{{ route("rencanatugas.kirimwa", ":id") }}'.replace(':id', id),
+        url: '{{ route("rencanatugas.kirimWaSekolah", ["id" => ":id", "id_sekolah" => ":id_sekolah"]) }}'.replace(':id', id).replace(':id_sekolah', id_sekolah),
         type: 'GET',
         success: function(response) {
             // Show success message with SweetAlert and re-enable button

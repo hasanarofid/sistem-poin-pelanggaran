@@ -31,7 +31,7 @@ class AdminController extends Controller
                     $total_guru = GuruM::where('is_aktif',true)->get()->count();
                     $total_sekolah = SekolahM::where('is_aktif',true)->get()->count();
                     $total_pengawas = User::where('role','Pengawas')->get()->count();
-                    $total_stockholder = User::where('role','Stakeholder')->get()->count();    
+                    $total_stockholder = User::where('role','Stakeholder')->get()->count();
                     $total_rencankerja = RencanaKerjaT::get()->count();
                     $total_umpanbalik = UmpanbalikT::get()->count();
                     // }else if(Auth::user()->role == 'Admin' || Auth::user()->role == 'Stakeholder' ){
@@ -41,36 +41,36 @@ class AdminController extends Controller
                 //     foreach($kabupaten as $kab){
                 //         $id_filter[] = $kab->id;
                 //     }
-        
+
                 //     $total_guru = GuruM::where('is_aktif',true)->whereIn('kabupaten_id',$id_filter)->get()->count();
                 //     $total_sekolah = SekolahM::where('is_aktif',true)->whereIn('kabupaten_id',$id_filter)->get()->count();
                 //     $total_pengawas = User::where('role','Pengawas')->whereIn('kabupaten_id',$id_filter)->get()->count();
-                //     $total_stockholder = User::where('role','Stakeholder')->whereIn('kabupaten_id',$id_filter)->get()->count();    
+                //     $total_stockholder = User::where('role','Stakeholder')->whereIn('kabupaten_id',$id_filter)->get()->count();
                 //      // dd($total_guru);
-        
+
                 // }
             $master = MasterTupoksi::orderBy('urutan')->get();
             $currentMonth = date('n'); // Numeric representation of the current month (1-12)
         $currentYear = date('Y');  // Current year
         $years = range($currentYear - 5, $currentYear + 5);
          $months = [];
-        
+
         // Array of month names in Indonesian
         $monthNamesIndo = [
-            1 => 'Januari', 
-            2 => 'Februari', 
-            3 => 'Maret', 
-            4 => 'April', 
-            5 => 'Mei', 
-            6 => 'Juni', 
-            7 => 'Juli', 
-            8 => 'Agustus', 
-            9 => 'September', 
-            10 => 'Oktober', 
-            11 => 'November', 
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
             12 => 'Desember'
         ];
-        
+
         // Generate the current and next 11 months in Indonesian
         for ($i = 0; $i < 12; $i++) {
             $timestamp = strtotime("+$i month");
@@ -91,13 +91,13 @@ class AdminController extends Controller
                     'total_rencankerja',
                     'total_umpanbalik',
                     'months',
-                    'currentYear',    
-                    'years',  
-                    'listPengawas' 
+                    'currentYear',
+                    'years',
+                    'listPengawas'
                     ) );
             }
         }
-       
+
     }
 
     public function chartData(Request $request)
@@ -136,14 +136,14 @@ class AdminController extends Controller
         $month = $request->input('bln', 'all');
         $year = $request->input('tahun', 'all');
         $pengawas = $request->input('pengawas', 'all');
-    
+
         $query = UmpanbalikT::with('pengawasnama', 'rencanakerja')
-            ->selectRaw('id_pelaporan, COUNT(DISTINCT umpanbalik_t.id) as total_respon, 
-            COUNT(DISTINCT tanggapan_umpanbalik_t.id_umpanbalik) as total')
+            ->selectRaw('id_pelaporan, COUNT(DISTINCT umpanbalik_t.id) as total_umpan_balik,
+            COUNT(DISTINCT tanggapan_umpanbalik_t.id) as total_respon')
             ->join('rencakakerja_t', 'umpanbalik_t.id_pelaporan', '=', 'rencakakerja_t.id')
             ->leftJoin('tanggapan_umpanbalik_t', 'tanggapan_umpanbalik_t.id_umpanbalik', '=', 'umpanbalik_t.id')
              ->groupBy('id_pelaporan');
-    
+
         // Apply the filters
         if ($pengawas !== 'all') {
             $query->where('umpanbalik_t.id_pengawas', $pengawas);
@@ -152,18 +152,18 @@ class AdminController extends Controller
             if ($month !== 'all') $q->where('bulan', $month);
             if ($year !== 'all') $q->where('tahun_ajaran', $year);
         });
-    
+
         $data = $query->get()->map(function ($item) {
             return [
                 'rencana_kerja' => $item->rencanakerja ? $item->rencanakerja->nama_program_kerja : 'Unknown',
                 'total_respon' => $item->total_respon,
-                'total_sekolah' => $item->total,
+                'total_umpan_balik' => $item->total_umpan_balik,
             ];
         });
-    
+
         return response()->json($data);
     }
-    
+
 
     public function chartData2lama(Request $request)
     {
@@ -180,7 +180,7 @@ class AdminController extends Controller
          if ($pengawas !== 'all') {
             $query->where('id_pengawas', $pengawas);
         }
-    
+
 
          // Apply the month and year filters on the related rencanakerja table
     $query->whereHas('rencanakerja', function ($q) use ($month, $year) {
@@ -240,7 +240,7 @@ class AdminController extends Controller
     public function getSpiderWebData(Request $request)
     {
         $pengawasId = $request->input('pengawas', 'all');
-    
+
         // Define the query to calculate averages
         $query = TanggapanUmpanbalikT::selectRaw(
             'AVG(
@@ -251,7 +251,7 @@ class AdminController extends Controller
                     WHEN "Kurang" THEN 1
                     WHEN "Sangat Kurang" THEN 0
                 END
-            ) as kemampuan_berinteraksi, 
+            ) as kemampuan_berinteraksi,
             AVG(
                 CASE jawaban_6
                     WHEN "Sangat Baik" THEN 4
@@ -260,7 +260,7 @@ class AdminController extends Controller
                     WHEN "Kurang" THEN 1
                     WHEN "Sangat Kurang" THEN 0
                 END
-            ) as menciptakan_suasana, 
+            ) as menciptakan_suasana,
             AVG(
                 CASE jawaban_7
                     WHEN "Sangat Baik" THEN 4
@@ -269,7 +269,7 @@ class AdminController extends Controller
                     WHEN "Kurang" THEN 1
                     WHEN "Sangat Kurang" THEN 0
                 END
-            ) as penguasaan_materi, 
+            ) as penguasaan_materi,
             AVG(
                 CASE jawaban_8
                     WHEN "Sangat Baik" THEN 4
@@ -291,18 +291,18 @@ class AdminController extends Controller
         )
         ->join('umpanbalik_t as ut', 'ut.id', '=', 'tanggapan_umpanbalik_t.id_umpanbalik')
         ->join('rencakakerja_t as rt', 'rt.id', '=', 'ut.id_pelaporan');
-    
+
         // Apply filter based on pengawasId, if specified
         if ($pengawasId !== 'all') {
             $query->where('rt.id_pengawas', $pengawasId);
         }
-    
+
         // Execute the query to retrieve the averages
         $data = $query->first();
-    
+
         return response()->json($data);
     }
-    
+
 
 
 
@@ -359,7 +359,7 @@ class AdminController extends Controller
     public function chartpie(Request $request)
     {
         $pengawas = $request->input('pengawas', 'all');
-    
+
         // Buat query untuk menghitung jumlah masing-masing jenis jawaban di jawaban_4
         $query = TanggapanUmpanbalikT::selectRaw("
                 COUNT(CASE WHEN jawaban_4 = 'Ya, melakukan pendampingan di Sekolah' THEN 1 END) as sekolah,
@@ -369,15 +369,15 @@ class AdminController extends Controller
             ")
             ->join('umpanbalik_t as ut', 'ut.id', '=', 'tanggapan_umpanbalik_t.id_umpanbalik')
             ->join('rencakakerja_t as rt', 'rt.id', '=', 'ut.id_pelaporan');
-    
+
         // Tambahkan filter untuk pengawas jika ada
         if ($pengawas !== 'all') {
             $query->where('rt.id_pengawas', $pengawas);
         }
-    
+
         // Ambil hasil dan bentuk ulang data untuk output JSON
         $data = $query->first(); // Mengambil hasil sebagai satu baris karena kita hanya menghitung jumlah
-    
+
         $result = [
             [
                 'jawaban' => 'Hadir',
@@ -396,7 +396,7 @@ class AdminController extends Controller
                 'total' => $data->tidak,
             ],
         ];
-    
+
         return response()->json($result);
     }
 
@@ -433,20 +433,20 @@ class AdminController extends Controller
                             Delete
                         </a>';
                         return $btn;
-                    
+
                     })
                     ->rawColumns(['no_telp','alamat','action','foto','kabupaten'])
                     ->make(true);
         }
         return view('admin.data');
     }
-    
+
 
     public function add(){
         $wilayah = Kabupaten::select('kelompok_kabupaten', DB::raw('MAX(id) as id'), DB::raw('COUNT(*) as total'))
              ->groupBy('kelompok_kabupaten')
              ->get();
-    
+
         // dd($wilayah);
          return view('adminNew.add',compact('wilayah'));
     }
@@ -456,7 +456,7 @@ class AdminController extends Controller
         $wilayah = Kabupaten::select('kelompok_kabupaten', DB::raw('MAX(id) as id'), DB::raw('COUNT(*) as total'))
              ->groupBy('kelompok_kabupaten')
              ->get();
-    
+
         // dd($wilayah);
          return view('adminNew.edit',compact('model','wilayah'));
     }
@@ -501,7 +501,7 @@ class AdminController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->kabupaten_id =  $request->kabupaten_id;
-         
+
             $user->no_telp = $request->no_telp;
             $user->kota = $request->kota;
             $user->alamat_lengkap = $request->alamat_lengkap;

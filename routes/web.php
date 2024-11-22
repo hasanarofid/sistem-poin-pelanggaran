@@ -95,7 +95,7 @@ Route::get('/spider-web-data', 'AdminController@getSpiderWebData')->name('admin.
 
 // route penel dashboard for superadmin
 Route::prefix('superadmin')->middleware(['auth', 'checkSuperadminOrStakeholder'])->group(function () {
-    // route menu admin 
+    // route menu admin
     Route::prefix('admin')->group(function () {
         Route::get('/data', 'AdminController@data')->name('admin.data');
         Route::get('/get-admin', 'AdminController@getdata')->name('admin.list');
@@ -134,6 +134,7 @@ Route::prefix('superadmin')->middleware(['auth', 'checkSuperadminOrStakeholder']
         Route::get('/edit-rencanatugas/{id}', 'RencanaTugasController@edit')->name('rencanatugas.edit');
         Route::post('/update-rencanatugas/{id}', 'RencanaTugasController@update')->name('rencanatugas.update');
         Route::get('/kirim-wa/{id}', 'RencanaTugasController@kirimWa')->name('rencanatugas.kirimwa');
+        Route::get('/kirim-wa-sekolah/{id}/{id_sekolah}', 'RencanaTugasController@kirimWaSekolah')->name('rencanatugas.kirimWaSekolah');
     });
 
     Route::prefix('listumpanbalik')->group(function () {
@@ -149,6 +150,7 @@ Route::prefix('superadmin')->middleware(['auth', 'checkSuperadminOrStakeholder']
     Route::prefix('dokumentasipendampingan')->group(function () {
         Route::get('/', 'DokumentasipendampinganController@index')->name('dokumentasipendampingan.index');
         Route::get('/get-dokumentasipendampingan', 'DokumentasipendampinganController@getdata')->name('dokumentasipendampingan.getdata');
+        Route::get('/export-pdf', 'DokumentasipendampinganController@exportPDF')->name('dokumentasipendampingan.exportPDF');
     });
 
 
@@ -187,7 +189,7 @@ Route::prefix('superadmin')->middleware(['auth', 'checkSuperadminOrStakeholder']
         Route::get('/hapus{id}', 'PembagianTupoksiController@hapus')->name('pembagiantupoksi.hapus');
     });
 
-     // route menu pengawas 
+     // route menu pengawas
      Route::prefix('masterpengawas')->group(function () {
         // route panel menu pengawas
         // dd('masterpengawas');
@@ -206,14 +208,14 @@ Route::prefix('superadmin')->middleware(['auth', 'checkSuperadminOrStakeholder']
         Route::get('/getRuang', 'PegawasMController@getRuang')->name('masterpengawas.getRuang');
         Route::get('/tesWa', 'PegawasMController@tesWa')->name('masterpengawas.tesWa');
         Route::get('/setSekolahBinaan/{id}', 'PegawasMController@setSekolahBinaan')->name('masterpengawas.setSekolahBinaan');
-        
-        
 
-       
+
+
+
         // end route panel menu pengawas
     });
 
-    // route menu pengawas 
+    // route menu pengawas
     Route::prefix('sekolah')->group(function () {
     // route panel menu sekolah
         Route::get('/', 'SekolahMController@index')->name('sekolah.index');
@@ -267,13 +269,13 @@ Route::prefix('superadmin')->middleware(['auth', 'checkSuperadminOrStakeholder']
         Route::get('/get-history', 'WablasthistoryController@getdata')->name('wablasthistory.getdata');
     });
 
-    // end route menu admin 
-});    
+    // end route menu admin
+});
 // end route penel dashboard for superadmin
 
 // route penel dashboard for admin
 // Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
-//     // route menu pengawas 
+//     // route menu pengawas
 //     Route::prefix('masterpengawas')->group(function () {
 //         // route panel menu pengawas
 //         Route::get('/', 'PegawasMController@index')->name('masterpengawas.index');
@@ -291,14 +293,14 @@ Route::prefix('superadmin')->middleware(['auth', 'checkSuperadminOrStakeholder']
 //         Route::get('/getRuang', 'PegawasMController@getRuang')->name('masterpengawas.getRuang');
 //         Route::get('/tesWa', 'PegawasMController@tesWa')->name('masterpengawas.tesWa');
 //         Route::get('/setSekolahBinaan/{id}', 'PegawasMController@setSekolahBinaan')->name('masterpengawas.setSekolahBinaan');
-        
-        
 
-       
+
+
+
 //         // end route panel menu pengawas
 //     });
 
-//     // route menu pengawas 
+//     // route menu pengawas
 //     Route::prefix('sekolah')->group(function () {
 //     // route panel menu sekolah
 //         Route::get('/', 'SekolahMController@index')->name('sekolah.index');
@@ -343,13 +345,13 @@ Route::prefix('superadmin')->middleware(['auth', 'checkSuperadminOrStakeholder']
 //         Route::get('/excelcontoh-stakeholder', 'StakeholderController@excelcontoh')->name('stakeholder.excelcontoh');
 //     });
 //     // end route panel menu stakeholder
-// });   
+// });
 // end
 
 // route halaman pengawas
 Route::middleware(['web', 'pengawas'])->group(function () {
 
-    
+
     Route::get('/pengawas', 'PengawasController@index')->name('pengawas.index');
     Route::get('/editprofile', 'PengawasController@editprofile')->name('pengawas.editprofile');
     Route::post('/updateprofile', 'PengawasController@updateprofile')->name('pengawas.updateprofile');
@@ -371,6 +373,7 @@ Route::middleware(['web', 'pengawas'])->group(function () {
     Route::prefix('pengawas/dokumentasipendampingan')->group(function () {
         Route::get('/', 'DokumentasipendampinganController@indexpengawas')->name('pengawas.dokumentasipendampingan.index');
         Route::get('/get-dokumentasipendampingan', 'DokumentasipendampinganController@getdatapengawas')->name('pengawas.dokumentasipendampingan.getdata');
+        Route::get('/export-pdf-pengawas', 'DokumentasipendampinganController@exportPDFPengawas')->name('pengawas.dokumentasipendampingan.exportPDF');
     });
 
 
@@ -378,8 +381,8 @@ Route::middleware(['web', 'pengawas'])->group(function () {
         Route::get('/', 'LayanandibutuhkanController@indexpengawas')->name('pengawas.layanandibutuhkan.index');
         Route::get('/get-layanandibutuhkan', 'LayanandibutuhkanController@getdatapengawas')->name('pengawas.layanandibutuhkan.getdata');
     });
-    
-    
+
+
     // route panel menu pengawas rencanakerja
     Route::prefix('rencanakerja')->group(function () {
         Route::get('/', 'RencanaKerjaController@index')->name('pengawas.rencanakerja');
@@ -401,8 +404,8 @@ Route::middleware(['web', 'pengawas'])->group(function () {
     });
     // end route panel menu pengawas umpanbalik
 
-    
-   
+
+
 
     // route panel menu pengawas datapengawas
     Route::prefix('datapengawas')->group(function () {
@@ -433,7 +436,7 @@ Route::middleware(['web', 'pengawas'])->group(function () {
         Route::get('/get-subcategories', 'PelaporanController@getSubcategories')->name('pengawas.pelaporan.getSubKategori');
         Route::get('/get-programKerja', 'PelaporanController@getProgramKerja')->name('pengawas.pelaporan.getProgramKerja');
         Route::get('/get-getProgramKerjaSasaran', 'PelaporanController@getProgramKerjaSasaran')->name('pengawas.pelaporan.getProgramKerjaSasaran');
-        
+
     });
     // end route panel menu pengawas pelaporan
 
@@ -456,8 +459,8 @@ Route::middleware(['web', 'pengawas'])->group(function () {
         Route::get('/show-umpanbalik/{id}', 'UmpanbalikController@show')->name('pengawas.umpanbalik.show');
     });
     // end route panel menu pengawas umpanbalik
-  
-    
+
+
     // login logout pengawas
     Route::get('/pengawas/login', 'Auth\LoginController@showPengawasLoginForm');
     Route::post('/pengawas/login', 'Auth\LoginController@superPengawasLogin')->name('superPengawasLogin');

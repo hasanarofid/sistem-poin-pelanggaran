@@ -35,7 +35,7 @@
                                     <tr>
                                       <th class="text-sm font-weight mb-1 ">No</th>
                                       <th class="text-sm font-weight mb-1 ">Nama Sekolah</th>
-                                      <th class="text-sm font-weight mb-1 ">Nama Guru</th>
+                                      <th class="text-sm font-weight mb-1 ">Nama KEpala Sekolah</th>
                                       <th class="text-sm font-weight mb-1 ">Jabatan</th>
                                       <th class="text-sm font-weight mb-1">No Telpon</th>
                                       <th class="text-sm font-weight mb-1">Alamat</th>

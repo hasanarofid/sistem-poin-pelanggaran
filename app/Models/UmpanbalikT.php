@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\User;
+use App\GuruM;
 use App\TanggapanUmpanbalikT;
 use App\Models\RencanaKerjaT;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,9 @@ class UmpanbalikT extends Model
     public function pengawasnama()
     {
         return $this->hasOne(User::class, 'id', 'id_pengawas');
+    }
+    public function user(){
+        return $this->hasOne(GuruM::class, 'id', 'id_user');
     }
 
     public function rencanakerja()

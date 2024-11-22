@@ -205,7 +205,9 @@
               <div class="col-lg-12">
                 <div class="card">
                   <div class="card-header pb-0 p-1">
-                    <h6 class="mb-0">Grafik Umpan Balik  direspon 6 bulan terakhir </h6>
+                    <h6 class="mb-0">
+                      Grafik Umpan Balik per Rencana Kerja
+                       </h6>
                   </div>
                       <div class="card-body p-3">
                        
@@ -340,7 +342,7 @@ function fetchChartData2(month = 'all', year = 'all', pengawas = 'all') {
             }
 
             const rencanaKerjaLabels = data.map(item => item.rencana_kerja);
-            const totalSekolahData = data.map(item => item.total_sekolah);
+            const totalUmpanbalikData = data.map(item => item.total_umpan_balik);
             const totalResponData = data.map(item => item.total_respon);
 
             if (umpanbalikChartInstance) umpanbalikChartInstance.destroy();
@@ -353,14 +355,14 @@ function fetchChartData2(month = 'all', year = 'all', pengawas = 'all') {
                     datasets: [
                         {
                             label: 'Jumlah Ditanggapi',
-                            data: totalSekolahData,
+                            data: totalResponData,
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 1
                         },
                         {
                             label: 'Jumlah Umpan Balik',
-                            data: totalResponData,
+                            data: totalUmpanbalikData,
                             backgroundColor: 'rgba(255, 99, 132, 0.2)',
                             borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 1

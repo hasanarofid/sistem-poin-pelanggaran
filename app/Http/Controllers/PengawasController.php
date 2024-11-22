@@ -656,7 +656,7 @@ return response()->json($chartData);
         return response()->json($result);
     }
 
-    public function chartData2(Request $request)
+    public function chartData2Lama(Request $request)
     {
         $month = $request->input('bln', 'all');
         $year = $request->input('tahun', 'all');
@@ -689,6 +689,40 @@ return response()->json($chartData);
     
         return response()->json($data);
     }
+
+    public function chartData2(Request $request)
+    {
+        $month = $request->input('bln', 'all');
+        $year = $request->input('tahun', 'all');
+        $pengawas = $request->input('pengawas', 'all');
+
+        $query = UmpanbalikT::with('pengawasnama', 'rencanakerja')
+            ->selectRaw('id_pelaporan, COUNT(DISTINCT umpanbalik_t.id) as total_umpan_balik,
+            COUNT(DISTINCT tanggapan_umpanbalik_t.id) as total_respon')
+            ->join('rencakakerja_t', 'umpanbalik_t.id_pelaporan', '=', 'rencakakerja_t.id')
+            ->leftJoin('tanggapan_umpanbalik_t', 'tanggapan_umpanbalik_t.id_umpanbalik', '=', 'umpanbalik_t.id')
+             ->groupBy('id_pelaporan');
+
+        // Apply the filters
+        if ($pengawas !== 'all') {
+            $query->where('umpanbalik_t.id_pengawas', $pengawas);
+        }
+        $query->whereHas('rencanakerja', function ($q) use ($month, $year) {
+            if ($month !== 'all') $q->where('bulan', $month);
+            if ($year !== 'all') $q->where('tahun_ajaran', $year);
+        });
+
+        $data = $query->get()->map(function ($item) {
+            return [
+                'rencana_kerja' => $item->rencanakerja ? $item->rencanakerja->nama_program_kerja : 'Unknown',
+                'total_respon' => $item->total_respon,
+                'total_umpan_balik' => $item->total_umpan_balik,
+            ];
+        });
+
+        return response()->json($data);
+    }
+
     
 
 

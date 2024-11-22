@@ -8,7 +8,7 @@
 
         <div class="row mt-4">
                {{-- begin spider web --}}
-            <div class="col-lg-6">
+            <div class="col-lg-12 mb-3">
                 <div class="card">
                   <div class="card-header pb-0 p-3">
                     <h6 class="mb-0">Profil Kompetensi Pengawas </h6>
@@ -21,7 +21,7 @@
             </div>
             {{-- end spider web --}}
              {{-- begin pie web --}}
-             <div class="col-lg-6">
+             <div class="col-lg-12 mb-3">
                 <div class="card">
                   <div class="card-header pb-0 p-3">
                     <h6 class="mb-0"> Realisasi Pelaksanaan Pendampingan </h6>
@@ -37,7 +37,7 @@
         </div>
 
         <div class="row mt-4">
-            <div class="col-lg-6">
+            <div class="col-lg-12 mb-3">
                 <div class="card">
                   <div class="card-header pb-0 p-3">
                     <h6 class="mb-0">Grafik Jumlah Pendampingan Terkonfirmasi 6 bulan terakhir </h6>
@@ -50,7 +50,7 @@
             </div>
 
             {{-- begin rapot pendidikan chart --}}
-            <div class="col-lg-6">
+            <div class="col-lg-12 mb-3">
                 <div class="card">
                   <div class="card-header pb-0 p-3">
                     <h6 class="mb-0">Grafik Jumlah Rencana Kerja per Raport Pendidikan </h6>

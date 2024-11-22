@@ -10,7 +10,7 @@ class SekolahbinaanController extends Controller
 {
      //index
      public function index(){
-        $binaan = SekolahbinaanT::with('sekolah','sekolah.kepalaSekolahSatu')
+        $binaan = SekolahbinaanT::with('sekolah','sekolah.kepalaSekolah')
         ->where('id_pengawas',Auth::user()->id)->get();
         // dd($binaan);
         return view('dashboard_pengawas.sekolahbinaan.index',

@@ -60,6 +60,12 @@
                 
                 
             </div>
+            <div class="row mb-3">
+              <div class="col-md-4">
+                  <a href="#" id="downloadPDF" class="btn btn-danger">Download PDF</a>
+              </div>
+          </div>
+
 
               <div class="table-responsive">
                 <table class="table table-bordered table-striped" id="dataTable">
@@ -67,7 +73,6 @@
                     <tr>
                       <th>No</th>
                       <th>Tanggal pendampingan</th>
-                      <th>Foto Bukti Pendampingan</th>
                       <th>Foto Bukti Pendampingan</th>
                       <th>Sekolah</th>
                       <th>Program Kerja</th>
@@ -90,6 +95,24 @@
 @section('script')
 <script>
   $(document).ready(function () {
+
+
+    $('#downloadPDF').click(function (event) {
+            event.preventDefault(); // Prevent the default link behavior
+
+            // Get the selected filter values
+            var pengawas = $('#filter-pengawas').val() || 'all';
+            var bln = $('#filter-bln').val() || 'all';
+            var tahun = $('#filter-tahun').val() || 'all';
+            var searchQuery = $('#dataTable').DataTable().search();
+            var url = "{{ route('pengawas.dokumentasipendampingan.exportPDF') }}";
+    url += `?pengawas=${pengawas}&bln=${bln}&tahun=${tahun}&search=${searchQuery}`;
+            console.log(url);
+
+            // Open the constructed URL in a new tab
+            window.open(url, '_blank');
+        });
+
 
         $('#filter-bln').select2();
         $('#filter-tahun').select2();
@@ -117,45 +140,10 @@ $('#filter-tahun').change(function () {
           {data: 'DT_RowIndex', name: 'DT_RowIndex'},
           {data: 'tanggal', name: 'tanggal'},
           // Kolom foto disembunyikan di DataTable, tapi tetap digunakan untuk ekspor PDF
-          {data: 'foto', name: 'foto', visible: true}, 
-          {data: 'foto2', name: 'foto2', visible: false}, 
+          {data: 'foto', name: 'foto'},
           {data: 'nama_sekolah', name: 'nama_sekolah'},
           {data: 'program', name: 'program'},
           {data: 'pengawas', name: 'pengawas'},
-        ],
-        dom: 'Bfrtip',
-        buttons: [
-          {
-            extend: 'pdfHtml5',
-            text: '<i class="fas fa-file-pdf"></i> Export PDF',
-            className: 'btn btn-danger',
-            title: 'List Dokumentasi Pendampingan',
-            orientation: 'landscape',
-            pageSize: 'A4',
-            exportOptions: {
-              columns: [0, 1, 3, 4, 5,6] // Sertakan kolom foto2 meskipun tersembunyi
-            },
-            modifier: {
-                    page: 'all' // Ekspor semua halaman
-                },
-            customize: function (doc) {
-              // Customizing columns
-              doc.content[1].table.widths = ['10%', '20%', '20%', '20%', '15%', '15%'];
-
-              // Customizing the rows to include images in Base64
-              const tableBody = doc.content[1].table.body;
-
-              // Iterate through table rows (excluding the header row)
-              for (let i = 1; i < tableBody.length; i++) {
-                const fotoBase64 = tableBody[i][2].text;  // Foto disembunyikan di kolom foto3
-                tableBody[i][2] = {
-                  image: fotoBase64,
-                  width: 100,    // Adjust width as needed
-                  height: 100,   // Adjust height as needed
-                };
-              }
-            }
-          }
         ]
       });
   });

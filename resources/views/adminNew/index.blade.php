@@ -68,16 +68,16 @@
             </div>
 
             <div class="row mt-4">
-   
-                <div class="col-lg-6">
+
+                <div class="col-lg-12 mb-3">
                   <div class="card">
                     <div class="card-header pb-0 p-3">
                       <h6 class="mb-0">Grafik Jumlah Rencana per pengawas </h6>
                     </div>
                         <div class="card-body p-3">
                             <div class="row mb-3">
-                               
-    
+
+
                                 <div class="col-md-6">
                                     <label for="filter-pengawas">Filter Bulan:</label>
                                     <select
@@ -93,7 +93,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                
+
                                 </div>
 
                                 <div class="col-md-6">
@@ -111,17 +111,17 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    
-                                
+
+
                                 </div>
-                                
+
                             </div>
                             <canvas id="pengawasChart"></canvas> <!-- Canvas for the chart -->
                         </div>
                   </div>
                 </div>
 
-                <div class="col-lg-6">
+                <div class="col-lg-12 mb-3">
                     <div class="card">
                       <div class="card-header pb-0 p-3">
                         <h6 class="mb-0">Grafik Umpan Balik per Rencana Kerja </h6>
@@ -144,7 +144,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                
+
                                 </div>
 
                                 <div class="col-md-3">
@@ -162,12 +162,12 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    
-                                
+
+
                                 </div>
-                              
+
                                 <div class="col-md-6">
-                                  
+
                                     <label for="filter-pengawas">Filter by Pengawas:</label>
                                     <select
                                     id="filter-pengawas"
@@ -181,34 +181,34 @@
                                     @endforeach
                                 </select>
                                 </div>
-                                
-                                
+
+
                             </div>
                             <canvas id="umpanbalikChart"></canvas> <!-- Canvas for the chart -->
                           </div>
                     </div>
                 </div>
 
-               
+
 
 
             </div>
 
-            
+
 
             <div class="row mt-4">
-                
+
 
                 {{-- begin spider web --}}
-                <div class="col-lg-6">
+                <div class="col-12 mb-3">
                     <div class="card">
                       <div class="card-header pb-0 p-3">
                         <h6 class="mb-0">Grafik Jumlah Rencana Kerja per Raport Pendidikan </h6>
                       </div>
                           <div class="card-body p-3">
                             <div class="row mb-3">
-                               
-    
+
+
                                 <div class="col-md-6">
                                     <label for="filter-pengawas">Filter Bulan:</label>
                                     <select
@@ -224,7 +224,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                
+
                                 </div>
 
                                 <div class="col-md-6">
@@ -242,10 +242,10 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    
-                                
+
+
                                 </div>
-                                
+
                             </div>
                             <canvas id="chartPerRencanaKerja"></canvas> <!-- Canvas for the chart -->
                           </div>
@@ -254,15 +254,15 @@
                 {{-- end spider web --}}
 
                  {{-- begin spider web --}}
-                 <div class="col-lg-6">
+                 <div class="col-lg-12 mb-3">
                     <div class="card">
                       <div class="card-header pb-0 p-3">
                         <h6 class="mb-0">Grafik Jumlah Pendampingan Terkonfirmasi </h6>
                       </div>
                           <div class="card-body p-3">
                             <div class="row mb-3">
-                               
-    
+
+
                                 <div class="col-md-6">
                                     <label for="filter-pengawas">Filter Bulan:</label>
                                     <select
@@ -278,7 +278,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                
+
                                 </div>
 
                                 <div class="col-md-6">
@@ -296,32 +296,32 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    
-                                
+
+
                                 </div>
-                                
+
                             </div>
                             <canvas id="chartKonfrim"></canvas> <!-- Canvas for the chart -->
                           </div>
                     </div>
                 </div>
-                
+
 
             </div>
 
 
             <div class="row mt-4">
                 {{-- begin spider web --}}
-                <div class="col-lg-6">
+                <div class="col-lg-12 mb-3">
                    <div class="card">
                      <div class="card-header pb-0 p-3">
                        <h6 class="mb-0">Profil Kompetensi Pengawas </h6>
                      </div>
                          <div class="card-body p-3">
                            <div class="row mb-3">
-                             
+
                                <div class="col-md-12">
-                                 
+
                                    <label for="filter-pengawas">Filter by Pengawas:</label>
                                    <select
                                    id="filter-pengawas2"
@@ -335,8 +335,8 @@
                                    @endforeach
                                </select>
                                </div>
-                               
-                               
+
+
                            </div>
                            <canvas id="spiderWebPengawas"></canvas> <!-- Canvas for the chart -->
                          </div>
@@ -345,16 +345,16 @@
                {{-- end spider web --}}
 
                 {{-- begin pie web --}}
-                <div class="col-lg-6">
+                <div class="col-lg-12 mb-3">
                     <div class="card">
                       <div class="card-header pb-0 p-3">
                         <h6 class="mb-0"> Realisasi Pelaksanaan Pendampingan </h6>
                       </div>
                           <div class="card-body p-3">
                             <div class="row mb-3">
-                              
+
                                 <div class="col-md-12">
-                                  
+
                                     <label for="filter-pengawas">Filter by Pengawas:</label>
                                     <select
                                     id="filter-pengawas3"
@@ -368,8 +368,8 @@
                                     @endforeach
                                 </select>
                                 </div>
-                                
-                                
+
+
                             </div>
                             <canvas id="piePengawas"></canvas> <!-- Canvas for the chart -->
                           </div>
@@ -488,7 +488,7 @@ function fetchChartTerkonfrim(month = 'all', year = 'all') {
             // Check if data is empty
             if (!data || data.length === 0) {
                 console.warn('No data available for the chart');
-                
+
                 // Destroy the existing chart instance if it exists
                 if (terkomfrimChartInstance) {
                     terkomfrimChartInstance.destroy();
@@ -572,7 +572,7 @@ function fetchChartDataRaportPendidikan(month = 'all', year = 'all') {
             // Check if data is empty
             if (!data || data.length === 0) {
                 console.warn('No data available for the chart');
-                
+
                 // Destroy the existing chart instance if it exists
                 if (raportPendidikanChartInstance) {
                     raportPendidikanChartInstance.destroy();
@@ -606,14 +606,14 @@ function fetchChartDataRaportPendidikan(month = 'all', year = 'all') {
                         label: 'Jumlah Rencana Kerja',
                         data: rencanaCounts,
                         backgroundColor: [
-                            // 'rgba(75, 192, 192, 0.2)', 
+                            // 'rgba(75, 192, 192, 0.2)',
                             'rgba(255, 159, 64, 0.2)'
                             //  'rgba(153, 102, 255, 0.2)',
                             // 'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'
                         ],
                         borderColor: [
                              'rgba(255, 159, 64, 1)'
-                             
+
                         ],
                         borderWidth: 1
                     }]
@@ -644,10 +644,10 @@ $('#filter-bln2, #filter-tahun2').change(function() {
 });
 
 // end chart per raport pendidikan
-        
+
         $('#filter-bln').select2();
         $('#filter-tahun').select2();
-   
+
         let pengawasChartInstance = null;
 
 function fetchChartData(month = 'all', year = 'all') {
@@ -657,7 +657,7 @@ function fetchChartData(month = 'all', year = 'all') {
             // Check if data is empty
             if (!data || data.length === 0) {
                 console.warn('No data available for the chart');
-                
+
                 // Destroy the existing chart instance if it exists
                 if (pengawasChartInstance) {
                     pengawasChartInstance.destroy();
@@ -748,7 +748,7 @@ function fetchChartData2(month = 'all', year = 'all', pengawas = 'all') {
             }
 
             const rencanaKerjaLabels = data.map(item => item.rencana_kerja);
-            const totalSekolahData = data.map(item => item.total_sekolah);
+            const totalUmpanbalikData = data.map(item => item.total_umpan_balik);
             const totalResponData = data.map(item => item.total_respon);
 
             if (umpanbalikChartInstance) umpanbalikChartInstance.destroy();
@@ -761,14 +761,14 @@ function fetchChartData2(month = 'all', year = 'all', pengawas = 'all') {
                     datasets: [
                         {
                             label: 'Jumlah Ditanggapi',
-                            data: totalSekolahData,
+                            data: totalResponData,
                             backgroundColor: 'rgba(75, 192, 192, 0.2)',
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 1
                         },
                         {
                             label: 'Jumlah Umpan Balik',
-                            data: totalResponData,
+                            data: totalUmpanbalikData,
                             backgroundColor: 'rgba(255, 99, 132, 0.2)',
                             borderColor: 'rgba(255, 99, 132, 1)',
                             borderWidth: 1
@@ -802,7 +802,7 @@ fetchChartData2();
 
 // Event listener for filter changes
 $('#filter-bln-last, #filter-tahun-last , #filter-pengawas').change(function() {
-    
+
     const pengawas = $('#filter-pengawas').val();
     const month = $('#filter-bln-last').val();
     const year = $('#filter-tahun-last').val();

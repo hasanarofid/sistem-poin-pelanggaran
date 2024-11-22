@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\UmpanbalikT;
+use App\GuruM;
 use Illuminate\Http\Request;
 use App\Models\RencanaKerjaT;
 use App\Kabupaten;
@@ -159,6 +160,30 @@ class RencanaTugasController extends Controller
                     $this->buildUmpanBalik($model, $nama_sekolah, $nama_kepala_sekolah, $nama_kepala_sekolah_id, $no_telp);
                 }
             }
+            $model->status = 1;
+            $model->save();
+        } catch (\Exception $e) {
+            Log::error("Failed to send WhatsApp message: " . $e->getMessage());
+        }
+    }
+
+    //kirimwakepalasekolah
+    public function kirimWaSekolah($id,$id_user){
+        // dd($id_user);
+        try {
+            $umpan = UmpanBalikT::where('id_pelaporan',$id)
+            ->where('id_user',$id_user)->first();
+
+            $model = RencanaKerjaT::findOrFail($id);
+            $kepalaSekolah = GuruM::findOrFail($id_user);
+                $nama_sekolah = $kepalaSekolah->sekolah->nama_sekolah;
+                     $nama_kepala_sekolah = $kepalaSekolah->nama;
+                    $nama_kepala_sekolah_id = $kepalaSekolah->id;
+                    $no_telp = $kepalaSekolah->no_telp;
+                    
+                    $this->buildUmpanBalik($model, $nama_sekolah, $nama_kepala_sekolah, $nama_kepala_sekolah_id, $no_telp);
+                
+            
             $model->status = 1;
             $model->save();
         } catch (\Exception $e) {

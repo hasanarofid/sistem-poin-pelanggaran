@@ -72,6 +72,16 @@
 .hide {
     display: none !important;
 }
+.required {
+    color: red;
+    font-weight: bold;
+}
+
+.validate-card.invalid {
+    border: 2px solid red;
+    background-color: #ffe5e5;
+}
+
 
     </style>
   </head>
@@ -128,7 +138,7 @@
                               <div class="card">
                               <div class="card-body">
                               <div class="form-group">
-                                  <label for="email1">Tanggal Kedatangan Pengawas</label>
+                                  <label for="email1">Tanggal Kedatangan Pengawas <span class="required">*</span></label>
                                   <input type="date"  required name="tgl_pendampingan" class="form-control" >
                               </div>
                               </div>
@@ -147,10 +157,10 @@
                             </div>
                             <br>
                               @foreach($umpanBalikM as $item)
-                              <div class="card">
+                              <div class="card validate-card">
                                 <div class="card-body">
                               <div class="form-group">
-                                  <label>{{ $item->pertanyaan }}</label>
+                                  <label>{{ $item->pertanyaan }} <span class="required">*</span></label>
                                   @if($item->type_input === 'radiobutton')
                                     <?php $options = explode(';', $item->jawaban); ?>
                                     @foreach($options as $option)
@@ -181,10 +191,10 @@
                             </div>
                             <br>
                               @foreach($umpanBalikM2 as $item)
-                              <div class="card">
+                              <div class="card validate-card" >
                                 <div class="card-body">
                               <div class="form-group">
-                                  <label>{{ $item->pertanyaan }}</label>
+                                  <label>{{ $item->pertanyaan }} <span class="required">*</span></label>
                                   @if($item->type_input === 'radiobutton')
                                     <?php $options = explode(';', $item->jawaban); ?>
                                     @foreach($options as $option)
@@ -216,9 +226,9 @@
                             <br>
                               @foreach($umpanBalikM3 as $item)
                               <div class="card">
-                                <div class="card-body">
+                                <div class="card-body validate-card">
                               <div class="form-group">
-                                  <label>{{ $item->pertanyaan }}</label>
+                                  <label>{{ $item->pertanyaan }} <span class="required">*</span></label>
                                   @if($item->type_input === 'radiobutton')
                                     <?php $options = explode(';', $item->jawaban); ?>
                                     @foreach($options as $option)
@@ -241,10 +251,10 @@
                               <br>
                               @endforeach
 
-                              <div class="card">
+                              <div class="card ">
                                 <div class="card-body">
                                   <div class="form-group">
-                                    <label for="email1">Ambil Foto</label>
+                                    <label for="email1">Ambil Foto <span class="required">*</span></label>
                                     <input type="file" required name="foto" class="form-control" id="foto" accept="image/*">
                                     </div>
                                 </div>
@@ -325,22 +335,29 @@
     <!-- Page JS -->
 
     <script>
-     $(document).ready(function() {
-      var currentStep = 0;
+$(document).ready(function() {
+    var currentStep = 0;
     var totalSteps = $('.formStep').length;
 
     // Initial button state
     updateButtons();
 
+    // Tombol Next untuk melanjutkan ke langkah berikutnya
     $('#nextBtn').click(function() {
-        if (currentStep < totalSteps - 1) {
-            $('.formStep').eq(currentStep).hide();
-            currentStep++;
-            $('.formStep').eq(currentStep).show();
-            updateButtons();
+        // Validasi step saat ini sebelum melanjutkan
+        if (validateStep(currentStep)) {
+            if (currentStep < totalSteps - 1) {
+                $('.formStep').eq(currentStep).hide();
+                currentStep++;
+                $('.formStep').eq(currentStep).show();
+                updateButtons();
+            }
+        } else {
+            showNotification("Harap isi semua kolom yang bertanda (*)!");
         }
     });
 
+    // Tombol Previous untuk kembali ke langkah sebelumnya
     $('#prevBtn').click(function() {
         if (currentStep > 0) {
             $('.formStep').eq(currentStep).hide();
@@ -350,22 +367,98 @@
         }
     });
 
+    // Fungsi untuk mengupdate status tombol
     function updateButtons() {
-    if (currentStep === 0) {
-        $('#prevBtn').addClass('hide'); // Menambahkan kelas CSS 'hide'
-    } else {
-        $('#prevBtn').removeClass('hide'); // Menghapus kelas CSS 'hide'
+        if (currentStep === 0) {
+            $('#prevBtn').addClass('hide');
+        } else {
+            $('#prevBtn').removeClass('hide');
+        }
+
+        if (currentStep === totalSteps - 1) {
+            $('#nextBtn').addClass('hide');
+            $('#submitBtn').removeClass('hide');
+        } else {
+            $('#nextBtn').removeClass('hide');
+            $('#submitBtn').addClass('hide');
+        }
     }
 
-    if (currentStep === totalSteps - 1) {
-        $('#nextBtn').addClass('hide'); // Menambahkan kelas CSS 'hide'
-        $('#submitBtn').removeClass('hide'); // Menghapus kelas CSS 'hide'
-    } else {
-        $('#nextBtn').removeClass('hide'); // Menghapus kelas CSS 'hide'
-        $('#submitBtn').addClass('hide'); // Menambahkan kelas CSS 'hide'
+    // Fungsi validasi step saat ini
+    function validateStep(step) {
+        let isValid = true;
+        const inputs = $('.formStep').eq(step).find('input, textarea, file');
+        
+        // Validasi input standar (input text, file, date, dll.)
+        inputs.each(function() {
+            if ($(this).prop('required') && !$(this).val()) {
+                $(this).addClass('is-invalid');
+                $(this).siblings('.invalid-feedback').show(); // Tampilkan pesan error
+                isValid = false;
+            } else {
+                $(this).removeClass('is-invalid');
+                $(this).siblings('.invalid-feedback').hide(); // Sembunyikan pesan error
+            }
+        });
+
+        // Validasi untuk radio button dan checkbox yang required
+        $('.formStep').eq(step).find('input[type="radio"]:required, input[type="checkbox"]:required').each(function() {
+            const name = $(this).attr('name');
+            if ($(`input[name="${name}"]:checked`).length === 0) {
+                isValid = false;
+                $(`input[name="${name}"]`).closest('.form-group').addClass('is-invalid');
+            } else {
+                $(`input[name="${name}"]`).closest('.form-group').removeClass('is-invalid');
+            }
+        });
+
+        return isValid;
     }
-}
-      });
+
+    // Fungsi untuk menampilkan notifikasi error
+    function showNotification(message) {
+        if ($('#formNotification').length === 0) {
+            $('#multiStepForm').prepend(
+                `<div id="formNotification" class="alert alert-danger">${message}</div>`
+            );
+        }
+    }
+
+    // Menghapus pesan error saat input diubah
+    $(document).on('input change', '.is-invalid', function() {
+        $(this).removeClass('is-invalid');
+        $(this).siblings('.invalid-feedback').hide();
+    });
+
+    // Menambahkan validasi untuk kartu (checkbox, radio, dan textarea)
+    $('#nextBtn, #submitBtn').click(function () {
+        let isValid = true;
+
+        // Memeriksa setiap kartu di form
+        $('.validate-card').each(function () {
+            const card = $(this);
+            const inputs = card.find('input[type="radio"]:checked, textarea');
+
+            // Jika tidak ada input yang dipilih atau textarea kosong
+            if (inputs.length === 0 || (inputs.is('textarea') && inputs.val().trim() === '')) {
+                card.addClass('invalid');
+                isValid = false;
+            } else {
+                card.removeClass('invalid');
+            }
+        });
+
+        // Jika tombol Next, jangan lanjut jika ada yang tidak valid
+        if ($(this).attr('id') === 'nextBtn' && !isValid) {
+            alert('Harap isi semua kolom yang wajib diisi!');
+        }
+
+        // Jika tombol Submit, kembalikan isValid untuk mengontrol form submission
+        return isValid;
+    });
+});
+
+
     </script>
   </body>
 </html>

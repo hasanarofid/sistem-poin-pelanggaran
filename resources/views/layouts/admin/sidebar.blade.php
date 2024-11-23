@@ -1,7 +1,7 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo" style="height: 190px !important;">
         <a href="{{ route('admin.index') }}" class="app-brand-link">
-            <img src="{{ asset('logomodip.jpeg') }}" height="200px" width="200px" alt="Image placeholder" class="">
+            <img src="{{ asset('logo_simodip_new.jpeg') }}" height="200px" width="200px" alt="Image placeholder" class="">
         </a>
         <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
             <i class="ti menu-toggle-icon d-none d-xl-block ti-sm align-middle"></i>

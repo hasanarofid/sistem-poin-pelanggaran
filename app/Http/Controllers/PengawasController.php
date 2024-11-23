@@ -58,6 +58,7 @@ class PengawasController extends Controller
 
             $sekolahdilayani = 0;
             $uniqueSekolahIds = [];
+            $listrencanakerja = [];
             
             foreach ($listsekolahdilayani as $value) {
                 $sekolahIds = explode(',', $value->sekolah_id);
@@ -702,6 +703,7 @@ return response()->json($chartData);
             COUNT(DISTINCT tanggapan_umpanbalik_t.id) as total_respon')
             ->join('rencakakerja_t', 'umpanbalik_t.id_pelaporan', '=', 'rencakakerja_t.id')
             ->leftJoin('tanggapan_umpanbalik_t', 'tanggapan_umpanbalik_t.id_umpanbalik', '=', 'umpanbalik_t.id')
+            ->where('umpanbalik_t.id_pengawas',Auth::user()->id)
              ->groupBy('id_pelaporan');
 
         // Apply the filters

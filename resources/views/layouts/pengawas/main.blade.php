@@ -10,7 +10,7 @@
     <meta name="description" content="Pengawas" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('logomodip.jpeg') }}" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('logo_simodip_new.jpeg') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

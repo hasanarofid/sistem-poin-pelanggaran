@@ -19,7 +19,7 @@ lang="{{ str_replace('_', '-', app()->getLocale()) }}"
       <meta name="description" content="Pengawas" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('logomodip.jpeg') }}" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('logo_simodip_new.jpeg') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -76,7 +76,7 @@ lang="{{ str_replace('_', '-', app()->getLocale()) }}"
               
 
               <a href="{{ route('pengawas.index') }}" class="app-brand-link" >
-                <img src="{{ asset('logomodip.jpeg') }}"   height="200px" width="200px" alt="Image placeholder" class="">
+                <img src="{{ asset('logo_simodip_new.jpeg') }}"   height="200px" width="200px" alt="Image placeholder" class="">
 
 
               </a>

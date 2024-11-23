@@ -8,7 +8,7 @@
         <!-- Login -->
         <div class="card">
           <div class="card-body">
-            <img src="{{ asset('logomodip.jpeg') }}" height="150px" alt="Image placeholder" class="card-img">
+            <img src="{{ asset('logo_simodip_new.jpeg') }}" height="150px" alt="Image placeholder" class="card-img">
             <h5 class="mb-1 pt-3 text-center">Monitoring & Evaluasi Pengawas dalam Pendampingan Satuan Pendidikan
               berbasis Digital di KCD Wilayah Kabupaten Tanggerang </h5>
               <hr>

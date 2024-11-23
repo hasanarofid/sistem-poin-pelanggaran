@@ -52,7 +52,7 @@
 
       <!-- User Profile Content -->
       <div class="row">
-        <div class="col-xl-6 col-lg-5 col-md-5">
+        <div class="col-xl-12 col-lg-5 col-md-5">
           <!-- About User -->
           <div class="card mb-2">
             <div class="card-body">
@@ -92,7 +92,49 @@
 
             </div>
           </div>
-          <!--/ About User -->
+        </div>
+        <div class="col-xl-12 col-lg-10 col-md-10 mb-3">
+          <h5 class="title">Kinerja</h5>
+          
+              {{-- chart --}}
+              <div class="col-lg-12 mb-3">
+                <div class="card">
+                  <div class="card-header pb-0 p-1">
+                    <h6 class="mb-0">Grafik Jumlah Rencana 6 bulan terakhir </h6>
+                  </div>
+                      <div class="card-body p-3">
+                        
+                          <canvas id="pengawasChart"></canvas> <!-- Canvas for the chart -->
+                      </div>
+                </div>
+              </div>
+
+
+              <div class="col-lg-12">
+                <div class="card">
+                  <div class="card-header pb-0 p-1">
+                    <h6 class="mb-0">
+                      Grafik Umpan Balik per Rencana Kerja
+                       </h6>
+                  </div>
+                      <div class="card-body p-3">
+                       
+                        <canvas id="umpanbalikChart"></canvas> <!-- Canvas for the chart -->
+                      </div>
+                </div>
+            </div>
+
+            <div class="col-lg-12">
+              
+            </div>
+
+
+              {{-- end chart --}}
+        
+        </div>
+        
+        <div class="col-xl-12 col-lg-5 col-md-5">
+      
           <!-- Profile Overview -->
           <div class="card mb-2">
             <div class="card-body">
@@ -185,45 +227,7 @@
           </div>
           <!--/ Profile Overview -->
         </div>
-        <div class="col-xl-6 col-lg-10 col-md-10 mb-3">
-          <h5 class="title">Kinerja</h5>
-          
-              {{-- chart --}}
-              <div class="col-lg-12 mb-3">
-                <div class="card">
-                  <div class="card-header pb-0 p-1">
-                    <h6 class="mb-0">Grafik Jumlah Rencana 6 bulan terakhir </h6>
-                  </div>
-                      <div class="card-body p-3">
-                        
-                          <canvas id="pengawasChart"></canvas> <!-- Canvas for the chart -->
-                      </div>
-                </div>
-              </div>
-
-
-              <div class="col-lg-12">
-                <div class="card">
-                  <div class="card-header pb-0 p-1">
-                    <h6 class="mb-0">
-                      Grafik Umpan Balik per Rencana Kerja
-                       </h6>
-                  </div>
-                      <div class="card-body p-3">
-                       
-                        <canvas id="umpanbalikChart"></canvas> <!-- Canvas for the chart -->
-                      </div>
-                </div>
-            </div>
-
-            <div class="col-lg-12">
-              
-            </div>
-
-
-              {{-- end chart --}}
         
-        </div>
       </div>
       <!--/ User Profile Content -->
     </div>

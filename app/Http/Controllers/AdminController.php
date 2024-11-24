@@ -140,14 +140,15 @@ class AdminController extends Controller
         $query = UmpanbalikT::with('pengawasnama', 'rencanakerja')
             ->selectRaw('id_pelaporan, 
                         COUNT(DISTINCT CONCAT(umpanbalik_t.id_user, "-", umpanbalik_t.id_pelaporan)) as total_umpan_balik,
-                        COUNT(DISTINCT CONCAT(tanggapan_umpanbalik_t.id, "-", tanggapan_umpanbalik_t.id_umpanbalik)) as total_respon
-            '
-            )
+                        COUNT(DISTINCT CONCAT(tanggapan_umpanbalik_t.id)) as total_respon
+
+                ')
             ->join('rencakakerja_t', 'umpanbalik_t.id_pelaporan', '=', 'rencakakerja_t.id')
             ->leftJoin('tanggapan_umpanbalik_t', 'tanggapan_umpanbalik_t.id_umpanbalik', '=', 'umpanbalik_t.id')
-             ->groupBy('id_pelaporan');
+            // ->whereNotNull('tanggapan_umpanbalik_t.id')  // Abaikan nilai NULL
+               ->groupBy('id_pelaporan');
 
-        // Apply the filters
+        // Apply the filters    COUNT(DISTINCT CONCAT(tanggapan_umpanbalik_t.id_user, "-", tanggapan_umpanbalik_t.id)) as total_respon
         if ($pengawas !== 'all') {
             $query->where('umpanbalik_t.id_pengawas', $pengawas);
         }
@@ -155,7 +156,9 @@ class AdminController extends Controller
             if ($month !== 'all') $q->where('bulan', $month);
             if ($year !== 'all') $q->where('tahun_ajaran', $year);
         });
-
+        // dd($query->get());
+        // $result = $query->get();
+        // dd($result);
         $data = $query->get()->map(function ($item) {
             return [
                 'rencana_kerja' => $item->rencanakerja ? $item->rencanakerja->nama_program_kerja : 'Unknown',

@@ -55,6 +55,7 @@ class UmpanbalikController extends Controller
         }else{
             $imageName = 'userdefault.jpg';
         }
+        $umpanbalik = UmpanbalikT::findOrFail($request->post('id_umpanbalik'));
 
         $model = new TanggapanUmpanbalikT();
         $model->id_umpanbalik  = $request->post('id_umpanbalik');
@@ -70,6 +71,7 @@ class UmpanbalikController extends Controller
         $model->jawaban_10  = $request->post('jawaban_10');
         $model->jawaban_11  = $request->post('jawaban_11');
         $model->tanggal_kedatangan  = $request->tgl_pendampingan;
+        $model->id_user  = $umpanbalik->id_user;
         $model->foto  = $imageName;
         
         $model->save();

@@ -11,10 +11,11 @@
             <div class="col-lg-12 mb-3">
                 <div class="card">
                   <div class="card-header pb-0 p-3">
+                    <button id="export-pdf1" class="btn btn-primary">Export PDF</button> <!-- Export button -->
                     <h6 class="mb-0">Profil Kompetensi Pengawas </h6>
                   </div>
                       <div class="card-body p-3">
-                     
+
                         <canvas id="spiderWebPengawas"></canvas> <!-- Canvas for the chart -->
                       </div>
                 </div>
@@ -24,10 +25,11 @@
              <div class="col-lg-12 mb-3">
                 <div class="card">
                   <div class="card-header pb-0 p-3">
+                    <button id="export-pdf2" class="btn btn-primary">Export PDF</button> <!-- Export button -->
                     <h6 class="mb-0"> Realisasi Pelaksanaan Pendampingan </h6>
                   </div>
                       <div class="card-body p-3">
-                       
+
                         <canvas id="piePengawas"></canvas> <!-- Canvas for the chart -->
                       </div>
                 </div>
@@ -40,10 +42,11 @@
             <div class="col-lg-12 mb-3">
                 <div class="card">
                   <div class="card-header pb-0 p-3">
+                    <button id="export-pdf3" class="btn btn-primary">Export PDF</button> <!-- Export button -->
                     <h6 class="mb-0">Grafik Jumlah Pendampingan Terkonfirmasi 6 bulan terakhir </h6>
                   </div>
                       <div class="card-body p-3">
-                     
+
                         <canvas id="chartKonfrim"></canvas> <!-- Canvas for the chart -->
                       </div>
                 </div>
@@ -53,11 +56,12 @@
             <div class="col-lg-12 mb-3">
                 <div class="card">
                   <div class="card-header pb-0 p-3">
+                    <button id="export-pdf4" class="btn btn-primary">Export PDF</button> <!-- Export button -->
                     <h6 class="mb-0">Grafik Jumlah Rencana Kerja per Raport Pendidikan </h6>
                   </div>
                       <div class="card-body p-3">
                         <div class="row mb-3">
-                           
+
 
                             <div class="col-md-6">
                                 <label for="filter-pengawas">Filter Bulan:</label>
@@ -74,7 +78,7 @@
                                     </option>
                                 @endforeach
                             </select>
-                            
+
                             </div>
 
                             <div class="col-md-6">
@@ -92,17 +96,17 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                
-                            
+
+
                             </div>
-                            
+
                         </div>
                         <canvas id="chartPerRencanaKerja"></canvas> <!-- Canvas for the chart -->
                       </div>
                 </div>
             </div>
             {{-- end rapot pendidikan chart --}}
-           
+
         </div>
 
     </div>
@@ -110,6 +114,8 @@
 @endsection
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script> <!-- jsPDF -->
+
 @section('script')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -209,6 +215,14 @@
             .catch(error => console.error('Error fetching spider web data:', error));
     }
 
+    document.getElementById('export-pdf1').addEventListener('click', function () {
+            const canvas = document.getElementById('spiderWebPengawas');
+            const pdf = new jspdf.jsPDF();
+
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 10, 10, 180, 90);
+            pdf.save('chart-spiderWebPengawas.pdf');
+        });
     // Initial chart data load
     fetchSpiderWebData();
     // end chart 1
@@ -225,7 +239,7 @@ function fetchChartTerkonfrim(month = 'all', year = 'all') {
             // Check if data is empty
             if (!data || data.length === 0) {
                 console.warn('No data available for the chart');
-                
+
                 // Destroy the existing chart instance if it exists
                 if (terkomfrimChartInstance) {
                     terkomfrimChartInstance.destroy();
@@ -290,6 +304,15 @@ function fetchChartTerkonfrim(month = 'all', year = 'all') {
         })
         .catch(error => console.error('Error fetching chart data:', error));
 }
+
+document.getElementById('export-pdf3').addEventListener('click', function () {
+            const canvas = document.getElementById('chartKonfrim');
+            const pdf = new jspdf.jsPDF();
+
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 10, 10, 180, 90);
+            pdf.save('chart-chartKonfrim.pdf');
+        });
 fetchChartTerkonfrim();
 
 // Event listener for filter changes
@@ -311,7 +334,7 @@ function fetchChartDataRaportPendidikan(month = 'all', year = 'all') {
             // Check if data is empty
             if (!data || data.length === 0) {
                 console.warn('No data available for the chart');
-                
+
                 // Destroy the existing chart instance if it exists
                 if (raportPendidikanChartInstance) {
                     raportPendidikanChartInstance.destroy();
@@ -345,14 +368,14 @@ function fetchChartDataRaportPendidikan(month = 'all', year = 'all') {
                         label: 'Jumlah Rencana Kerja',
                         data: rencanaCounts,
                         backgroundColor: [
-                            // 'rgba(75, 192, 192, 0.2)', 
+                            // 'rgba(75, 192, 192, 0.2)',
                             'rgba(255, 159, 64, 0.2)'
                             //  'rgba(153, 102, 255, 0.2)',
                             // 'rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'
                         ],
                         borderColor: [
                              'rgba(255, 159, 64, 1)'
-                             
+
                         ],
                         borderWidth: 1
                     }]
@@ -373,6 +396,14 @@ function fetchChartDataRaportPendidikan(month = 'all', year = 'all') {
         })
         .catch(error => console.error('Error fetching chart data:', error));
 }
+document.getElementById('export-pdf4').addEventListener('click', function () {
+            const canvas = document.getElementById('chartPerRencanaKerja');
+            const pdf = new jspdf.jsPDF();
+
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 10, 10, 180, 90);
+            pdf.save('chart-chartPerRencanaKerja.pdf');
+        });
 fetchChartDataRaportPendidikan();
 
 // Event listener for filter changes
@@ -466,6 +497,15 @@ function fetchChartDataPie(pengawas = 'all') {
         })
         .catch(error => console.error('Error fetching chart data:', error));
 }
+
+document.getElementById('export-pdf2').addEventListener('click', function () {
+            const canvas = document.getElementById('piePengawas');
+            const pdf = new jspdf.jsPDF();
+
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 10, 10, 180, 90);
+            pdf.save('chart-piePengawas.pdf');
+        });
 // Load chart awal tanpa filter (semua data)
 fetchChartDataPie();
 

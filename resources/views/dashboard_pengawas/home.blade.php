@@ -77,7 +77,7 @@
                     @php
                     $profile = App\Profile::where('user_id', Auth::user()->id)->first();
                 @endphp
-            
+
                 @if (!empty($profile->homepage))
                     <a href="{{ $profile->homepage }}" target="_blank">{{ $profile->homepage }}</a>
                 @endif
@@ -95,15 +95,18 @@
         </div>
         <div class="col-xl-12 col-lg-10 col-md-10 mb-3">
           <h5 class="title">Kinerja</h5>
-          
+
               {{-- chart --}}
               <div class="col-lg-12 mb-3">
+
                 <div class="card">
+
                   <div class="card-header pb-0 p-1">
+                    <button id="export-pdf" class="btn btn-primary">Export PDF</button> <!-- Export button -->
                     <h6 class="mb-0">Grafik Jumlah Rencana 6 bulan terakhir </h6>
                   </div>
                       <div class="card-body p-3">
-                        
+
                           <canvas id="pengawasChart"></canvas> <!-- Canvas for the chart -->
                       </div>
                 </div>
@@ -113,28 +116,29 @@
               <div class="col-lg-12">
                 <div class="card">
                   <div class="card-header pb-0 p-1">
+                    <button id="export-pdf2" class="btn btn-primary">Export PDF</button> <!-- Export button -->
                     <h6 class="mb-0">
                       Grafik Umpan Balik per Rencana Kerja
                        </h6>
                   </div>
                       <div class="card-body p-3">
-                       
+
                         <canvas id="umpanbalikChart"></canvas> <!-- Canvas for the chart -->
                       </div>
                 </div>
             </div>
 
             <div class="col-lg-12">
-              
+
             </div>
 
 
               {{-- end chart --}}
-        
+
         </div>
-        
+
         <div class="col-xl-12 col-lg-5 col-md-5">
-      
+
           <!-- Profile Overview -->
           <div class="card mb-2">
             <div class="card-body">
@@ -148,7 +152,7 @@
                   <span>{{ $sekolahdilayani }}</span>
                 </li>
                 <li class="d-flex align-items-center">
-                  <i class="ti ti-users"></i><span class="fw-bold mx-2">List Rencana Kerja:</span> 
+                  <i class="ti ti-users"></i><span class="fw-bold mx-2">List Rencana Kerja:</span>
                 </li>
               </ul>
               <br>
@@ -159,7 +163,7 @@
                         <th>No</th>
                         <th>Nama Program</th>
                         <th>Total Sekolah</th>
-                      </tr>                  
+                      </tr>
                     </thead>
                     <tbody>
                       @php
@@ -180,8 +184,8 @@
                       </tr>
                       @endforeach
                     </tbody>
-                 
-                  
+
+
                   </table>
                 </div>
 
@@ -197,7 +201,7 @@
                     <tr>
                         <th>No</th>
                         <th>Nama Sekolah</th>
-                    </tr>                  
+                    </tr>
                 </thead>
                 <tbody>
                     @php
@@ -219,7 +223,7 @@
                                     $displayedSekolahIds[] = $sekolah->id; // Tandai sekolah_id sebagai sudah ditampilkan
                                 @endphp
                             @endif
-                        @endforeach                 
+                        @endforeach
                     @endforeach
                 </tbody>
             </table>
@@ -227,27 +231,28 @@
           </div>
           <!--/ Profile Overview -->
         </div>
-        
+
       </div>
       <!--/ User Profile Content -->
     </div>
     <!-- / Content -->
 
-    
+
 
     <div class="content-backdrop fade"></div>
   </div>
 @endsection
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script> <!-- jsPDF -->
 @section('script')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-        
+
         $('#filter-bln').select2();
         $('#filter-tahun').select2();
-   
+
         let pengawasChartInstance = null;
 
         function fetchChartData(month = 'all', year = 'all') {
@@ -257,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Check if data is empty
                 if (!data || data.length === 0) {
                     console.warn('No data available for the chart');
-                    
+
                     // Destroy the existing chart instance if it exists
                     if (pengawasChartInstance) {
                         pengawasChartInstance.destroy();
@@ -313,7 +318,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Error fetching chart data:', error));
     }
 
+    document.getElementById('export-pdf').addEventListener('click', function () {
+            const canvas = document.getElementById('pengawasChart');
+            const pdf = new jspdf.jsPDF();
 
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 10, 10, 180, 90);
+            pdf.save('chart-pengawasChart.pdf');
+        });
 // Initial chart load with no filters (all data)
 fetchChartData();
 
@@ -393,7 +405,14 @@ function fetchChartData2(month = 'all', year = 'all', pengawas = 'all') {
         .catch(error => console.error('Error fetching chart data:', error));
 }
 
+document.getElementById('export-pdf2').addEventListener('click', function () {
+            const canvas = document.getElementById('umpanbalikChart');
+            const pdf = new jspdf.jsPDF();
 
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 10, 10, 180, 90);
+            pdf.save('chart-umpanbalikChart.pdf');
+        });
 
 // Initial chart load with no filters (all data)
 fetchChartData2();
@@ -401,7 +420,7 @@ fetchChartData2();
 
 // Event listener for filter changes
 $('#filter-bln-last, #filter-tahun-last').change(function() {
-    
+
     const month = $('#filter-bln-last').val();
     const year = $('#filter-tahun-last').val();
     fetchChartData2(month, year);

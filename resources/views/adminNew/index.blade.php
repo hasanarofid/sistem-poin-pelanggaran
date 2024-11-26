@@ -75,6 +75,7 @@
                       <h6 class="mb-0">Grafik Jumlah Rencana per pengawas </h6>
                     </div>
                         <div class="card-body p-3">
+                            <button id="export-pdf" class="btn btn-primary">Export PDF</button> <!-- Export button -->
                             <div class="row mb-3">
 
 
@@ -117,6 +118,7 @@
 
                             </div>
                             <canvas id="pengawasChart"></canvas> <!-- Canvas for the chart -->
+
                         </div>
                   </div>
                 </div>
@@ -127,6 +129,7 @@
                         <h6 class="mb-0">Grafik Umpan Balik per Rencana Kerja </h6>
                       </div>
                           <div class="card-body p-3">
+                            <button id="export-pdf2" class="btn btn-primary">Export PDF</button> <!-- Export button -->
                             <div class="row mb-2">
 
                                 <div class="col-md-3">
@@ -206,6 +209,7 @@
                         <h6 class="mb-0">Grafik Jumlah Rencana Kerja per Raport Pendidikan </h6>
                       </div>
                           <div class="card-body p-3">
+                            <button id="export-pdf3" class="btn btn-primary">Export PDF</button> <!-- Export button -->
                             <div class="row mb-3">
 
 
@@ -260,6 +264,8 @@
                         <h6 class="mb-0">Grafik Jumlah Pendampingan Terkonfirmasi </h6>
                       </div>
                           <div class="card-body p-3">
+                            <button id="export-pdf4" class="btn btn-primary">Export PDF</button> <!-- Export button -->
+
                             <div class="row mb-3">
 
 
@@ -318,7 +324,9 @@
                        <h6 class="mb-0">Profil Kompetensi Pengawas </h6>
                      </div>
                          <div class="card-body p-3">
+                            <button id="export-pdf5" class="btn btn-primary">Export PDF</button> <!-- Export button -->
                            <div class="row mb-3">
+
 
                                <div class="col-md-12">
 
@@ -351,6 +359,7 @@
                         <h6 class="mb-0"> Realisasi Pelaksanaan Pendampingan </h6>
                       </div>
                           <div class="card-body p-3">
+                            <button id="export-pdf6" class="btn btn-primary">Export PDF</button> <!-- Export button -->
                             <div class="row mb-3">
 
                                 <div class="col-md-12">
@@ -383,6 +392,7 @@
 @endsection
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script> <!-- jsPDF -->
 @section('script')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -467,6 +477,14 @@ function fetchChartDataPie(pengawas = 'all') {
         })
         .catch(error => console.error('Error fetching chart data:', error));
 }
+document.getElementById('export-pdf6').addEventListener('click', function () {
+            const canvas = document.getElementById('piePengawas');
+            const pdf = new jspdf.jsPDF();
+
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 10, 10, 180, 90);
+            pdf.save('chart-piePengawas.pdf');
+        });
 
 // Load chart awal tanpa filter (semua data)
 fetchChartDataPie();
@@ -550,6 +568,16 @@ function fetchChartTerkonfrim(month = 'all', year = 'all') {
         })
         .catch(error => console.error('Error fetching chart data:', error));
 }
+
+document.getElementById('export-pdf4').addEventListener('click', function () {
+            const canvas = document.getElementById('chartKonfrim');
+            const pdf = new jspdf.jsPDF();
+
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 10, 10, 180, 90);
+            pdf.save('chart-chartKonfrim.pdf');
+        });
+
 fetchChartTerkonfrim();
 
 // Event listener for filter changes
@@ -634,6 +662,18 @@ function fetchChartDataRaportPendidikan(month = 'all', year = 'all') {
         })
         .catch(error => console.error('Error fetching chart data:', error));
 }
+
+// export-pdf3
+document.getElementById('export-pdf3').addEventListener('click', function () {
+            const canvas = document.getElementById('chartPerRencanaKerja');
+            const pdf = new jspdf.jsPDF();
+
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 10, 10, 180, 90);
+            pdf.save('chart-chartPerRencanaKerja.pdf');
+        });
+
+
 fetchChartDataRaportPendidikan();
 
 // Event listener for filter changes
@@ -718,6 +758,17 @@ function fetchChartData(month = 'all', year = 'all') {
         .catch(error => console.error('Error fetching chart data:', error));
 }
 
+  // Export chart as PDF
+  document.getElementById('export-pdf').addEventListener('click', function () {
+            const canvas = document.getElementById('pengawasChart');
+            const pdf = new jspdf.jsPDF();
+
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 10, 10, 180, 90);
+            pdf.save('chart-export.pdf');
+        });
+
+
 // Initial chart load with no filters (all data)
 fetchChartData();
 
@@ -795,7 +846,15 @@ function fetchChartData2(month = 'all', year = 'all', pengawas = 'all') {
         .catch(error => console.error('Error fetching chart data:', error));
 }
 
+  // Export chart as PDF
+  document.getElementById('export-pdf2').addEventListener('click', function () {
+            const canvas = document.getElementById('umpanbalikChart');
+            const pdf = new jspdf.jsPDF();
 
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 10, 10, 180, 90);
+            pdf.save('chart-umpanbalikChart.pdf');
+        });
 
 // Initial chart load with no filters (all data)
 fetchChartData2();
@@ -905,6 +964,16 @@ function fetchSpiderWebData(pengawas = 'all') {
         })
         .catch(error => console.error('Error fetching spider web data:', error));
 }
+
+  // Export chart as PDF
+  document.getElementById('export-pdf5').addEventListener('click', function () {
+            const canvas = document.getElementById('spiderWebPengawas');
+            const pdf = new jspdf.jsPDF();
+
+            const imgData = canvas.toDataURL('image/png');
+            pdf.addImage(imgData, 'PNG', 10, 10, 180, 90);
+            pdf.save('chart-spiderWebPengawas.pdf');
+        });
 
 // Initial chart data load
 fetchSpiderWebData();

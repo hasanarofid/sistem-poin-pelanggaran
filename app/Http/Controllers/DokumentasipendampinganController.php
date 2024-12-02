@@ -160,10 +160,10 @@ class DokumentasipendampinganController extends Controller
                 })
 
                 ->addColumn('program', function($row){
-                    return !empty($row->umpanBalikT) ? $row->umpanBalikT->rencanakerja->nama_program_kerja : '-';
+                    return !empty($row->umpanBalikT->rencanakerja) ? $row->umpanBalikT->rencanakerja->nama_program_kerja : '-';
                 })
                 ->addColumn('pengawas', function($row){
-                    return !empty($row->umpanBalikT) ? $row->umpanBalikT->pengawasnama->name : '-';
+                    return !empty($row->umpanBalikT->rencanakerja) ? $row->umpanBalikT->pengawasnama->name : '-';
                 })
                 ->addColumn('nama_sekolah', function($row) {
                     $cariguru = GuruM::findOrFail($row->umpanBalikT->id_user);
@@ -220,19 +220,19 @@ class DokumentasipendampinganController extends Controller
             $q->orWhereHas('umpanBalikT.user.sekolah', function ($subQuery) use ($search) {
                 $subQuery->where('nama_sekolah', 'like', "%{$search}%");
             });
-    
+
             // Search by nama_program_kerja
             $q->orWhereHas('umpanBalikT.rencanakerja', function ($subQuery) use ($search) {
                 $subQuery->where('nama_program_kerja', 'like', "%{$search}%");
             });
-    
+
             // Search by pengawas name
             $q->orWhereHas('umpanBalikT.pengawasnama', function ($subQuery) use ($search) {
                 $subQuery->where('name', 'like', "%{$search}%");
             });
         });
     }
-    
+
 
     // Get the filtered data and map it
     $data = $query->get()->map(function ($row) {
@@ -316,12 +316,12 @@ class DokumentasipendampinganController extends Controller
                     }
 
                 })
-               
+
                 ->addColumn('program', function($row){
-                    return !empty($row->umpanBalikT) ? $row->umpanBalikT->rencanakerja->nama_program_kerja : '-';
+                    return !empty($row->umpanBalikT->rencanakerja) ? $row->umpanBalikT->rencanakerja->nama_program_kerja : '-';
                 })
                 ->addColumn('pengawas', function($row){
-                    return !empty($row->umpanBalikT) ? $row->umpanBalikT->pengawasnama->name : '-';
+                    return !empty($row->umpanBalikT->rencanakerja) ? $row->umpanBalikT->pengawasnama->name : '-';
                 })
                 ->addColumn('nama_sekolah', function($row) {
                     $cariguru = GuruM::findOrFail($row->umpanBalikT->id_user);
@@ -340,40 +340,40 @@ class DokumentasipendampinganController extends Controller
         $tahun = $request->input('tahun', 'all');
         $bln = $request->input('bln', 'all');
         $search = $request->input('search', '');
-    
+
         // Define month names mapping for Indonesian months
         $monthNamesIndo = [
             'Januari' => 1, 'Februari' => 2, 'Maret' => 3, 'April' => 4,
             'Mei' => 5, 'Juni' => 6, 'Juli' => 7, 'Agustus' => 8,
             'September' => 9, 'Oktober' => 10, 'November' => 11, 'Desember' => 12,
         ];
-    
+
         // Convert the month name to the corresponding number, or use 'all'
         $monthNumber = isset($monthNamesIndo[$bln]) ? $monthNamesIndo[$bln] : 'all';
-    
+
         // Start the query
         $query = TanggapanUmpanbalikT::with('umpanBalikT', 'umpanBalikT.rencanakerja', 'umpanBalikT.pengawasnama')
         ->whereHas('umpanBalikT', function ($query) {
             $query->where('id_pengawas', Auth::user()->id);
         })->latest();
-    
+
         // Apply month filter
         if ($bln !== 'all') {
             $query->whereMonth('created_at', $monthNumber);
         }
-    
+
         // Apply year filter
         if ($tahun !== 'all') {
             $query->whereYear('created_at', $tahun);
         }
-    
+
         // Apply pengawas filter
         if ($pengawas !== 'all') {
             $query->whereHas('umpanBalikT', function ($q) use ($pengawas) {
                 $q->where('id_pengawas', $pengawas);
             });
         }
-    
+
         // Apply search filter
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
@@ -381,20 +381,20 @@ class DokumentasipendampinganController extends Controller
                 $q->orWhereHas('umpanBalikT.user.sekolah', function ($subQuery) use ($search) {
                     $subQuery->where('nama_sekolah', 'like', "%{$search}%");
                 });
-        
+
                 // Search by nama_program_kerja
                 $q->orWhereHas('umpanBalikT.rencanakerja', function ($subQuery) use ($search) {
                     $subQuery->where('nama_program_kerja', 'like', "%{$search}%");
                 });
-        
+
                 // Search by pengawas name
                 $q->orWhereHas('umpanBalikT.pengawasnama', function ($subQuery) use ($search) {
                     $subQuery->where('name', 'like', "%{$search}%");
                 });
             });
         }
-        
-    
+
+
         // Get the filtered data and map it
         $data = $query->get()->map(function ($row) {
             return [
@@ -405,13 +405,13 @@ class DokumentasipendampinganController extends Controller
                 'pengawas' => $row->umpanBalikT->pengawasnama->name ?? '-',
             ];
         });
-    
+
         // Generate the PDF using the filtered data
         $pdf = PDF::loadView('dashboard_pengawas.umpanbalik.dokumentasi_pdf', ['data' => $data]);
-    
+
         // Return the PDF as a downloadable file
         return $pdf->download('Laporan_Dokumentasi.pdf');
     }
 
-    
+
 }

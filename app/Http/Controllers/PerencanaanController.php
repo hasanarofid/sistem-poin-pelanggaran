@@ -12,7 +12,7 @@ use App\Models\UmpanbalikT;
 use App\Models\WhatsappMessagesLog;
 use App\SekolahM;
 use Illuminate\Http\Request;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use DataTables;
 use Illuminate\Support\Facades\Log;
@@ -30,23 +30,23 @@ class PerencanaanController extends Controller
         $currentMonth = date('n'); // Numeric representation of the current month (1-12)
         $currentYear = date('Y');  // Current year
         $months = [];
-        
+
         // Array of month names in Indonesian
         $monthNamesIndo = [
-            1 => 'Januari', 
-            2 => 'Februari', 
-            3 => 'Maret', 
-            4 => 'April', 
-            5 => 'Mei', 
-            6 => 'Juni', 
-            7 => 'Juli', 
-            8 => 'Agustus', 
-            9 => 'September', 
-            10 => 'Oktober', 
-            11 => 'November', 
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
             12 => 'Desember'
         ];
-        
+
         // Generate the current and next 11 months in Indonesian
         for ($i = 0; $i < 12; $i++) {
             $timestamp = strtotime("+$i month");
@@ -63,7 +63,7 @@ class PerencanaanController extends Controller
         compact('kegiatan'
         ,'kategory','subkategory','binaan','months',
         'jenisProgram','aspekProgram'
-        
+
     ));
     }
 
@@ -71,10 +71,10 @@ class PerencanaanController extends Controller
      public function getdata(Request $request){
         if ($request->ajax()) {
 
-    
+
          $post = RencanaKerjaT::with('kategoriprogram','jenisprogram','aspekprogram')
          ->where('id_pengawas',Auth::user()->id)->latest()->get();
-    
+
             return Datatables::of($post)
                     ->addIndexColumn()
             //          ->addColumn('foto', function($row){
@@ -108,21 +108,21 @@ class PerencanaanController extends Controller
              ->addColumn('nama_sekolah', function($row){
                 $sekolahIds = explode(',', $row->sekolah_id);
                 $sekolahs = SekolahM::whereIn('id', $sekolahIds)->get();
-                
+
                 $nama_sekolah = '';
                 foreach ($sekolahs as $sekolah) {
                     $nama_sekolah .= '<span class="badge bg-label-primary m-1">' . $sekolah->nama_sekolah . '</span> '; // Added a space for separation
                 }
                 // dd($nama_sekolah);
-                
+
                 return $nama_sekolah;
             })
 
             ->addColumn('action', function($row){
-   
+
                            $btn = '<a  onclick="editPerencanaan('.$row->id.')" class="btn btn-sm bg-info text-white " > <i class="fa fa-edit"></i> Edit</a>';
                            $btn = $btn. '<a href="#" onclick="deletePerencanaan('.$row->id.')" class="btn btn-danger btn-sm deletePost"><i class="fa fa-remove"></i> Delete</a>';
-    
+
                             return $btn;
                     })
                     ->rawColumns(['action',
@@ -155,7 +155,7 @@ class PerencanaanController extends Controller
         return redirect()->route('pengawas.perencanaan')->with('success', 'Perencanaan berhasil disimpan!');
     }
 
-    //update 
+    //update
     public function update(Request $request){
         $data = RencanaKerjaT::findOrFail($request->post('id'));
         // dd($request->post());
@@ -181,7 +181,7 @@ class PerencanaanController extends Controller
     {
         // Ambil data dari model berdasarkan ID atau yang lain sesuai kebutuhan
         $data = RencanaKerjaT::findOrFail($id); // Gantilah YourModel dengan model yang sesuai
-        
+
         return response()->json($data);
     }
 
@@ -190,10 +190,10 @@ class PerencanaanController extends Controller
     {
         // Temukan data yang akan dihapus
         $data = RencanaKerjaT::findOrFail($id);
-        
+
         // Lakukan operasi penghapusan data
         $data->delete();
-        
+
         // Balas dengan respons yang sesuai
         return response()->json(['message' => 'Data berhasil dihapus'], 200);
     }
@@ -203,9 +203,9 @@ class PerencanaanController extends Controller
         try {
             $model = RencanaKerjaT::findOrFail($id);
             $sekolahIds = explode(',', $model->sekolah_id);
-            
+
             $sekolahs = SekolahM::with('kepalaSekolahSatu')->whereIn('id', $sekolahIds)->get();
-            
+
             foreach ($sekolahs as $list) {
                 $nama_sekolah = $list->nama_sekolah;
                 $kepalaSekolah = $list->kepalaSekolahSatu;
@@ -213,7 +213,7 @@ class PerencanaanController extends Controller
                     $nama_kepala_sekolah = $kepalaSekolah->nama;
                     $nama_kepala_sekolah_id = $kepalaSekolah->id;
                     $no_telp = $kepalaSekolah->no_telp;
-                    
+
                     $this->buildUmpanBalik($model, $nama_sekolah, $nama_kepala_sekolah, $nama_kepala_sekolah_id, $no_telp);
                 }
             }
@@ -223,38 +223,58 @@ class PerencanaanController extends Controller
             Log::error("Failed to send WhatsApp message: " . $e->getMessage());
         }
     }
-    
+
     public function buildUmpanBalik($model, $nama_sekolah, $nama_kepala_sekolah, $nama_kepala_sekolah_id, $no_telp)
     {
         try {
-            $uniqueUrl = Str::uuid()->toString();
-            
-            $umpanBalik = new UmpanbalikT();
-            $umpanBalik->id_pelaporan = $model->id;
-            $umpanBalik->id_user = $nama_kepala_sekolah_id;
-            $umpanBalik->id_pengawas = $model->id_pengawas;
-            $umpanBalik->generate_url = $uniqueUrl;
-            $umpanBalik->save();
-            
-            $fullUrl = url('umpan-balik/' . $uniqueUrl);
-            
+
+
+
+            $checkUmpanBalik = UmpanbalikT::where('id_user',$nama_kepala_sekolah_id)
+            ->where('id_pelaporan',$model->id)
+            ->where('id_pengawas',$model->id_pengawas)
+            ->first();
+                if($checkUmpanBalik){
+                    $umpanBalik = $checkUmpanBalik;
+                    $umpanBalik->id_updated_by = Auth::user()->id;
+                    $umpanBalik->save();
+                    $fullUrl = url('umpan-balik/' . $checkUmpanBalik->generate_url);
+                }else{
+                    $uniqueUrl = Str::uuid()->getHex();
+                    $umpanBalik = new UmpanbalikT();
+                    $umpanBalik->generate_url = $uniqueUrl;
+                    $umpanBalik->id_updated_by = Auth::user()->id; // Set the updated_by field
+                    $umpanBalik->id_pelaporan = $model->id;
+                    $umpanBalik->id_user = $nama_kepala_sekolah_id;
+                    $umpanBalik->id_pengawas = $model->id_pengawas;
+                    $umpanBalik->generate_url = $uniqueUrl;
+                    $umpanBalik->id_created_by = Auth::user()->id;
+                    $umpanBalik->save();
+                    $fullUrl = url('umpan-balik/' . $uniqueUrl);
+                }
+
+
+
+
+
+
             $pesan = "Yth Bapak / Ibu {$nama_kepala_sekolah}
-            Kepala {$nama_sekolah}, 
-            Pada bulan {$model->bulan} {$model->tahun} 
+            Kepala {$nama_sekolah},
+            Pada bulan {$model->bulan} {$model->tahun}
             pengawas {$model->pengawasnama->name}
             akan melakukan kegiatan pendampingan {$model->nama_program_kerja}
-            ke sekolah. 
+            ke sekolah.
             Mohon dapat mengisi formulir Monev pada link berikut : {$fullUrl}
-            
-            Berikut ini beberapa catatan yang penting: 
+
+            Berikut ini beberapa catatan yang penting:
             1. Pastikan link diisi pada hari pengawas melakukan pendampingan.
             2. Sertakan 1 bukti pendampingan berupa foto kegiatan bersama pengawas.
-            
+
             Terimakasih
             Pesan ini digenerate otomatis oleh Sistem Monitoring dan Evaluasi Digital Pengawas (SiMODiP) KCD Kabupaten Tangerang";
-    
+
             $this->sendWhatsAppMessage($no_telp, $pesan,$nama_kepala_sekolah_id,$model);
-            
+
         } catch (\Exception $e) {
             Log::error("Failed to create or send feedback link: " . $e->getMessage());
         }
@@ -292,16 +312,16 @@ class PerencanaanController extends Controller
             $logEntry->is_sent = false;
             $logEntry->failure_reason = "API error: " . $e->getMessage();
         }
-        
+
         $logEntry->save(); // Save the log entry to the database
     }
 
-    
+
     // protected function sendWhatsAppMessage($phone, $message)
     // {
     //     $token = 'OZ9q0PSQUUV4PRZGxyKUfZjt9EFyt22dTIRnklQSepTmFlrFMN9BqaIs7RXtnD9I';
     //     $url = "https://jogja.wablas.com/api/send-message";
-    
+
     //     try {
     //         $response = Http::withHeaders([
     //             'Authorization' => $token,
@@ -309,13 +329,13 @@ class PerencanaanController extends Controller
     //             'phone' => $phone,
     //             'message' => $message,
     //         ]);
-    
+
     //         if ($response->successful()) {
     //             Log::info("WhatsApp message sent successfully to {$phone}");
     //         } else {
     //             Log::error("Failed to send WhatsApp message to {$phone}: " . $response->body());
     //         }
-            
+
     //     } catch (\Exception $e) {
     //         Log::error("WhatsApp API error for {$phone}: " . $e->getMessage());
     //     }

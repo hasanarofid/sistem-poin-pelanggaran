@@ -131,12 +131,30 @@ class PelaporanController extends Controller
         $token = 'OZ9q0PSQUUV4PRZGxyKUfZjt9EFyt22dTIRnklQSepTmFlrFMN9BqaIs7RXtnD9I';
         if ($pelaporan->sasaran == 'Guru') {
             $user = GuruM::find($pelaporan->object);
-            $uniqueUrl = Str::uuid()->getHex();
-            $umpanBalik = new UmpanbalikT();
+            
+            
+            
+
+            $checkUmpanBalik = UmpanbalikT::where('id_user',$user->id)
+                                ->where('id_pelaporan',$id)
+                                ->where('id_pengawas',$pelaporan->id_pengawas)
+                                ->first();
+            if($checkUmpanBalik){
+                $umpanBalik = $checkUmpanBalik;
+                $umpanBalik->id_updated_by = Auth::user()->id;
+                $umpanBalik->save();
+
+            }else{
+                $uniqueUrl = Str::uuid()->getHex();
+                $umpanBalik = new UmpanbalikT();
+                $umpanBalik->generate_url = $uniqueUrl;
+            }
+
             $umpanBalik->id_pelaporan = $id;
             $umpanBalik->id_user = $user->id;
             $umpanBalik->id_pengawas = $pelaporan->id_pengawas;
-            $umpanBalik->generate_url = $uniqueUrl;
+            $umpanBalik->id_created_by = Auth::user()->id;
+
             $umpanBalik->save();
         
             // Kirim WA menggunakan curl

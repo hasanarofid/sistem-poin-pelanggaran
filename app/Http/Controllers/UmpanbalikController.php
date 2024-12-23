@@ -22,6 +22,10 @@ class UmpanbalikController extends Controller
 
     public function umpan($generate){
         $model = UmpanbalikT::where('generate_url',$generate)->first();
+        $cektanggapan = TanggapanUmpanbalikT::where('id_umpanbalik',$model->id)->first();
+        if($cektanggapan){
+            return view('umpanbalik.done',compact('model'));
+        }
         $pengawas = User::find($model->id_pengawas);
         $pelaporan = RencanaKerjaT::find($model->id_pelaporan);
         // dd($pengawas);
@@ -48,10 +52,10 @@ class UmpanbalikController extends Controller
 
             // Generate a unique name based on the current date and time.
             $imageName = now()->format('YmdHis') . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
-        
+
             // Store the image in the "blog" directory within the "public" disk.
             $request->foto->storeAs('umpanbalik', $imageName, 'public');
-            
+
         }else{
             $imageName = 'userdefault.jpg';
         }
@@ -73,7 +77,7 @@ class UmpanbalikController extends Controller
         $model->tanggal_kedatangan  = $request->tgl_pendampingan;
         $model->id_user  = $umpanbalik->id_user;
         $model->foto  = $imageName;
-        
+
         $model->save();
         return redirect()->route('tanggapan')->with('success', 'Umpan Balik anda berhasil disimpan. terima kasih untuk tanggapan anda');
     }
@@ -85,9 +89,9 @@ class UmpanbalikController extends Controller
     public function getdata(Request $request){
         if ($request->ajax()) {
 
-    
+
             $post = UmpanbalikT::where('id_pengawas',Auth::user()->id)->latest()->get();
-       
+
                return Datatables::of($post)
                        ->addIndexColumn()
                        ->addColumn('tanggal', function($row){
@@ -97,12 +101,12 @@ class UmpanbalikController extends Controller
                         $rencana = Pelaporan::find($row->id_pelaporan);
                         return $rencana->sasaran;
                     })
-   
+
                ->addColumn('action', function($row){
                 $fullUrl = url('umpan-balik-view/' . $row->generate_url);
-      
+
                               $btn = '<a target="_blanck" href="'.$fullUrl.'"   class="btn btn-sm bg-warning text-white " > <i class="fa fa-view"></i> view</a>';
-                           
+
                                return $btn;
                        })
                        ->rawColumns(['action','sasaran','tanggal'])

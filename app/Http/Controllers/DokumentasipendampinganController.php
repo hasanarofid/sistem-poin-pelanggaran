@@ -146,7 +146,7 @@ class DokumentasipendampinganController extends Controller
                 return Datatables::of($post->get())
                 ->addIndexColumn()
                 ->addColumn('tanggal', function($row){
-                    return $row->created_at->format('d M Y');
+                    return !empty($row->umpanBalikT->rencanakerja->created_at) ? $row->umpanBalikT->rencanakerja->created_at->format('d M Y') : '-';
                 })
                 ->addColumn('foto', function($row){
                     if(!empty($row->foto)){
@@ -304,7 +304,7 @@ class DokumentasipendampinganController extends Controller
                 return Datatables::of($post->get())
                 ->addIndexColumn()
                 ->addColumn('tanggal', function($row){
-                    return $row->created_at->format('d M Y');
+                    return !empty($row->umpanBalikT->rencanakerja->created_at) ? $row->umpanBalikT->rencanakerja->created_at->format('d M Y') : '-';
                 })
                 ->addColumn('foto', function($row){
                     if(!empty($row->foto)){

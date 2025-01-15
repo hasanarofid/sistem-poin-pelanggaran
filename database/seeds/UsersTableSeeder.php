@@ -15,8 +15,8 @@ class UsersTableSeeder extends Seeder
         DB::table('users')->insert([
             [
                 'id'=>1,
-                'name'=>'Admin Sistem Modip',
-                'email'=>'admin@kcdkabtang.com',
+                'name'=>'Admin Gita',
+                'email'=>'admin@gitatalavial.com',
                 'password'=>Hash::make('admin12345'),
                 'role'=>'Super Admin',
                 'nip'=>'',
@@ -29,7 +29,7 @@ class UsersTableSeeder extends Seeder
               [
                 'id'=>2,
                 'name'=>'Admin Wilayah Seragon',
-                'email'=>'adminseragon@kcdkabtang.com',
+                'email'=>'adminseragon@gitatalavial.com',
                 'password'=>Hash::make('admin12345'),
                 'role'=>'Admin',
                 'nip'=>'',

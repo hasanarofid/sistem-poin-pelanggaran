@@ -11,14 +11,11 @@ class CreateWhatsappMessagesLogTable extends Migration
         Schema::create('whatsapp_messages_log', function (Blueprint $table) {
             $table->id();
             $table->foreignId('rencana_kerja_id')->constrained('rencakakerja_t')->onDelete('cascade');
-            
-            // Ubah referensi ke tabel guru_m
-            $table->foreignId('kepala_sekolah_id')->nullable()->constrained('guru_m')->onDelete('set null');
-            
-            $table->string('phone_number', 20);
-            $table->text('message');
-            $table->boolean('is_sent')->default(false);
-            $table->string('failure_reason')->nullable();
+            $table->foreignId('kepala_sekolah_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('phone_number', 20); // Phone number where the message was sent
+            $table->text('message'); // The content of the WhatsApp message
+            $table->boolean('is_sent')->default(false); // Status of the message
+            $table->string('failure_reason')->nullable(); // Reason if not sent
             $table->timestamps();
         });
     }

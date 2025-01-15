@@ -280,9 +280,46 @@ class PerencanaanController extends Controller
         }
     }
 
-    protected function sendWhatsAppMessage($phone, $message,$nama_kepala_sekolah_id,$model)
+    // protected function sendWhatsAppMessage($phone, $message,$nama_kepala_sekolah_id,$model)
+    // {
+    //     $token = 'OZ9q0PSQUUV4PRZGxyKUfZjt9EFyt22dTIRnklQSepTmFlrFMN9BqaIs7RXtnD9I';
+    //     $url = "https://jogja.wablas.com/api/send-message";
+
+    //     $logEntry = new WhatsappMessagesLog();
+    //     $logEntry->rencana_kerja_id = $model->id; // Add the Rencana Kerja ID here
+    //     $logEntry->kepala_sekolah_id = $nama_kepala_sekolah_id;
+    //     $logEntry->phone_number = $phone;
+    //     $logEntry->message = $message;
+
+    //     try {
+    //         $response = Http::withHeaders([
+    //             'Authorization' => $token,
+    //         ])->post($url, [
+    //             'phone' => $phone,
+    //             'message' => $message,
+    //         ]);
+
+    //         if ($response->successful()) {
+    //             Log::info("WhatsApp message sent successfully to {$phone}");
+    //             $logEntry->is_sent = true;
+    //         } else {
+    //             Log::error("Failed to send WhatsApp message to {$phone}: " . $response->body());
+    //             $logEntry->is_sent = false;
+    //             $logEntry->failure_reason = "Failed to send message: " . $response->body();
+    //         }
+    //     } catch (\Exception $e) {
+    //         Log::error("WhatsApp API error for {$phone}: " . $e->getMessage());
+    //         $logEntry->is_sent = false;
+    //         $logEntry->failure_reason = "API error: " . $e->getMessage();
+    //     }
+
+    //     $logEntry->save(); // Save the log entry to the database
+    // }
+    protected function sendWhatsAppMessage($phone, $message, $nama_kepala_sekolah_id, $model)
     {
-        $token = 'OZ9q0PSQUUV4PRZGxyKUfZjt9EFyt22dTIRnklQSepTmFlrFMN9BqaIs7RXtnD9I';
+        $token = 'ChvMJmr8Y5PwD130iY6kZqNQoAvCNQBxvH4RKiCOckJCAvEtVZtBO2Gyubj9THyU';
+        $secretKey = 'fv6GW850'; // Replace this with the actual secret key
+        $authorization = "{$token}.{$secretKey}";
         $url = "https://jogja.wablas.com/api/send-message";
 
         $logEntry = new WhatsappMessagesLog();
@@ -293,7 +330,7 @@ class PerencanaanController extends Controller
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => $token,
+                'Authorization' => $authorization,
             ])->post($url, [
                 'phone' => $phone,
                 'message' => $message,

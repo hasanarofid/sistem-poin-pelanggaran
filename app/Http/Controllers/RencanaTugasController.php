@@ -249,9 +249,11 @@ class RencanaTugasController extends Controller
     }
 
 
-    protected function sendWhatsAppMessage($phone, $message,$nama_kepala_sekolah_id,$model)
+    protected function sendWhatsAppMessage($phone, $message, $nama_kepala_sekolah_id, $model)
     {
-        $token = 'OZ9q0PSQUUV4PRZGxyKUfZjt9EFyt22dTIRnklQSepTmFlrFMN9BqaIs7RXtnD9I';
+        $token = 'ChvMJmr8Y5PwD130iY6kZqNQoAvCNQBxvH4RKiCOckJCAvEtVZtBO2Gyubj9THyU';
+        $secretKey = 'fv6GW850'; // Replace this with the actual secret key
+        $authorization = "{$token}.{$secretKey}";
         $url = "https://jogja.wablas.com/api/send-message";
 
         $logEntry = new WhatsappMessagesLog();
@@ -262,7 +264,7 @@ class RencanaTugasController extends Controller
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => $token,
+                'Authorization' => $authorization,
             ])->post($url, [
                 'phone' => $phone,
                 'message' => $message,

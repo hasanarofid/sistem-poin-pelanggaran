@@ -24,14 +24,18 @@
                 <div data-i18n="Profile">Data Siswa</div>
             </a>
         </li>
-        <li class="menu-item" style="margin: 2px 10px;">
-            <a href="#" class="menu-link" style="color: white; padding: 12px 15px; border-radius: 6px;">
-                <i class="menu-icon tf-icons ti ti-plus" style="margin-right: 12px;"></i>
+        <li class="menu-item {{ request()->routeIs('input-pelanggaran.*') ? 'active' : '' }}" style="margin: 2px 10px;">
+            <a href="{{ route('input-pelanggaran.index') }}"
+                class="menu-link"
+                style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('input-pelanggaran.*') ? 'background: #4a5568 !important;' : '' }}">
+                <i class="menu-icon tf-icons ti ti-users" style="margin-right: 12px;"></i>
                 <div data-i18n="Profile">Input Pelanggaran</div>
             </a>
         </li>
-        <li class="menu-item" style="margin: 2px 10px;">
-            <a href="#" class="menu-link" style="color: white; padding: 12px 15px; border-radius: 6px;">
+        <li class="menu-item {{ request()->routeIs('laporan.*') ? 'active' : '' }}" style="margin: 2px 10px;">
+            <a href="{{ route('laporan.index') }}"
+                class="menu-link"
+                style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('laporan.*') ? 'background: #4a5568 !important;' : '' }}">
                 <i class="menu-icon tf-icons ti ti-file-text" style="margin-right: 12px;"></i>
                 <div data-i18n="Profile">Laporan</div>
             </a>

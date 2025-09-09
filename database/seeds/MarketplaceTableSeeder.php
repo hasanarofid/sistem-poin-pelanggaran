@@ -14,8 +14,8 @@ class MarketplaceTableSeeder extends Seeder
         DB::table('profilemarketpalces')->insert([
             [
                 'id'=>1,
-                'title'=>'Gita Talavial',
-                'diskripsi'=>'by Andi B Fransiska',
+                'title'=>'Sistem Poin Pelanggaran',
+                'diskripsi'=>'by solusicodekita',
                 'address'=>'Jogjakarta',
                 'zipcode'=>3055,
                 'email'=>'hasanarofid@gitatalavial.com',

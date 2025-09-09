@@ -14,7 +14,8 @@
 
 
     <!-- Styles -->
-    <link rel="icon" href="{{ asset('logogita.jpeg') }}" type="image/x-icon"/>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
 
 
      <!--     Fonts and icons     -->

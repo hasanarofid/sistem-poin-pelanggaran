@@ -7,6 +7,10 @@
     
     <title>@yield('title') | Sistem Poin Pelanggaran</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
+    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -158,7 +162,7 @@
         /* Header */
         .header {
             background: white;
-            padding: 20px 30px;
+            padding: 20px 30px 20px 30px;
             border-bottom: 1px solid #e5e7eb;
             display: flex;
             justify-content: space-between;
@@ -218,11 +222,13 @@
         .header-right {
             display: flex;
             align-items: center;
+            gap: 30px;
+            justify-content: flex-end;
         }
         
         .user-info {
-            margin-right: 20px;
             text-align: right;
+            margin-right: 10px;
         }
         
         .user-role {
@@ -247,6 +253,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-left: 10px;
         }
         
         .logout-btn:hover {
@@ -556,13 +563,13 @@
                 </div>
                 
                 <div class="header-right">
+                    <button class="logout-btn" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        Keluar
+                    </button>
                     <div class="user-info">
                         <div class="user-role">Administrator</div>
                         <div class="user-name">(ADMIN)</div>
                     </div>
-                    <button class="logout-btn" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        Keluar
-                    </button>
                 </div>
             </header>
             

@@ -26,6 +26,9 @@ class DatabaseSeeder extends Seeder
                 UmpanbalikMSeeder::class,
                 KategorySeeder::class,
                 SubKategorySeeder::class,
+                KelasSeeder::class,
+                TahunAjaranSeeder::class,
+                UserSeeder::class,
             ]);
     }
 }

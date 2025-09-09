@@ -269,6 +269,43 @@ Route::prefix('superadmin')->middleware(['auth', 'checkSuperadminOrStakeholder']
         Route::get('/get-history', 'WablasthistoryController@getdata')->name('wablasthistory.getdata');
     });
 
+    // route menu siswa
+    Route::prefix('siswa')->group(function () {
+        Route::get('/', 'SiswaController@index')->name('siswa.index');
+        Route::get('/create', 'SiswaController@create')->name('siswa.create');
+        Route::post('/', 'SiswaController@store')->name('siswa.store');
+        Route::get('/{id}', 'SiswaController@show')->name('siswa.show');
+        Route::get('/{id}/edit', 'SiswaController@edit')->name('siswa.edit');
+        Route::put('/{id}', 'SiswaController@update')->name('siswa.update');
+        Route::delete('/{id}', 'SiswaController@destroy')->name('siswa.destroy');
+        Route::get('/export/excel', 'SiswaController@export')->name('siswa.export');
+        Route::get('/import/form', 'SiswaController@importForm')->name('siswa.import.form');
+        Route::post('/import', 'SiswaController@import')->name('siswa.import');
+        Route::get('/template/download', 'SiswaController@downloadTemplate')->name('siswa.template.download');
+    });
+
+    // route menu kelas
+    Route::prefix('kelas')->group(function () {
+        Route::get('/', 'KelasController@index')->name('kelas.index');
+        Route::get('/create', 'KelasController@create')->name('kelas.create');
+        Route::post('/', 'KelasController@store')->name('kelas.store');
+        Route::get('/{id}', 'KelasController@show')->name('kelas.show');
+        Route::get('/{id}/edit', 'KelasController@edit')->name('kelas.edit');
+        Route::put('/{id}', 'KelasController@update')->name('kelas.update');
+        Route::delete('/{id}', 'KelasController@destroy')->name('kelas.destroy');
+    });
+
+    // route menu tahun ajaran
+    Route::prefix('tahun-ajaran')->group(function () {
+        Route::get('/', 'TahunAjaranController@index')->name('tahun-ajaran.index');
+        Route::get('/create', 'TahunAjaranController@create')->name('tahun-ajaran.create');
+        Route::post('/', 'TahunAjaranController@store')->name('tahun-ajaran.store');
+        Route::get('/{id}', 'TahunAjaranController@show')->name('tahun-ajaran.show');
+        Route::get('/{id}/edit', 'TahunAjaranController@edit')->name('tahun-ajaran.edit');
+        Route::put('/{id}', 'TahunAjaranController@update')->name('tahun-ajaran.update');
+        Route::delete('/{id}', 'TahunAjaranController@destroy')->name('tahun-ajaran.destroy');
+    });
+
     // end route menu admin
 });
 // end route penel dashboard for superadmin

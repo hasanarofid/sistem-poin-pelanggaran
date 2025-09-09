@@ -61,80 +61,147 @@
     <script src="{{ asset('theme/assets/js/config.js') }}"></script>
 
     @yield('css')
+    
+    <!-- Fixed Layout CSS -->
+    <style>
+        /* Fix layout overflow */
+        body, html {
+            overflow-x: hidden !important;
+        }
+        
+        .layout-wrapper {
+            width: 100% !important;
+        }
+        
+        .layout-container {
+            display: flex !important;
+            width: 100% !important;
+        }
+        
+        .layout-page {
+            flex: 1 !important;
+            margin-left: 0 !important;
+            width: calc(100% - 280px) !important;
+        }
+        
+        .layout-navbar {
+            width: 100% !important;
+            margin: 0 !important;
+        }
+        
+        .content-wrapper {
+            width: 100% !important;
+            margin: 0 !important;
+        }
+        
+        .container-xxl {
+            max-width: none !important;
+            width: 100% !important;
+            padding: 30px !important;
+        }
+        
+        /* Fix navbar */
+        .navbar {
+            width: 100% !important;
+            padding: 0 30px !important;
+        }
+        
+        /* Fix cards spacing */
+        .row {
+            margin: 0 -10px !important;
+        }
+        
+        .col-xl-3, .col-md-6, .col-12 {
+            padding: 0 10px !important;
+        }
+        
+        /* Header styling improvements */
+        .navbar-nav .nav-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .navbar-nav .nav-item .text-end {
+            line-height: 1.2;
+        }
+        
+        /* Logout button hover effect */
+        .btn-danger:hover {
+            background: #b91c1c !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 12px rgba(220, 38, 38, 0.4) !important;
+            color: white !important;
+        }
+        
+        /* Ensure button is always visible */
+        .btn-danger {
+            background: #dc2626 !important;
+            border: none !important;
+            color: white !important;
+        }
+        
+        /* Header info styling */
+        .navbar-nav .nav-item .text-end div:first-child {
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
 </head>
 
 <body>
     <!-- Layout wrapper -->
-    <div class="layout-wrapper layout-content-navbar">
-        <div class="layout-container">
+    <div class="layout-wrapper layout-content-navbar" style="display: flex; width: 100%;">
+        <div class="layout-container" style="display: flex; width: 100%;">
             <!-- Menu -->
             @include('layouts.admin.sidebar')
             <!-- / Menu -->
 
             <!-- Layout container -->
-            <div class="layout-page">
+            <div class="layout-page" style="flex: 1; margin-left: 0 !important; width: calc(100% - 280px) !important;">
                 <!-- Navbar -->
                 <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
-                    id="layout-navbar">
+                    id="layout-navbar" style="background: white !important; border-bottom: 1px solid #e5e7eb; margin: 0 !important; width: 100% !important;">
                     <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
                         <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-                            <i class="ti ti-menu-2 ti-sm"></i>
+                            <i class="ti ti-menu-2 ti-sm" style="color: #374151;"></i>
                         </a>
                     </div>
 
-                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-                      <h4 style="margin-top: 15px">@yield('titelcard')</h4>
-                        <ul class="navbar-nav flex-row align-items-center ms-auto">
-                            @php
-                                if (Auth::user()->foto_profile == 'userdefault.jpg') {
-                                    $foto = asset('userdefault.jpg');
-                                } else {
-                                    $foto = route('fotopengawas', Auth::user()->foto_profile);
-                                }
-                            @endphp
-                            <!-- User -->
-                            <li class="nav-item navbar-dropdown dropdown-user dropdown">
-                                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);"
-                                    data-bs-toggle="dropdown">
-                                    <div class="avatar avatar-online">
-                                        <img src="{{ $foto }}" alt class="rounded-circle" />
-                                    </div>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <a class="dropdown-item" href="{{ route('pengawas.index') }}">
-                                            <div class="d-flex">
-                                                <div class="flex-shrink-0 me-3">
-                                                    <div class="avatar avatar-online">
-                                                        <img src="{{ $foto }}" alt class="rounded-circle" />
-                                                    </div>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <span class="fw-semibold d-block">{{ Auth::user()->name }}</span>
-                                                    <small class="text-muted">{{ Auth::user()->role }}</small>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <div class="dropdown-divider"></div>
-                                    </li>
-
-                                    <li>
-                                        <a class="dropdown-item" href="{{ route('logout') }}"
-                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                            <i class="ti ti-logout me-2 ti-sm"></i> Log Out
-                                        </a>
-                                        <form id="logout-form" action="{{ route('logout') }}" method="POST"
-                                            style="display: none;">
-                                            @csrf
-                                        </form>
-
-                                    </li>
-                                </ul>
-                            </li>
-                            <!--/ User -->
-                        </ul>
+                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse" style="width: 100%; justify-content: space-between;">
+                        <div class="d-flex align-items-center">
+                            <div style="width: 30px; height: 30px; background: #3b82f6; border-radius: 6px; margin-right: 12px; display: flex; align-items: center; justify-content: center; position: relative;">
+                                <div style="width: 18px; height: 18px; background: white; border-radius: 3px; position: relative;"></div>
+                                <div style="position: absolute; top: 3px; left: 50%; transform: translateX(-50%); width: 12px; height: 4px; background: white; border-radius: 1px 1px 0 0;"></div>
+                            </div>
+                            <h4 style="margin: 0; color: #1f2937; font-weight: 700;">Sistem Poin Pelanggaran</h4>
+                        </div>
+                    <ul class="navbar-nav flex-row align-items-center">
+                        <li class="nav-item me-3">
+                            <div class="text-end">
+                                <div style="font-size: 12px; color: #6b7280; margin-bottom: 2px;">Administrator</div>
+                                <div style="font-size: 14px; font-weight: 600; color: #1f2937;">(ADMIN)</div>
+                            </div>
+                        </li>
+                        <li class="nav-item me-2">
+                            <div class="text-end">
+                                <div style="font-size: 11px; color: #9ca3af; margin-bottom: 1px;">Login sebagai</div>
+                                <div style="font-size: 13px; font-weight: 500; color: #374151;">{{ Auth::user()->name ?? 'Administrator' }}</div>
+                            </div>
+                        </li>
+                        <li class="nav-item me-2">
+                            <div class="text-end">
+                                <div style="font-size: 11px; color: #9ca3af; margin-bottom: 1px;">Terakhir login</div>
+                                <div style="font-size: 13px; font-weight: 500; color: #374151;">{{ now()->format('d/m/Y H:i') }}</div>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                               class="btn btn-danger btn-sm" style="background: #dc2626 !important; border: none !important; padding: 10px 18px !important; border-radius: 8px !important; font-weight: 600 !important; box-shadow: 0 3px 6px rgba(220, 38, 38, 0.3) !important; transition: all 0.2s ease !important; color: white !important; text-decoration: none !important;">
+                                <i class="ti ti-arrow-left me-1"></i>
+                                Keluar
+                            </a>
+                        </li>
+                    </ul>
                     </div>
 
                     <!-- Search Small Screens -->
@@ -199,6 +266,11 @@
     <!-- Page JS -->
     <script src="{{ asset('theme/assets/js/tables-datatables-basic.js') }}"></script>
     @yield('script')
+
+    <!-- Logout Form -->
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+        @csrf
+    </form>
 
 </body>
 

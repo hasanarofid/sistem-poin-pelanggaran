@@ -16,8 +16,8 @@ class UsersTableSeeder extends Seeder
             [
                 'id'=>1,
                 'name'=>'Admin Gita',
-                'email'=>'admin@gitatalavial.com',
-                'password'=>Hash::make('admin12345'),
+                'email'=>'admin@gmail.com',
+                'password'=>Hash::make('admin12'),
                 'role'=>'Super Admin',
                 'nip'=>'',
                 'foto_profile'=>'userdefault.jpg',
@@ -29,8 +29,8 @@ class UsersTableSeeder extends Seeder
               [
                 'id'=>2,
                 'name'=>'Admin Wilayah Seragon',
-                'email'=>'adminseragon@gitatalavial.com',
-                'password'=>Hash::make('admin12345'),
+                'email'=>'adminseragon@gmail.com',
+                'password'=>Hash::make('admin12'),
                 'role'=>'Admin',
                 'nip'=>'',
                 'foto_profile'=>'userdefault.jpg',

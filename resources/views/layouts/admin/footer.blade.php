@@ -5,7 +5,7 @@
             <script>
                 document.write(new Date().getFullYear());
             </script>
-            , made with ❤️ by <a href="{{ route('pengawas.index') }}" target="_blank" class="fw-semibold">Sistem Modip</a>
+            , made with ❤️ by <a  target="_blank" class="fw-semibold">Sistem Poin Pelanggaran</a>
         </div>
 
     </div>

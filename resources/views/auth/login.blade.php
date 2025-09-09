@@ -243,7 +243,7 @@
         <div class="login-card">
             <div class="login-header">
                 <div class="logo-icon"></div>
-                <h1 class="title">Sistem Poin Pelang</h1>
+                <h1 class="title">Sistem Poin Pelanggaran</h1>
                 <p class="subtitle">SMKN 12 Kabupaten Tangerang</p>
                 <div class="divider"></div>
             </div>

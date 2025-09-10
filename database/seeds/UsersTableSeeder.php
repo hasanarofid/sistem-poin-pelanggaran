@@ -83,7 +83,20 @@ class UsersTableSeeder extends Seeder
                 'gol_ruang'=>'IV/d',
                 'kabupaten_id'=>1
             ],
-          
+            [
+                'id'=>6,
+                'name'=>'guru',
+                'email'=>'guru@gmail.com',
+                'username'=>'guru',
+                'password'=>Hash::make('guru12'),
+                'role'=>'guru',
+                'nip'=>'',
+                'foto_profile'=>'userdefault.jpg',
+                'jenjang_jabatan'=>'Guru',
+                'pangkat'=>'',
+                'gol_ruang'=>'',
+                'kabupaten_id'=>1
+            ],
             
             
         ]);

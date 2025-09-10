@@ -83,7 +83,7 @@
           <!-- Nama Pelanggaran -->
           <div class="mb-3">
             <label for="nama_pelanggaran" class="form-label">Nama Pelanggaran</label>
-            <input type="text" class="form-control" id="nama_pelanggaran" name="nama_pelanggaran" placeholder="Contoh: Tidak memakai topi">
+            <input type="text" class="form-control" id="nama_pelanggaran" name="nama_pelanggaran" placeholder="">
           </div>
 
           <!-- Kategori -->

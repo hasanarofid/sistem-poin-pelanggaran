@@ -41,6 +41,18 @@
                     <div data-i18n="Profile">Data Siswa</div>
                 </a>
             </li>
+            <li class="menu-item {{ request()->routeIs('admin.kategori.*') ? 'active' : '' }}" style="margin: 2px 10px;">
+                <a href="{{ route('admin.kategori.index') }}" class="menu-link" style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('admin.kategori.*') ? 'background: #4a5568 !important;' : '' }}">
+                    <i class="menu-icon tf-icons ti ti-users" style="margin-right: 12px;"></i>
+                    <div data-i18n="Profile">Kategori</div>
+                </a>
+            </li>
+            <li class="menu-item {{ request()->routeIs('admin.jenis-pelanggaran.*') ? 'active' : '' }}" style="margin: 2px 10px;">
+                <a href="{{ route('admin.jenis-pelanggaran.index') }}" class="menu-link" style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('admin.jenis-pelanggaran.*') ? 'background: #4a5568 !important;' : '' }}">
+                    <i class="menu-icon tf-icons ti ti-users" style="margin-right: 12px;"></i>
+                    <div data-i18n="Profile">Jenis Pelanggaran</div>
+                </a>
+            </li>
             <li class="menu-item {{ request()->routeIs('input-pelanggaran.*') ? 'active' : '' }}" style="margin: 2px 10px;">
                 <a href="{{ route('input-pelanggaran.index') }}"
                     class="menu-link"

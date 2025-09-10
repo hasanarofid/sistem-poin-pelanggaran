@@ -63,12 +63,23 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
     Route::prefix('input-pelanggaran')->group(function () {
         Route::get('/', 'InputPelanggaranController@index')->name('input-pelanggaran.index');
     });
+    Route::prefix('jenis-pelanggaran')->name('admin.jenis-pelanggaran.')->group(function () {
+        Route::get('/', 'JenisPelanggaranController@index')->name('index');
+        Route::post('/store', 'JenisPelanggaranController@store')->name('store');
+        Route::delete('/admin/jenis-pelanggaran/{id}', 'JenisPelanggaranController@destroy')->name('destroy');
+    });
+    Route::prefix('kategori')->name('admin.kategori.')->group(function () {
+        Route::get('/', 'KategoriController@index')->name('index');
+        Route::post('/store', 'KategoriController@store')->name('store');
+        Route::put('/{id}/update', 'KategoriController@update')->name('update');
+        Route::delete('/admin/kategori/{id}', 'KategoriController@destroy')->name('destroy');
+    });
     
     // route menu laporan untuk admin
     Route::prefix('laporan')->group(function () {
         Route::get('/', 'LaporanController@index')->name('laporan.index');
     });
-    
+
     // route menu siswa untuk admin (CRUD lengkap)
     Route::prefix('siswa')->group(function () {
         Route::get('/', 'AdminSiswaController@index')->name('admin.siswa.index');
@@ -90,7 +101,7 @@ Route::prefix('guru')->middleware(['auth', 'role.guru'])->group(function () {
     Route::get('/dashboard', 'GuruController@dashboard')->name('guru.dashboard');
     Route::get('/input-pelanggaran', 'InputPelanggaranController@index')->name('guru.input-pelanggaran');
     Route::get('/laporan', 'LaporanController@index')->name('guru.laporan');
-    
+
     // route menu siswa untuk guru (CRUD lengkap)
     Route::prefix('siswa')->group(function () {
         Route::get('/', 'GuruController@siswaIndex')->name('guru.siswa.index');
@@ -174,4 +185,3 @@ Route::get('umpanbalikfoto/{filename}', function ($filename) {
 
     return $response;
 })->name('umpanbalikfoto');
-

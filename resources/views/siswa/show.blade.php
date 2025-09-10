@@ -8,10 +8,10 @@
                 <div class="card-header">
                     <h3 class="card-title">Detail Data Siswa</h3>
                     <div class="card-tools">
-                        <a href="{{ route('siswa.index') }}" class="btn btn-secondary btn-sm">
+                        <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary btn-sm">
                             <i class="fas fa-arrow-left"></i> Kembali
                         </a>
-                        <a href="{{ route('siswa.edit', $siswa->id) }}" class="btn btn-warning btn-sm">
+                        <a href="{{ route('admin.siswa.edit', $siswa->id) }}" class="btn btn-warning btn-sm">
                             <i class="fas fa-edit"></i> Edit
                         </a>
                     </div>

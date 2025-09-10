@@ -17,7 +17,7 @@ class UsersTableSeeder extends Seeder
                 'id'=>1,
                 'name'=>'Admin Gita',
                 'email'=>'admin@gmail.com',
-                'username'=>'admin',
+                'username'=>'superadmin',
                 'password'=>Hash::make('admin12'),
                 'role'=>'Super Admin',
                 'nip'=>'',

@@ -67,21 +67,28 @@
         /* Fix layout overflow */
         body, html {
             overflow-x: hidden !important;
+            height: 100% !important;
         }
         
         .layout-wrapper {
             width: 100% !important;
+            min-height: 100vh !important;
+            display: flex !important;
+            flex-direction: column !important;
         }
         
         .layout-container {
             display: flex !important;
             width: 100% !important;
+            flex: 1 !important;
         }
         
         .layout-page {
             flex: 1 !important;
             margin-left: 0 !important;
             width: calc(100% - 280px) !important;
+            display: flex !important;
+            flex-direction: column !important;
         }
         
         .layout-navbar {
@@ -92,18 +99,164 @@
         .content-wrapper {
             width: 100% !important;
             margin: 0 !important;
+            flex: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
         }
         
         .container-xxl {
             max-width: none !important;
             width: 100% !important;
             padding: 30px !important;
+            flex: 1 !important;
         }
         
         /* Fix navbar */
         .navbar {
             width: 100% !important;
-            padding: 0 30px !important;
+            padding: 15px 30px !important;
+            min-height: 70px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+        
+        .layout-navbar {
+            padding: 15px 30px !important;
+            min-height: 70px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+        }
+        
+        /* Force logout button to be visible */
+        .ms-auto {
+            margin-left: auto !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 20px !important;
+        }
+        
+        .btn-danger {
+            flex-shrink: 0 !important;
+            white-space: nowrap !important;
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            z-index: 999 !important;
+        }
+        
+        /* Force navbar layout */
+        .layout-navbar > div:last-child {
+            display: flex !important;
+            align-items: center !important;
+            gap: 20px !important;
+            margin-left: auto !important;
+        }
+        
+        /* Override any theme CSS that might hide the button */
+        .navbar-nav-right {
+            display: flex !important;
+            align-items: center !important;
+            gap: 20px !important;
+            margin-left: auto !important;
+        }
+        
+        /* Ensure button is always visible on desktop */
+        @media (min-width: 768px) {
+            .btn-danger {
+                display: inline-block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+        }
+        
+        /* FORCE LOGOUT BUTTON TO BE VISIBLE - OVERRIDE EVERYTHING */
+        a[href*="logout"],
+        a[onclick*="logout"],
+        .btn-danger,
+        #layout-navbar .btn-danger,
+        .layout-navbar .btn-danger,
+        nav .btn-danger,
+        div a[href*="logout"] {
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            z-index: 9999 !important;
+            background: #dc2626 !important;
+            color: white !important;
+            border: none !important;
+            padding: 10px 18px !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+            white-space: nowrap !important;
+            flex-shrink: 0 !important;
+            width: auto !important;
+            height: auto !important;
+            margin: 0 !important;
+            float: none !important;
+            clear: none !important;
+        }
+        
+        /* Force navbar layout */
+        #layout-navbar,
+        .layout-navbar,
+        nav {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+        }
+        
+        /* Force all logout buttons to be visible */
+        *[href*="logout"] {
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            background: #dc2626 !important;
+            color: white !important;
+        }
+        
+        /* Fixed Header Styles */
+        .fixed-header {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 1000 !important;
+            background: white !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        }
+        
+        /* Adjust content for fixed header */
+        .content-with-fixed-header {
+            margin-top: 60px !important;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .fixed-header {
+                left: 0 !important;
+                width: 100% !important;
+                padding: 8px 15px !important;
+                min-height: 50px !important;
+            }
+            .content-with-fixed-header {
+                margin-top: 50px !important;
+            }
+        }
+        
+        /* Desktop adjustments */
+        @media (min-width: 769px) {
+            .fixed-header {
+                left: 280px !important;
+                width: calc(100% - 280px) !important;
+            }
         }
         
         /* Fix cards spacing */
@@ -145,6 +298,28 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+        
+        /* Sticky Footer */
+        .content-footer {
+            margin-top: auto !important;
+            background: white !important;
+            border-top: 1px solid #e5e7eb !important;
+            padding: 20px 0 !important;
+        }
+        
+        .footer-container {
+            color: #374151 !important;
+            font-size: 14px !important;
+        }
+        
+        .footer-container a {
+            color: #3b82f6 !important;
+            text-decoration: none !important;
+        }
+        
+        .footer-container a:hover {
+            text-decoration: underline !important;
+        }
     </style>
 </head>
 
@@ -157,71 +332,47 @@
             <!-- / Menu -->
 
             <!-- Layout container -->
-            <div class="layout-page" style="flex: 1; margin-left: 0 !important; width: calc(100% - 280px) !important;">
-                <!-- Navbar -->
-                <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
-                    id="layout-navbar" style="background: white !important; border-bottom: 1px solid #e5e7eb; margin: 0 !important; width: 100% !important;">
-                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
-                        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-                            <i class="ti ti-menu-2 ti-sm" style="color: #374151;"></i>
+            <div class="layout-page" style="flex: 1; margin-left: 0 !important; width: calc(100% - 280px) !important; display: flex; flex-direction: column;">
+                <!-- Navbar - FIXED HEADER -->
+                <div class="fixed-header" style="position: fixed; top: 0; left: 280px; right: 0; background: white; border-bottom: 1px solid #e5e7eb; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; width: calc(100% - 280px); min-height: 60px; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    
+                    <!-- Left Side: Logo and Title -->
+                    <div style="display: flex; align-items: center;">
+                        <div style="width: 30px; height: 30px; background: #3b82f6; border-radius: 6px; margin-right: 12px; display: flex; align-items: center; justify-content: center; position: relative;">
+                            <div style="width: 18px; height: 18px; background: white; border-radius: 3px; position: relative;"></div>
+                            <div style="position: absolute; top: 3px; left: 50%; transform: translateX(-50%); width: 12px; height: 4px; background: white; border-radius: 1px 1px 0 0;"></div>
+                        </div>
+                        <h4 style="margin: 0; color: #1f2937; font-weight: 700;">Sistem Poin Pelanggaran</h4>
+                    </div>
+
+                    <!-- Right Side: User Info and Logout Button -->
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <div style="text-align: right;">
+                            <div style="font-size: 11px; color: #9ca3af; margin-bottom: 1px;">Login sebagai</div>
+                            <div style="font-size: 13px; font-weight: 500; color: #374151;">{{ Auth::user()->name ?? 'Administrator' }}</div>
+                        </div>
+                      
+                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                           style="background: #dc2626; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; box-shadow: 0 3px 6px rgba(220, 38, 38, 0.3); color: white; text-decoration: none; white-space: nowrap; display: inline-block;">
+                            <i class="ti ti-arrow-left" style="margin-right: 5px;"></i>
+                            Keluar
                         </a>
                     </div>
 
-                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse" style="width: 100%; justify-content: space-between;">
-                        <div class="d-flex align-items-center">
-                            <div style="width: 30px; height: 30px; background: #3b82f6; border-radius: 6px; margin-right: 12px; display: flex; align-items: center; justify-content: center; position: relative;">
-                                <div style="width: 18px; height: 18px; background: white; border-radius: 3px; position: relative;"></div>
-                                <div style="position: absolute; top: 3px; left: 50%; transform: translateX(-50%); width: 12px; height: 4px; background: white; border-radius: 1px 1px 0 0;"></div>
-                            </div>
-                            <h4 style="margin: 0; color: #1f2937; font-weight: 700;">Sistem Poin Pelanggaran</h4>
-                        </div>
-                    <ul class="navbar-nav flex-row align-items-center">
-                        <li class="nav-item me-3">
-                            <div class="text-end">
-                                <div style="font-size: 12px; color: #6b7280; margin-bottom: 2px;">Administrator</div>
-                                <div style="font-size: 14px; font-weight: 600; color: #1f2937;">(ADMIN)</div>
-                            </div>
-                        </li>
-                        <li class="nav-item me-2">
-                            <div class="text-end">
-                                <div style="font-size: 11px; color: #9ca3af; margin-bottom: 1px;">Login sebagai</div>
-                                <div style="font-size: 13px; font-weight: 500; color: #374151;">{{ Auth::user()->name ?? 'Administrator' }}</div>
-                            </div>
-                        </li>
-                        <li class="nav-item me-2">
-                            <div class="text-end">
-                                <div style="font-size: 11px; color: #9ca3af; margin-bottom: 1px;">Terakhir login</div>
-                                <div style="font-size: 13px; font-weight: 500; color: #374151;">{{ now()->format('d/m/Y H:i') }}</div>
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                               class="btn btn-danger btn-sm" style="background: #dc2626 !important; border: none !important; padding: 10px 18px !important; border-radius: 8px !important; font-weight: 600 !important; box-shadow: 0 3px 6px rgba(220, 38, 38, 0.3) !important; transition: all 0.2s ease !important; color: white !important; text-decoration: none !important;">
-                                <i class="ti ti-arrow-left me-1"></i>
-                                Keluar
-                            </a>
-                        </li>
-                    </ul>
-                    </div>
-
-                    <!-- Search Small Screens -->
-                    <div class="navbar-search-wrapper search-input-wrapper d-none">
-                        <input type="text" class="form-control search-input container-xxl border-0"
-                            placeholder="Search..." aria-label="Search..." />
-                        <i class="ti ti-x ti-sm search-toggler cursor-pointer"></i>
-                    </div>
-                </nav>
+                </div>
 
                 <!-- / Navbar -->
 
                 <!-- Content wrapper -->
-                @yield('content')
+                <div class="content-wrapper content-with-fixed-header" style="flex: 1; display: flex; flex-direction: column; margin-top: 60px;">
+                    @yield('content')
+                </div>
+                
                 <!-- Footer -->
-                <footer class="content-footer footer bg-footer-theme">
+                <footer class="content-footer footer bg-footer-theme" style="margin-top: auto;">
                     @include('layouts.admin.footer')
                 </footer>
                 <!-- / Footer -->
-                <!-- Content wrapper -->
             </div>
             <!-- / Layout page -->
         </div>
@@ -271,6 +422,40 @@
     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
         @csrf
     </form>
+
+    <!-- Force Logout Button to be Visible -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Force logout button to be visible
+            const logoutButtons = document.querySelectorAll('a[href*="logout"], a[onclick*="logout"]');
+            logoutButtons.forEach(function(button) {
+                button.style.display = 'inline-block';
+                button.style.visibility = 'visible';
+                button.style.opacity = '1';
+                button.style.background = '#dc2626';
+                button.style.color = 'white';
+                button.style.padding = '10px 18px';
+                button.style.borderRadius = '8px';
+                button.style.fontWeight = '600';
+                button.style.textDecoration = 'none';
+                button.style.whiteSpace = 'nowrap';
+                button.style.position = 'relative';
+                button.style.zIndex = '9999';
+            });
+            
+            // Also check for any hidden logout buttons and make them visible
+            setTimeout(function() {
+                const allButtons = document.querySelectorAll('a');
+                allButtons.forEach(function(button) {
+                    if (button.href && button.href.includes('logout')) {
+                        button.style.display = 'inline-block';
+                        button.style.visibility = 'visible';
+                        button.style.opacity = '1';
+                    }
+                });
+            }, 1000);
+        });
+    </script>
 
 </body>
 

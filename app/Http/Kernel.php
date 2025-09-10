@@ -68,6 +68,9 @@ class Kernel extends HttpKernel
         'pengawas' => \App\Http\Middleware\PengawasMiddleware::class,
         'user' => \App\Http\Middleware\UserMiddleware::class,
         'checkSuperadminOrStakeholder' => \App\Http\Middleware\CheckSuperadminOrStakeholder::class,
+        'role.admin' => \App\Http\Middleware\AdminRoleMiddleware::class,
+        'role.guru' => \App\Http\Middleware\GuruRoleMiddleware::class,
+        'role.siswa' => \App\Http\Middleware\SiswaRoleMiddleware::class,
 
     ];
 }

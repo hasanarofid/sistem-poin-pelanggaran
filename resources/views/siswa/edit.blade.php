@@ -8,13 +8,13 @@
                 <div class="card-header">
                     <h3 class="card-title">Edit Data Siswa</h3>
                     <div class="card-tools">
-                        <a href="{{ route('siswa.index') }}" class="btn btn-secondary btn-sm">
+                        <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary btn-sm">
                             <i class="fas fa-arrow-left"></i> Kembali
                         </a>
                     </div>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('siswa.update', $siswa->id) }}" method="POST">
+                    <form action="{{ route('admin.siswa.update', $siswa->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="row">
@@ -163,7 +163,7 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i> Update
                             </button>
-                            <a href="{{ route('siswa.index') }}" class="btn btn-secondary">
+                            <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary">
                                 <i class="fas fa-times"></i> Batal
                             </a>
                         </div>

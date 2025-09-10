@@ -8,7 +8,7 @@
                 <div class="card-header">
                     <h3 class="card-title">Import Data Siswa</h3>
                     <div class="card-tools">
-                        <a href="{{ route('siswa.index') }}" class="btn btn-secondary btn-sm">
+                        <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary btn-sm">
                             <i class="fas fa-arrow-left"></i> Kembali
                         </a>
                     </div>
@@ -44,7 +44,7 @@
                         </ul>
                     </div>
 
-                    <form action="{{ route('siswa.import') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.siswa.import') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="form-group">
                             <label for="file">Pilih File Excel/CSV <span class="text-danger">*</span></label>
@@ -59,10 +59,10 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-upload"></i> Import Data
                             </button>
-                            <a href="{{ route('siswa.template.download') }}" class="btn btn-success">
+                            <a href="{{ route('admin.siswa.template.download') }}" class="btn btn-success">
                                 <i class="fas fa-download"></i> Download Template
                             </a>
-                            <a href="{{ route('siswa.index') }}" class="btn btn-secondary">
+                            <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary">
                                 <i class="fas fa-times"></i> Batal
                             </a>
                         </div>

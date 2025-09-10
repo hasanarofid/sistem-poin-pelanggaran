@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin.home')
 
 @section('content')
 <div class="container-fluid">
@@ -7,11 +7,6 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Edit Data Siswa</h3>
-                    <div class="card-tools">
-                        <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-arrow-left"></i> Kembali
-                        </a>
-                    </div>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('admin.siswa.update', $siswa->id) }}" method="POST">
@@ -158,13 +153,13 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-
+                        <br>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Update
+                                <i class="fas fa-save"></i> &nbsp; Update
                             </button>
                             <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Batal
+                                <i class="fas fa-arrow-left"></i> &nbsp; Kembali
                             </a>
                         </div>
                     </form>

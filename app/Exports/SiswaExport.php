@@ -45,8 +45,9 @@ class SiswaExport implements FromCollection, WithHeadings, WithMapping
      */
     public function map($siswa): array
     {
+        static $no_urut = 1; // Inisialisasi nomor urut
         return [
-            $siswa->id,
+            $no_urut++, // Menggunakan nomor urut dari jumlah data
             $siswa->nis,
             $siswa->nama,
             $siswa->kelas->nama_kelas ?? '',

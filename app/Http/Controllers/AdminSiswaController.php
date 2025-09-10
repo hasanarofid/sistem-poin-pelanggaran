@@ -9,6 +9,7 @@ use App\TahunAjaran;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SiswaExport;
+use App\Exports\TemplateSiswaExport;
 use App\Imports\SiswaImport;
 
 class AdminSiswaController extends Controller
@@ -28,9 +29,27 @@ class AdminSiswaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $siswa = Siswa::with(['kelas', 'tahunAjaran'])->paginate(10);
+        $query = Siswa::with(['kelas', 'tahunAjaran']);
+        
+        // Jika ada parameter search, tambahkan kondisi pencarian
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', '%' . $search . '%')
+                  ->orWhere('nis', 'like', '%' . $search . '%')
+                  ->orWhereHas('kelas', function($kelasQuery) use ($search) {
+                      $kelasQuery->where('nama_kelas', 'like', '%' . $search . '%')
+                                ->orWhere('subkelas', 'like', '%' . $search . '%');
+                  })
+                  ->orWhereHas('tahunAjaran', function($tahunQuery) use ($search) {
+                      $tahunQuery->where('tahun_ajaran', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+        
+        $siswa = $query->paginate(10);
         return view('siswa.index', compact('siswa'));
     }
 
@@ -185,9 +204,37 @@ class AdminSiswaController extends Controller
         }
 
         try {
-            Excel::import(new SiswaImport, $request->file('file'));
-            return redirect()->route('admin.siswa.index')
-                ->with('success', 'Data siswa berhasil diimpor.');
+            $import = new SiswaImport();
+            Excel::import($import, $request->file('file'));
+            
+            // Buat pesan berdasarkan hasil import
+            $messages = [];
+            
+            if ($import->successCount > 0) {
+                $messages[] = "Berhasil mengimpor {$import->successCount} data siswa.";
+            }
+            
+            if ($import->errorCount > 0) {
+                $errorMessage = "Terjadi {$import->errorCount} error:<br>";
+                foreach ($import->errors as $error) {
+                    $errorMessage .= "• " . $error . "<br>";
+                }
+                $messages[] = $errorMessage;
+            }
+            
+            if (empty($messages)) {
+                $messages[] = "Tidak ada data yang diproses.";
+            }
+            
+            // Jika ada error, tampilkan sebagai error, jika tidak tampilkan sebagai success
+            if ($import->errorCount > 0) {
+                return redirect()->back()
+                    ->with('error', implode("<br>", $messages));
+            } else {
+                return redirect()->route('admin.siswa.index')
+                    ->with('success', implode("<br>", $messages));
+            }
+            
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage());
@@ -201,6 +248,6 @@ class AdminSiswaController extends Controller
      */
     public function downloadTemplate()
     {
-        return Excel::download(new SiswaExport, 'template_siswa.xlsx');
+        return Excel::download(new TemplateSiswaExport, 'template_siswa.xlsx');
     }
 }

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin.home')
 
 @section('content')
 <div class="container-fluid">
@@ -7,16 +7,11 @@
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Import Data Siswa</h3>
-                    <div class="card-tools">
-                        <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-arrow-left"></i> Kembali
-                        </a>
-                    </div>
                 </div>
                 <div class="card-body">
                     @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
+                            {!! session('success') !!}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -25,15 +20,12 @@
 
                     @if(session('error'))
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            {{ session('error') }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
+                            {!! session('error') !!}
                         </div>
                     @endif
 
-                    <div class="alert alert-info">
-                        <h5><i class="icon fas fa-info"></i> Petunjuk Import Data Siswa</h5>
+                    <div class="alert" style="border: 1px solid #17a2b8; padding: 15px; border-radius: 5px;">
+                        <h5 style=" font-weight: bold;"><i class="icon fas fa-info-circle"></i> Petunjuk Import Data Siswa</h5>
                         <ul>
                             <li>File harus berformat Excel (.xlsx, .xls) atau CSV</li>
                             <li>Baris pertama harus berisi header kolom</li>
@@ -54,16 +46,16 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-
+                        <br>
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-upload"></i> Import Data
+                                <i class="fas fa-upload"></i> &nbsp; Import Data
                             </button>
                             <a href="{{ route('admin.siswa.template.download') }}" class="btn btn-success">
-                                <i class="fas fa-download"></i> Download Template
+                                <i class="fas fa-download"></i> &nbsp; Download Template
                             </a>
                             <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Batal
+                                <i class="fas fa-arrow-left"></i> &nbsp; Kembali
                             </a>
                         </div>
                     </form>

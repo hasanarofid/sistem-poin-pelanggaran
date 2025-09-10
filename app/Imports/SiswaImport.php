@@ -12,15 +12,25 @@ use Illuminate\Support\Facades\Validator;
 
 class SiswaImport implements ToCollection, WithHeadingRow
 {
+    public $errors = [];
+    public $successCount = 0;
+    public $errorCount = 0;
+
     /**
     * @param Collection $collection
     */
     public function collection(Collection $collection)
     {
-        foreach ($collection as $row) {
+        $this->errors = [];
+        $this->successCount = 0;
+        $this->errorCount = 0;
+        
+        $hasError = false; // Flag untuk mengecek apakah ada error
+
+        foreach ($collection as $index => $row) {
             // Validasi data
             $validator = Validator::make($row->toArray(), [
-                'nis' => 'required|string|max:255',
+                'nis' => 'required|max:255',
                 'nama' => 'required|string|max:255',
                 'kelas' => 'required|string|max:255',
                 'subkelas' => 'required|string|max:255',
@@ -30,56 +40,98 @@ class SiswaImport implements ToCollection, WithHeadingRow
                 'tanggal_lahir' => 'required|date',
                 'alamat' => 'required|string',
                 'tahun_ajaran' => 'required|string|max:255',
-                'rfid' => 'nullable|string|max:255',
+                'rfid' => 'nullable|max:255',
                 'finger' => 'nullable|string|max:255',
+            ], [
+                'nis.required' => 'NIS wajib diisi.',
+                'nis.max' => 'NIS tidak boleh lebih dari 255 karakter.',
+                'nama.required' => 'Nama wajib diisi.',
+                'nama.string' => 'Nama harus berupa string.',
+                'nama.max' => 'Nama tidak boleh lebih dari 255 karakter.',
+                'kelas.required' => 'Kelas wajib diisi.',
+                'kelas.string' => 'Kelas harus berupa string.',
+                'kelas.max' => 'Kelas tidak boleh lebih dari 255 karakter.',
+                'subkelas.required' => 'Subkelas wajib diisi.',
+                'subkelas.string' => 'Subkelas harus berupa string.',
+                'subkelas.max' => 'Subkelas tidak boleh lebih dari 255 karakter.',
+                'hp_orang_tua.string' => 'HP Orang Tua harus berupa string.',
+                'hp_orang_tua.max' => 'HP Orang Tua tidak boleh lebih dari 20 karakter.',
+                'jenis_kelamin.required' => 'Jenis kelamin wajib diisi.',
+                'jenis_kelamin.in' => 'Jenis kelamin harus L atau P.',
+                'tempat_lahir.required' => 'Tempat lahir wajib diisi.',
+                'tempat_lahir.string' => 'Tempat lahir harus berupa string.',
+                'tempat_lahir.max' => 'Tempat lahir tidak boleh lebih dari 255 karakter.',
+                'tanggal_lahir.required' => 'Tanggal lahir wajib diisi.',
+                'tanggal_lahir.date' => 'Tanggal lahir harus berupa tanggal yang valid.',
+                'alamat.required' => 'Alamat wajib diisi.',
+                'alamat.string' => 'Alamat harus berupa string.',
+                'tahun_ajaran.required' => 'Tahun ajaran wajib diisi.',
+                'tahun_ajaran.string' => 'Tahun ajaran harus berupa string.',
+                'tahun_ajaran.max' => 'Tahun ajaran tidak boleh lebih dari 255 karakter.',
+                'rfid.max' => 'RFID tidak boleh lebih dari 255 karakter.',
+                'finger.string' => 'Finger harus berupa string.',
+                'finger.max' => 'Finger tidak boleh lebih dari 255 karakter.',
             ]);
 
             if ($validator->fails()) {
-                continue; // Skip row jika validasi gagal
+                $this->errorCount++;
+                $this->errors[] = "Baris " . ($index + 2) . ": " . implode(', ', $validator->errors()->all());
+                $hasError = true; // Set flag jika ada error
             }
+        }
 
-            // Cari atau buat kelas
-            $kelas = Kelas::firstOrCreate(
-                [
-                    'nama_kelas' => $row['kelas'],
-                    'subkelas' => $row['subkelas']
-                ],
-                [
-                    'nama_kelas' => $row['kelas'],
-                    'subkelas' => $row['subkelas'],
-                    'status' => true
-                ]
-            );
+        // Jika tidak ada error, simpan data
+        if (!$hasError) {
+            foreach ($collection as $index => $row) {
+                // Cari atau buat kelas
+                $kelas = Kelas::firstOrCreate(
+                    [
+                        'nama_kelas' => $row['kelas'],
+                        'subkelas' => $row['subkelas']
+                    ],
+                    [
+                        'nama_kelas' => $row['kelas'],
+                        'subkelas' => $row['subkelas'],
+                        'status' => true
+                    ]
+                );
 
-            // Cari atau buat tahun ajaran
-            $tahunAjaran = TahunAjaran::firstOrCreate(
-                ['tahun_ajaran' => $row['tahun_ajaran']],
-                [
-                    'tahun_ajaran' => $row['tahun_ajaran'],
-                    'tanggal_mulai' => now()->startOfYear(),
-                    'tanggal_selesai' => now()->endOfYear(),
-                    'status' => false
-                ]
-            );
+                // Cari atau buat tahun ajaran
+                $tahunAjaran = TahunAjaran::firstOrCreate(
+                    ['tahun_ajaran' => $row['tahun_ajaran']],
+                    [
+                        'tahun_ajaran' => $row['tahun_ajaran'],
+                        'tanggal_mulai' => now()->startOfYear(),
+                        'tanggal_selesai' => now()->endOfYear(),
+                        'status' => false
+                    ]
+                );
 
-            // Cari atau buat siswa
-            Siswa::updateOrCreate(
-                ['nis' => $row['nis']],
-                [
-                    'nis' => $row['nis'],
-                    'nama' => $row['nama'],
-                    'kelas_id' => $kelas->id,
-                    'hp_orang_tua' => $row['hp_orang_tua'],
-                    'jenis_kelamin' => $row['jenis_kelamin'],
-                    'tempat_lahir' => $row['tempat_lahir'],
-                    'tanggal_lahir' => $row['tanggal_lahir'],
-                    'alamat' => $row['alamat'],
-                    'tahun_ajaran_id' => $tahunAjaran->id,
-                    'rfid' => $row['rfid'],
-                    'finger' => $row['finger'],
-                    'status' => true
-                ]
-            );
+                try {
+                    // Cari atau buat siswa
+                    Siswa::updateOrCreate(
+                        ['nis' => $row['nis']],
+                        [
+                            'nis' => $row['nis'],
+                            'nama' => $row['nama'],
+                            'kelas_id' => $kelas->id,
+                            'hp_orang_tua' => $row['hp_orang_tua'],
+                            'jenis_kelamin' => $row['jenis_kelamin'],
+                            'tempat_lahir' => $row['tempat_lahir'],
+                            'tanggal_lahir' => $row['tanggal_lahir'],
+                            'alamat' => $row['alamat'],
+                            'tahun_ajaran_id' => $tahunAjaran->id,
+                            'rfid' => $row['rfid'],
+                            'finger' => $row['finger'],
+                            'status' => true
+                        ]
+                    );
+                    $this->successCount++;
+                } catch (\Exception $e) {
+                    $this->errorCount++;
+                    $this->errors[] = "Baris " . ($index + 2) . ": Error database - " . $e->getMessage();
+                }
+            }
         }
     }
 }

@@ -338,10 +338,7 @@
                     
                     <!-- Left Side: Logo and Title -->
                     <div style="display: flex; align-items: center;">
-                        <div style="width: 30px; height: 30px; background: #3b82f6; border-radius: 6px; margin-right: 12px; display: flex; align-items: center; justify-content: center; position: relative;">
-                            <div style="width: 18px; height: 18px; background: white; border-radius: 3px; position: relative;"></div>
-                            <div style="position: absolute; top: 3px; left: 50%; transform: translateX(-50%); width: 12px; height: 4px; background: white; border-radius: 1px 1px 0 0;"></div>
-                        </div>
+                        <img src="{{ asset('logopoint.png') }}" style="height:50px;" alt="">
                         <h4 style="margin: 0; color: #1f2937; font-weight: 700;">Sistem Poin Pelanggaran</h4>
                     </div>
                     <!-- Right Side: User Info and Logout Button -->

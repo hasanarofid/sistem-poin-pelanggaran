@@ -242,7 +242,10 @@
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <div class="logo-icon"></div>
+                
+                {{-- <div class="logo-icon"> --}}
+                    <img src="{{ asset('logopoint.png') }}" style="height:100px;" alt="">
+                {{-- </div> --}}
                 <h1 class="title">Sistem Poin Pelanggaran</h1>
                 <p class="subtitle">SMKN 12 Kabupaten Tangerang</p>
                 <div class="divider"></div>

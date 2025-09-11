@@ -8,8 +8,8 @@
     <title>@yield('title') | Sistem Poin Pelanggaran</title>
     
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
-    <link rel="icon" type="image/png" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('logopoint.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('logopoint.png') }}">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -30,6 +30,6 @@ class CreateJenisPelanggaranM extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('jenis_pelanggaran_m');
+        Schema::dropIfExists('jenis_pelanggaran');
     }
 }

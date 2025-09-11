@@ -11,6 +11,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SiswaExport;
 use App\Exports\TemplateSiswaExport;
 use App\Imports\SiswaImport;
+use App\User;
+use Illuminate\Support\Facades\Hash;
 
 class AdminSiswaController extends Controller
 {
@@ -88,7 +90,16 @@ class AdminSiswaController extends Controller
                 ->withInput();
         }
 
+        $user = User::create([
+            'name' => $request->nama,
+            'username' => $request->nis,
+            'password' => Hash::make('siswa123'),
+            'role' => 'siswa',
+            'alamat_lengkap' => $request->alamat,
+        ]);
+        $request->merge(['user_id' => $user->id]);
         Siswa::create($request->all());
+
 
         return redirect()->route('admin.siswa.index')
             ->with('success', 'Siswa berhasil ditambahkan.');
@@ -194,14 +205,16 @@ class AdminSiswaController extends Controller
      */
     public function import(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:xlsx,xls,csv'
-        ]);
+        ini_set('max_execution_time', 300);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator);
-        }
+        // $validator = Validator::make($request->all(), [
+        //     'file' => 'required|mimes:xlsx,xls,csv'
+        // ]);
+
+        // if ($validator->fails()) {
+        //     return redirect()->back()
+        //         ->withErrors($validator);
+        // }
 
         try {
             $import = new SiswaImport();

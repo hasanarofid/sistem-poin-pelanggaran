@@ -18,6 +18,7 @@ class CreateSiswaTable extends Migration
             $table->string('nis')->unique(); // Nomor Induk Siswa
             $table->string('nama');
             $table->unsignedBigInteger('kelas_id');
+            $table->unsignedBigInteger('user_id');
             $table->string('hp_orang_tua')->nullable();
             $table->enum('jenis_kelamin', ['L', 'P']);
             $table->string('tempat_lahir');
@@ -31,6 +32,7 @@ class CreateSiswaTable extends Migration
 
             $table->foreign('kelas_id')->references('id')->on('kelas')->onDelete('cascade');
             $table->foreign('tahun_ajaran_id')->references('id')->on('tahun_ajaran')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

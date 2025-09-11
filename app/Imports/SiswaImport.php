@@ -5,7 +5,9 @@ namespace App\Imports;
 use App\Siswa;
 use App\Kelas;
 use App\TahunAjaran;
+use App\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Illuminate\Support\Facades\Validator;
@@ -34,7 +36,7 @@ class SiswaImport implements ToCollection, WithHeadingRow
                 'nama' => 'required|string|max:255',
                 'kelas' => 'required|string|max:255',
                 'subkelas' => 'required|string|max:255',
-                'hp_orang_tua' => 'nullable|string|max:20',
+                'hp_orang_tua' => 'nullable|max:20',
                 'jenis_kelamin' => 'required|in:L,P',
                 'tempat_lahir' => 'required|string|max:255',
                 'tanggal_lahir' => 'required|date',
@@ -54,7 +56,6 @@ class SiswaImport implements ToCollection, WithHeadingRow
                 'subkelas.required' => 'Subkelas wajib diisi.',
                 'subkelas.string' => 'Subkelas harus berupa string.',
                 'subkelas.max' => 'Subkelas tidak boleh lebih dari 255 karakter.',
-                'hp_orang_tua.string' => 'HP Orang Tua harus berupa string.',
                 'hp_orang_tua.max' => 'HP Orang Tua tidak boleh lebih dari 20 karakter.',
                 'jenis_kelamin.required' => 'Jenis kelamin wajib diisi.',
                 'jenis_kelamin.in' => 'Jenis kelamin harus L atau P.',
@@ -108,6 +109,18 @@ class SiswaImport implements ToCollection, WithHeadingRow
                 );
 
                 try {
+                    // Cari atau buat user
+                    $user = User::updateOrCreate(
+                        ['username' => $row['nis']],
+                        [
+                            'name' => $row['nama'],
+                            'username' => $row['nis'],
+                            'password' => Hash::make('siswa123'),
+                            'role' => 'siswa',
+                            'alamat_lengkap' => $row['alamat'],
+                        ]
+                    );
+                    
                     // Cari atau buat siswa
                     Siswa::updateOrCreate(
                         ['nis' => $row['nis']],
@@ -115,6 +128,7 @@ class SiswaImport implements ToCollection, WithHeadingRow
                             'nis' => $row['nis'],
                             'nama' => $row['nama'],
                             'kelas_id' => $kelas->id,
+                            'user_id' => $user->id,
                             'hp_orang_tua' => $row['hp_orang_tua'],
                             'jenis_kelamin' => $row['jenis_kelamin'],
                             'tempat_lahir' => $row['tempat_lahir'],
@@ -126,6 +140,7 @@ class SiswaImport implements ToCollection, WithHeadingRow
                             'status' => true
                         ]
                     );
+
                     $this->successCount++;
                 } catch (\Exception $e) {
                     $this->errorCount++;

@@ -53,4 +53,28 @@ class InputPelanggaranController extends Controller
             ->route('admin.input-pelanggaran.index')
             ->with('success', 'Data berhasil dihapus');
     }
+
+    public function edit($id)
+    {
+        $pelanggaran = InputPelanggaranT::findOrFail($id);
+        return response()->json($pelanggaran);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'siswa_id' => 'required',
+            'jenis_pelanggaran_id' => 'required',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        $pelanggaran = InputPelanggaranT::findOrFail($id);
+        $pelanggaran->update([
+            'siswa_id' => $request->siswa_id,
+            'jenis_pelanggaran_id' => $request->jenis_pelanggaran_id,
+            'keterangan' => $request->keterangan,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Input Pelanggaran berhasil diperbarui']);
+    }
 }

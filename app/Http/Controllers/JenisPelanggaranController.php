@@ -22,7 +22,7 @@ class JenisPelanggaranController extends Controller
             'nama_pelanggaran' => 'required|string|max:255',
             'kategori_id'      => 'required|integer',
             'poin'             => 'required|integer|min:1|max:50',
-            'deskripsi'        => 'nullable|string',
+            'deskripsi'        => 'nullable',
         ]);
 
         JenisPelanggaran::create([
@@ -56,14 +56,6 @@ class JenisPelanggaranController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Validasi input
-        $request->validate([
-            'nama_pelanggaran' => 'required|string|max:255',
-            'kategori_id' => 'required|exists:kategori,id',
-            'poin' => 'required|integer|min:1|max:50',
-            'deskripsi' => 'nullable|string',
-        ]);
-
         // Cari data
         $pelanggaran = JenisPelanggaran::findOrFail($id);
 

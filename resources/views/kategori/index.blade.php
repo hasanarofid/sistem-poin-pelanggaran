@@ -90,7 +90,7 @@
 
                     <!-- Kategori -->
                     <div class="mb-3">
-                        <label for="is_aktif" class="form-label">Kategori</label>
+                        <label for="is_aktif" class="form-label">Status</label>
                         <select id="is_aktif" name="is_aktif" class="form-select">
                             <option value="">Pilih Status...</option>
                             <option value="1">Aktif</option>

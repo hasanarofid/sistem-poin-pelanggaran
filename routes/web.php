@@ -79,7 +79,10 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
         Route::get('/', 'InputPelanggaranController@index')->name('index');
         Route::post('/store', 'InputPelanggaranController@store')->name('store');
         Route::delete('/admin/input-pelanggaran/{id}', 'InputPelanggaranController@destroy')->name('destroy');
+        Route::get('/{id}/edit', 'InputPelanggaranController@edit')->name('edit');
+        Route::put('/{id}/update', 'InputPelanggaranController@update')->name('update');
     });
+    
     // route menu laporan untuk admin
     Route::prefix('laporan')->group(function () {
         Route::get('/', 'LaporanController@index')->name('laporan.index');

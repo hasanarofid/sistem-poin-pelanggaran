@@ -48,7 +48,7 @@
                                             class="btn btn-sm btn-warning btnEditJenisPelanggaran"
                                             data-id="{{ $pelanggaran->id }}"
                                             data-nama="{{ $pelanggaran->nama_pelanggaran }}"
-                                            data-kategori="{{ $pelanggaran->kategori->kategori_id }}"
+                                            data-kategori="{{ $pelanggaran->kategori_id }}"
                                             data-poin="{{ $pelanggaran->poin }}"
                                             data-deskripsi="{{ $pelanggaran->deskripsi }}">
                                             <i class="ti ti-edit"></i>
@@ -256,8 +256,8 @@
         let formData = $(this).serialize();
 
         $.ajax({
-            url: "/admin/jenis-pelanggaran/" + id, // sesuaikan dengan route update
-            type: "POST", // tetap POST, karena ada @method('PUT')
+            url: "/admin/jenis-pelanggaran/" + id + "/update",
+            type: "PUT",
             data: formData,
             success: function(res) {
                 if (res.success) {

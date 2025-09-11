@@ -17,7 +17,7 @@ class CreateInputPelanggaranT extends Migration
             $table->id();
             $table->integer('siswa_id');
             $table->integer('jenis_pelanggaran_id');
-            $table->text('keterangan');
+            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }

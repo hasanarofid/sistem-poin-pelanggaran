@@ -41,12 +41,7 @@
                                 <td>
                                     <div class="d-flex gap-2">
                                         <button type="button"
-                                            class="btn btn-sm btn-warning btnEditKategori"
-                                            data-id="{{ $value->id }}"
-                                            data-nama="{{ $value->nama_kategori }}"
-                                            data-aktif="{{ $value->is_aktif }}"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modalEditKategori">
+                                            class="btn btn-sm btn-warning btnEditKategori">
                                             <i class="ti ti-edit"></i>
                                         </button>
                                         <form action="{{ route('admin.kategori.destroy', $value->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
@@ -117,42 +112,50 @@
 </div>
 
 <!-- MODAL EDIT -->
-<div class="modal fade" id="modalEditKategori" tabindex="-1" aria-hidden="true">
+<!-- Modal Edit Kategori -->
+<div class="modal fade" id="modalEditKategori" tabindex="-1" aria-labelledby="modalEditKategoriLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
+            <!-- Header -->
             <div class="modal-header">
-                <h5 class="modal-title">Edit Kategori</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title fw-bold" id="modalEditKategoriLabel">Edit Kategori</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
 
-            <form id="formEditKategori" method="POST">
-                @csrf
-                @method('PUT')
-                <div class="modal-body">
+            <!-- Body -->
+            <div class="modal-body">
+                <form id="formEditKategori">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" id="edit_id" name="id">
+
                     <div class="mb-3">
                         <label for="edit_nama_kategori" class="form-label">Nama Kategori</label>
                         <input type="text" class="form-control" id="edit_nama_kategori" name="nama_kategori" required>
                     </div>
+
                     <div class="mb-3">
                         <label for="edit_is_aktif" class="form-label">Status</label>
-                        <select id="edit_is_aktif" name="is_aktif" class="form-select">
+                        <select class="form-select" id="edit_is_aktif" name="is_aktif" required>
                             <option value="1">Aktif</option>
                             <option value="0">Tidak Aktif</option>
                         </select>
                     </div>
-                </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success">Update</button>
-                </div>
-            </form>
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+
         </div>
     </div>
 </div>
+
 @endsection
-@section('js')
+@section('script')
 <script>
     $(document).ready(function() {
         // Submit form tambah pelanggaran
@@ -186,20 +189,47 @@
                 }
             });
         });
-
     });
 
     $(document).on("click", ".btnEditKategori", function() {
-        let id = $(this).data("id");
-        let nama = $(this).data("nama");
-        let aktif = $(this).data("aktif");
-        
-        // isi ke form
-        $("#edit_nama_kategori").val(nama);
-        $("#edit_is_aktif").val(aktif);
+        let row = $(this).closest("tr");
+        let id = row.find("form").attr("action").split("/").pop(); // ambil ID dari action form delete
+        let nama_kategori = row.find("td:eq(1)").text().trim();
+        let status = row.find("td:eq(2)").text().trim() === "Aktif" ? 1 : 0;
 
-        // set action form ke update route
-        $("#formEditKategori").attr("action", "/kategori/" + id + "/update");
+        // Set nilai ke modal
+        $("#edit_id").val(id);
+        $("#edit_nama_kategori").val(nama_kategori);
+        $("#edit_is_aktif").val(status);
+
+        // Tampilkan modal
+        $("#modalEditKategori").modal("show");
+    });
+
+    // Submit form Edit
+    $("#formEditKategori").on("submit", function(e) {
+        e.preventDefault();
+
+        let id = $("#edit_id").val();
+        let formData = $(this).serialize();
+
+        $.ajax({
+            url: "/admin/kategori/" + id + "/update", // ✅ sesuai route
+            type: "POST", // tetap POST karena ada @method('PUT') di form
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    $("#modalEditKategori").modal("hide");
+                    location.reload();
+                } else {
+                    alert(response.message || "Gagal update data");
+                }
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText);
+                alert("Terjadi kesalahan saat update!");
+            }
+        });
     });
 </script>
 

@@ -66,6 +66,7 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
     Route::prefix('jenis-pelanggaran')->name('admin.jenis-pelanggaran.')->group(function () {
         Route::get('/', 'JenisPelanggaranController@index')->name('index');
         Route::post('/store', 'JenisPelanggaranController@store')->name('store');
+        Route::put('/{id}/update', 'JenisPelanggaranController@update')->name('update');
         Route::delete('/admin/jenis-pelanggaran/{id}', 'JenisPelanggaranController@destroy')->name('destroy');
     });
     Route::prefix('kategori')->name('admin.kategori.')->group(function () {
@@ -74,7 +75,11 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
         Route::put('/{id}/update', 'KategoriController@update')->name('update');
         Route::delete('/admin/kategori/{id}', 'KategoriController@destroy')->name('destroy');
     });
-    
+    Route::prefix('input-pelanggaran')->name('admin.input-pelanggaran.')->group(function () {
+        Route::get('/', 'InputPelanggaranController@index')->name('index');
+        Route::post('/store', 'InputPelanggaranController@store')->name('store');
+        Route::delete('/admin/input-pelanggaran/{id}', 'InputPelanggaranController@destroy')->name('destroy');
+    });
     // route menu laporan untuk admin
     Route::prefix('laporan')->group(function () {
         Route::get('/', 'LaporanController@index')->name('laporan.index');

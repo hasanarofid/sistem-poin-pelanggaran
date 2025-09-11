@@ -53,10 +53,10 @@
                     <div data-i18n="Profile">Jenis Pelanggaran</div>
                 </a>
             </li>
-            <li class="menu-item {{ request()->routeIs('input-pelanggaran.*') ? 'active' : '' }}" style="margin: 2px 10px;">
-                <a href="{{ route('input-pelanggaran.index') }}"
+            <li class="menu-item {{ request()->routeIs('admin.input-pelanggaran.*') ? 'active' : '' }}" style="margin: 2px 10px;">
+                <a href="{{ route('admin.input-pelanggaran.index') }}"
                     class="menu-link"
-                    style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('input-pelanggaran.*') ? 'background: #4a5568 !important;' : '' }}">
+                    style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('admin.input-pelanggaran.*') ? 'background: #4a5568 !important;' : '' }}">
                     <i class="menu-icon tf-icons ti ti-edit" style="margin-right: 12px;"></i>
                     <div data-i18n="Profile">Input Pelanggaran</div>
                 </a>

@@ -53,17 +53,17 @@ class KategoriController extends Controller
     {
         $request->validate([
             'nama_kategori' => 'required|string|max:255',
-            'is_aktif'      => 'required|boolean',
+            'is_aktif' => 'required|in:0,1',
         ]);
 
         $kategori = Kategori::findOrFail($id);
-        $kategori->update([
-            'nama_kategori' => $request->nama_kategori,
-            'is_aktif'      => $request->is_aktif,
-        ]);
+        $kategori->nama_kategori = $request->nama_kategori;
+        $kategori->is_aktif = $request->is_aktif;
+        $kategori->save();
 
-        return redirect()
-            ->route('admin.kategori.index')
-            ->with('success', 'Kategori berhasil diperbarui');
+        return response()->json([
+            'success' => true,
+            'message' => 'Kategori berhasil diperbarui'
+        ]);
     }
 }

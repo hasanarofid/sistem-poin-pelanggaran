@@ -12,7 +12,7 @@ class InputPelanggaranT extends Model
 
     public function jenispelanggaran()
     {
-        return $this->belongsTo(jenispelanggaran::class, 'jenis_pelanggaran_id');
+        return $this->belongsTo(JenisPelanggaran::class, 'jenis_pelanggaran_id');
     }
 
     public function siswa()

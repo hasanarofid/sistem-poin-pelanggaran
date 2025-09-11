@@ -18,7 +18,7 @@ class CreateJenisPelanggaranM extends Migration
             $table->integer('kategori_id');
             $table->string('nama_pelanggaran');
             $table->string('poin');
-            $table->string('deskripsi');
+            $table->text('deskripsi')->nullable();
             $table->timestamps();
         });
     }

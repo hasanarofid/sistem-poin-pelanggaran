@@ -344,11 +344,10 @@
                         </div>
                         <h4 style="margin: 0; color: #1f2937; font-weight: 700;">Sistem Poin Pelanggaran</h4>
                     </div>
-
                     <!-- Right Side: User Info and Logout Button -->
                     <div style="display: flex; align-items: center; gap: 20px;">
                         <div style="text-align: right;">
-                            <div style="font-size: 11px; color: #9ca3af; margin-bottom: 1px;">Login sebagai</div>
+                            <div style="font-size: 11px; color: #9ca3af; margin-bottom: 1px;"> Login Sebagai {{ ucwords(Auth::user()->role) }}</div>
                             <div style="font-size: 13px; font-weight: 500; color: #374151;">{{ Auth::user()->name ?? 'Administrator' }}</div>
                         </div>
                       

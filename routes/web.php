@@ -127,6 +127,7 @@ Route::prefix('guru')->middleware(['auth', 'role.guru'])->group(function () {
 Route::prefix('siswa')->middleware(['auth', 'role.siswa'])->group(function () {
     Route::get('/dashboard', 'SiswaController@dashboard')->name('siswa.dashboard');
     Route::get('/profile', 'SiswaController@profile')->name('siswa.profile');
+    Route::post('/ubah-password/{id}', 'SiswaController@ubahPassword')->name('siswa.ubah-password');
 });
 
 Auth::routes();

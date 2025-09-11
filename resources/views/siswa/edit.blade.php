@@ -144,6 +144,21 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="finger">Status</label>
+                                    <select class="form-control @error('status') is-invalid @enderror" 
+                                            id="status" name="status">
+                                        <option value="1" {{ old('status', $siswa->status) == 1 ? 'selected' : '' }}>Aktif</option>
+                                        <option value="0" {{ old('status', $siswa->status) == 0 ? 'selected' : '' }}>Tidak Aktif</option>
+                                    </select>
+                                    @error('status')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="form-group">
                             <label for="alamat">Alamat <span class="text-danger">*</span></label>

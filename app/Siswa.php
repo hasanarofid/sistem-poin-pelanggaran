@@ -19,7 +19,8 @@ class Siswa extends Model
         'tahun_ajaran_id',
         'rfid',
         'finger',
-        'status'
+        'status',
+        'user_id'
     ];
 
     protected $casts = [

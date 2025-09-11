@@ -11,7 +11,7 @@ class JenisPelanggaranController extends Controller
     //index
     public function index()
     {
-        $jenisPelanggaran = JenisPelanggaran::get();
+        $jenisPelanggaran = JenisPelanggaran::with('kategori')->get();
         $kategori = Kategori::where('is_aktif', true)->get();
         return view('jenispelanggaran.index', compact('jenisPelanggaran', 'kategori'));
     }
@@ -52,5 +52,32 @@ class JenisPelanggaranController extends Controller
         return redirect()
             ->route('admin.jenis-pelanggaran.index')
             ->with('success', 'Data berhasil dihapus');
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Validasi input
+        $request->validate([
+            'nama_pelanggaran' => 'required|string|max:255',
+            'kategori_id' => 'required|exists:kategori,id',
+            'poin' => 'required|integer|min:1|max:50',
+            'deskripsi' => 'nullable|string',
+        ]);
+
+        // Cari data
+        $pelanggaran = JenisPelanggaran::findOrFail($id);
+
+        // Update data
+        $pelanggaran->nama_pelanggaran = $request->nama_pelanggaran;
+        $pelanggaran->kategori_id = $request->kategori_id;
+        $pelanggaran->poin = $request->poin;
+        $pelanggaran->deskripsi = $request->deskripsi;
+        $pelanggaran->save();
+
+        // Kalau pakai AJAX, balikan JSON
+        return response()->json([
+            'success' => true,
+            'message' => 'Jenis pelanggaran berhasil diperbarui'
+        ]);
     }
 }

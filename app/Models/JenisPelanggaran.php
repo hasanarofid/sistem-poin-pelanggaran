@@ -15,8 +15,8 @@ class JenisPelanggaran extends Model
         'deskripsi',
     ];
 
-    // public function kategori()
-    // {
-    //     return $this->belongsTo(Kategori::class, 'kategori_id');
-    // }
+    public function kategori()
+    {
+        return $this->belongsTo(Kategori::class, 'kategori_id');
+    }
 }

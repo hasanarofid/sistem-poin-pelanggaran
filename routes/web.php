@@ -86,6 +86,8 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
     // route menu laporan untuk admin
     Route::prefix('laporan')->group(function () {
         Route::get('/', 'LaporanController@index')->name('laporan.index');
+        Route::get('/setkelas', 'LaporanController@setkelas')->name('laporan.setkelas');
+        Route::get('/export/excel', 'LaporanController@export')->name('laporan.export');
     });
 
     // route menu siswa untuk admin (CRUD lengkap)
@@ -101,6 +103,7 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
         Route::get('/import/form', 'AdminSiswaController@importForm')->name('admin.siswa.import.form');
         Route::post('/import', 'AdminSiswaController@import')->name('admin.siswa.import');
         Route::get('/template/download', 'AdminSiswaController@downloadTemplate')->name('admin.siswa.template.download');
+        Route::post('/updatekelas', 'AdminSiswaController@updateKelas')->name('admin.siswa.updatekelas');
     });
 });
 
@@ -109,6 +112,8 @@ Route::prefix('guru')->middleware(['auth', 'role.guru'])->group(function () {
     Route::get('/dashboard', 'GuruController@dashboard')->name('guru.dashboard');
     Route::get('/input-pelanggaran', 'InputPelanggaranController@index')->name('guru.input-pelanggaran');
     Route::get('/laporan', 'LaporanController@index')->name('guru.laporan');
+    Route::get('/laporan/setkelas', 'LaporanController@setkelas')->name('laporan.setkelas');
+    Route::get('/export/excel', 'LaporanController@export')->name('laporan.export');
 
     // route menu siswa untuk guru (CRUD lengkap)
     Route::prefix('siswa')->group(function () {
@@ -123,6 +128,7 @@ Route::prefix('guru')->middleware(['auth', 'role.guru'])->group(function () {
         Route::get('/import/form', 'GuruController@siswaImportForm')->name('guru.siswa.import.form');
         Route::post('/import', 'GuruController@siswaImport')->name('guru.siswa.import');
         Route::get('/template/download', 'GuruController@siswaDownloadTemplate')->name('guru.siswa.template.download');
+        Route::post('/updatekelas', 'GuruController@updateKelas')->name('guru.siswa.updatekelas');
     });
 });
 

@@ -1,3 +1,4 @@
+{{-- Start of Selection --}}
 @extends('layouts.admin.home')
 @section('title', 'Data Siswa')
 @section('titelcard', 'Data Siswa')
@@ -73,7 +74,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card" style="border: 1px solid #e5e7eb; border-radius: 8px;">
-                <div class="card-body" style="padding: 0;">
+                <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-bordered mb-0" style="border: none;">
                             <thead style="background-color: #f8f9fa;">
@@ -85,7 +86,7 @@
                                     <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">JENIS KELAMIN</th>
                                     <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">TAHUN AJARAN</th>
                                     <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">STATUS</th>
-                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">AKSI</th>
+                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none; text-align: center;">AKSI</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -110,6 +111,49 @@
                                             <a href="{{ request()->routeIs('admin.*') ? route('admin.siswa.edit', $item->id) : route('guru.siswa.edit', $item->id) }}" class="btn btn-sm" style="background: #059669; color: white; border: none; border-radius: 6px; padding: 6px 10px;">
                                                 <i class="ti ti-edit"></i>
                                             </a>
+                                            <!-- Button trigger modal -->
+                                            <button type="button" class="btn btn-sm" style="background: #f0ec0d; color: white; border: none; border-radius: 6px; padding: 6px 10px;" data-bs-toggle="modal" data-bs-target="#updateKelasModal{{ $item->id }}">
+                                                <i class="ti ti-refresh"></i>
+                                            </button>
+
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="updateKelasModal{{ $item->id }}" tabindex="-1" aria-labelledby="updateKelasModalLabel{{ $item->id }}" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="updateKelasModalLabel{{ $item->id }}">Update Kelas</h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            @php
+                                                                $kelas = \App\Kelas::find($item->kelas_id);
+                                                            @endphp
+                                                            <form action="{{ request()->routeIs('admin.*') ? route('admin.siswa.updatekelas', $item->id) : route('guru.siswa.updatekelas', $item->id) }}" method="POST">
+                                                                @csrf
+                                                                <div class="mb-3">
+                                                                    <label for="kelas" class="form-label">Dari Kelas</label>
+                                                                    <input type="text" class="form-control" id="darikelas" name="darikelas" value="{{ $kelas->nama_kelas . ' - ' . $kelas->subkelas }}" readonly>
+                                                                    <input type="text" class="form-control" id="id" name="id" value="{{ $item->id }}" hidden>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="kelas" class="form-label">Ke Kelas <span class="text-danger">*</span></label>
+                                                                    <select id="kelas{{ $item->id }}" class="form-select @error('kelas') is-invalid @enderror" name="kelas">
+                                                                        <option value="">Pilih Kelas</option>
+                                                                        @foreach($listKelas as $k)
+                                                                            <option value="{{ $k->id }}" {{ old('kelas') == $k->id ? 'selected' : '' }}>{{ $k->nama_kelas . ' - ' . $k->subkelas }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                    @error('kelas')
+                                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                                    @enderror
+                                                                </div>
+                                                                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <form action="{{ request()->routeIs('admin.*') ? route('admin.siswa.destroy', $item->id) : route('guru.siswa.destroy', $item->id) }}" method="POST" style="display: inline-block;">
                                                 @csrf
                                                 @method('DELETE')
@@ -173,5 +217,26 @@
     background-color: #f9fafb;
     border-color: #e5e7eb;
 }
+
+/* Error styling untuk modal */
+.modal .is-invalid {
+    border-color: #dc3545 !important;
+}
+
+.modal .invalid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: #dc3545;
+}
+
+.modal .form-label .text-danger {
+    color: #dc3545 !important;
+}
 </style>
 @endsection
+@section('script')
+    @include('siswa.jsFunction')
+@endsection
+{{-- End of Selection --}}

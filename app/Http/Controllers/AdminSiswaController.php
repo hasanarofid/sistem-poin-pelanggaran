@@ -13,6 +13,7 @@ use App\Exports\TemplateSiswaExport;
 use App\Imports\SiswaImport;
 use App\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AdminSiswaController extends Controller
 {
@@ -52,7 +53,8 @@ class AdminSiswaController extends Controller
         }
         
         $siswa = $query->paginate(10);
-        return view('siswa.index', compact('siswa'));
+        $listKelas = Kelas::where('status', true)->get();
+        return view('siswa.index', compact('siswa', 'listKelas'));
     }
 
     /**
@@ -262,5 +264,34 @@ class AdminSiswaController extends Controller
     public function downloadTemplate()
     {
         return Excel::download(new TemplateSiswaExport, 'template_siswa.xlsx');
+    }
+
+    public function updateKelas(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'kelas' => 'required|exists:kelas,id',
+        ], [
+            'kelas.required' => 'Pilih kelas tujuan terlebih dahulu.',
+            'kelas.exists' => 'Kelas yang dipilih tidak valid.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Validasi gagal. Silakan periksa kembali data yang diisi.');
+        }
+        
+        try {
+            $siswa = Siswa::findOrFail($request->id);
+            $siswa->kelas_id = $request->kelas;
+            $siswa->save();
+
+            return redirect()->route('admin.siswa.index')
+                ->with('success', 'Kelas siswa berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan saat memperbarui kelas siswa: ' . $e->getMessage());
+        }
     }
 }

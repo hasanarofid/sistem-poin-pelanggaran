@@ -23,29 +23,30 @@
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped align-middle">
-                        <thead class="table-dark">
+                    <table class="table table-bordered mb-0" style="border: none;">
+                        <thead style="background-color: #f8f9fa;">
                             <tr>
-                                <th style="width: 5%;">No</th>
-                                <th style="width: 25%;">Nama Pelanggaran</th>
-                                <th style="width: 20%;">Kategori</th>
-                                <th style="width: 15%;">Poin Pelanggaran</th>
-                                <th style="width: 25%;">Deskripsi</th>
-                                <th style="width: 10%;">Aksi</th>
+                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">No</th>
+                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Nama Pelanggaran</th>
+                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Kategori</th>
+                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Poin Pelanggaran</th>
+                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Deskripsi</th>
+                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($jenisPelanggaran as $index => $pelanggaran)
                             <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $pelanggaran->nama_pelanggaran }}</td>
-                                <td>{{ $pelanggaran->kategori->nama_kategori ?? '-' }}</td>
-                                <td>{{ $pelanggaran->poin }}</td>
-                                <td>{{ $pelanggaran->deskripsi ?? '-' }}</td>
-                                <td>
+                                <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $index + 1 }}</td>
+                                <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $pelanggaran->nama_pelanggaran }}</td>
+                                <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $pelanggaran->kategori->nama_kategori ?? '-' }}</td>
+                                <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $pelanggaran->poin }}</td>
+                                <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $pelanggaran->deskripsi ?? '-' }}</td>
+                                <td style="border: 1px solid #e5e7eb; padding: 12px;">
                                     <div class="d-flex gap-2">
                                         <button type="button"
-                                            class="btn btn-sm btn-warning btnEditJenisPelanggaran"
+                                            style="background: #059669; color: white; border: none; border-radius: 6px; padding: 6px 10px;"
+                                            class="btn btn-sm btnEditJenisPelanggaran"
                                             data-id="{{ $pelanggaran->id }}"
                                             data-nama="{{ $pelanggaran->nama_pelanggaran }}"
                                             data-kategori="{{ $pelanggaran->kategori_id }}"
@@ -209,9 +210,19 @@
                 data: formData,
                 success: function(response) {
                     if (response.success) {
-                        $('#modalTambahPelanggaran').modal('hide');
-                        $('#formTambahPelanggaran')[0].reset();
-                        location.reload();
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: 'Data jenis pelanggaran berhasil disimpan',
+                                showConfirmButton: false,
+                                timer: 2000
+                            }).then(() => {
+                                $('#modalTambahPelanggaran').modal('hide');
+                                $('#formTambahPelanggaran')[0].reset();
+                                location.reload();
+                            });
+                        }
                     }
                 },
                 error: function(xhr) {
@@ -261,8 +272,18 @@
             data: formData,
             success: function(res) {
                 if (res.success) {
-                    $("#modalEditPelanggaran").modal("hide");
-                    location.reload();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: 'Data jenis pelanggaran berhasil disimpan',
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(() => {
+                        $("#modalEditPelanggaran").modal("hide");
+                        $('#formTambahPelanggaran')[0].reset();
+                        location.reload();
+                    });
+
                 } else {
                     alert(res.message || "Gagal update data");
                 }

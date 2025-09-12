@@ -52,6 +52,7 @@
     <link rel="stylesheet" href="{{ asset('theme/assets/vendor/libs/select2/select2.css') }}" />
     <!-- Page CSS -->
     <link rel="stylesheet" href="{{ asset('theme/assets/vendor/css/pages/page-profile.css') }}" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Helpers -->
     <script src="{{ asset('theme/assets/vendor/js/helpers.js') }}"></script>
 
@@ -59,6 +60,7 @@
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('theme/assets/js/config.js') }}"></script>
+    
     @yield('css')
     
     <!-- Fixed Layout CSS -->
@@ -525,6 +527,8 @@
     <!-- Page JS -->
     <script src="{{ asset('theme/assets/js/tables-datatables-basic.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     @yield('script')
 
     <!-- Logout Form -->

@@ -6,6 +6,7 @@ use App\Models\InputPelanggaranT;
 use App\Models\JenisPelanggaran;
 use App\Siswa;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class InputPelanggaranController extends Controller
 {
@@ -20,6 +21,7 @@ class InputPelanggaranController extends Controller
 
     public function store(Request $request)
     {
+        $pelapor_id = Auth::user()->id;
         $request->validate([
             'siswa_id'                  => 'required|string|max:255',
             'jenis_pelanggaran_id'      => 'required|integer',
@@ -30,6 +32,7 @@ class InputPelanggaranController extends Controller
             'siswa_id'              => $request->siswa_id,
             'jenis_pelanggaran_id'  => $request->jenis_pelanggaran_id,
             'keterangan'            => $request->keterangan,
+            'pelapor_id'            => $pelapor_id,
         ]);
 
         if ($request->ajax()) {
@@ -62,6 +65,7 @@ class InputPelanggaranController extends Controller
 
     public function update(Request $request, $id)
     {
+        $pelapor_id = Auth::user()->id;
         $request->validate([
             'siswa_id' => 'required',
             'jenis_pelanggaran_id' => 'required',
@@ -73,6 +77,7 @@ class InputPelanggaranController extends Controller
             'siswa_id' => $request->siswa_id,
             'jenis_pelanggaran_id' => $request->jenis_pelanggaran_id,
             'keterangan' => $request->keterangan,
+            'pelapor_id' => $pelapor_id,
         ]);
 
         return response()->json(['success' => true, 'message' => 'Input Pelanggaran berhasil diperbarui']);

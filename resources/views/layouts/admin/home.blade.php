@@ -264,6 +264,31 @@
         /* Mobile Menu Toggle Button */
         .mobile-menu-toggle {
             display: none !important;
+            position: relative !important;
+            z-index: 1001 !important;
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            background: none !important;
+            border: none !important;
+            padding: 8px !important;
+            margin-right: 15px !important;
+            font-size: 24px !important;
+            color: #374151 !important;
+            transition: color 0.3s ease !important;
+        }
+        
+        .mobile-menu-toggle:hover {
+            color: #1f2937 !important;
+            background: rgba(0, 0, 0, 0.05) !important;
+            border-radius: 4px !important;
+        }
+        
+        .mobile-menu-toggle:active {
+            transform: scale(0.95) !important;
+        }
+        
+        .mobile-menu-toggle i {
+            pointer-events: none !important;
         }
         
         /* Responsive adjustments */
@@ -300,6 +325,12 @@
             
             .mobile-menu-toggle {
                 display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                pointer-events: auto !important;
+                cursor: pointer !important;
+                z-index: 1001 !important;
+                position: relative !important;
             }
             
             /* Hide desktop menu toggle */
@@ -416,7 +447,7 @@
                     <!-- Left Side: Hamburger Menu (Mobile) + Logo and Title -->
                     <div style="display: flex; align-items: center;">
                         <!-- Hamburger Menu for Mobile -->
-                        <button class="mobile-menu-toggle d-xl-none" id="mobile-menu-toggle" style="background: none; border: none; margin-right: 15px; font-size: 24px; color: #374151; cursor: pointer;">
+                        <button type="button" class="mobile-menu-toggle d-xl-none" id="mobile-menu-toggle" style="background: none; border: none; margin-right: 15px; font-size: 24px; color: #374151; cursor: pointer; z-index: 1001; position: relative;">
                             <i class="ti ti-menu-2"></i>
                         </button>
                         <img src="{{ asset('logopoint.png') }}" style="height:50px;" alt="">
@@ -509,12 +540,44 @@
             const layoutOverlay = document.querySelector('.layout-overlay');
             const menuToggle = document.getElementById('menu-toggle');
             
+            console.log('Mobile menu toggle element:', mobileMenuToggle);
+            console.log('Layout menu element:', layoutMenu);
+            console.log('Layout overlay element:', layoutOverlay);
+            
             // Toggle sidebar on mobile
             if (mobileMenuToggle) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    layoutMenu.classList.toggle('show');
-                    layoutOverlay.classList.toggle('show');
+                mobileMenuToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Mobile menu toggle clicked');
+                    
+                    if (layoutMenu) {
+                        layoutMenu.classList.toggle('show');
+                        console.log('Layout menu classes:', layoutMenu.className);
+                    }
+                    
+                    if (layoutOverlay) {
+                        layoutOverlay.classList.toggle('show');
+                        console.log('Layout overlay classes:', layoutOverlay.className);
+                    }
                 });
+                
+                // Also add touch events for mobile
+                mobileMenuToggle.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Mobile menu toggle touched');
+                    
+                    if (layoutMenu) {
+                        layoutMenu.classList.toggle('show');
+                    }
+                    
+                    if (layoutOverlay) {
+                        layoutOverlay.classList.toggle('show');
+                    }
+                });
+            } else {
+                console.error('Mobile menu toggle element not found');
             }
             
             // Close sidebar when clicking overlay
@@ -552,6 +615,35 @@
                 }
             });
             
+            // Alternative toggle method using jQuery if available
+            if (typeof $ !== 'undefined') {
+                $(document).ready(function() {
+                    $('#mobile-menu-toggle').on('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('jQuery mobile menu toggle clicked');
+                        
+                        $('#layout-menu').toggleClass('show');
+                        $('.layout-overlay').toggleClass('show');
+                    });
+                });
+            }
+            
+            // Fallback method using direct event delegation
+            document.addEventListener('click', function(e) {
+                if (e.target && e.target.closest('#mobile-menu-toggle')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Event delegation mobile menu toggle clicked');
+                    
+                    const menu = document.getElementById('layout-menu');
+                    const overlay = document.querySelector('.layout-overlay');
+                    
+                    if (menu) menu.classList.toggle('show');
+                    if (overlay) overlay.classList.toggle('show');
+                }
+            });
+            
             // Force logout button to be visible
             const logoutButtons = document.querySelectorAll('a[href*="logout"], a[onclick*="logout"]');
             logoutButtons.forEach(function(button) {
@@ -580,6 +672,34 @@
                     }
                 });
             }, 1000);
+            
+            // Debug function to test toggle manually
+            window.testToggle = function() {
+                console.log('Manual toggle test');
+                const menu = document.getElementById('layout-menu');
+                const overlay = document.querySelector('.layout-overlay');
+                
+                if (menu) {
+                    menu.classList.toggle('show');
+                    console.log('Menu classes:', menu.className);
+                }
+                
+                if (overlay) {
+                    overlay.classList.toggle('show');
+                    console.log('Overlay classes:', overlay.className);
+                }
+            };
+            
+            // Test if elements exist
+            setTimeout(function() {
+                console.log('=== DEBUG INFO ===');
+                console.log('Mobile toggle exists:', !!document.getElementById('mobile-menu-toggle'));
+                console.log('Layout menu exists:', !!document.getElementById('layout-menu'));
+                console.log('Layout overlay exists:', !!document.querySelector('.layout-overlay'));
+                console.log('Window width:', window.innerWidth);
+                console.log('Is mobile view:', window.innerWidth < 1200);
+                console.log('==================');
+            }, 2000);
         });
     </script>
 

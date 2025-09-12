@@ -237,16 +237,94 @@
             margin-top: 60px !important;
         }
         
+        /* Mobile Sidebar Styles */
+        .layout-menu {
+            transition: transform 0.3s ease-in-out !important;
+        }
+        
+        .layout-menu.mobile-hidden {
+            transform: translateX(-100%) !important;
+        }
+        
+        .layout-overlay {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: rgba(0, 0, 0, 0.5) !important;
+            z-index: 999 !important;
+            display: none !important;
+        }
+        
+        .layout-overlay.show {
+            display: block !important;
+        }
+        
+        /* Mobile Menu Toggle Button */
+        .mobile-menu-toggle {
+            display: none !important;
+        }
+        
         /* Responsive adjustments */
-        @media (max-width: 768px) {
+        @media (max-width: 1199px) {
+            .layout-menu {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 280px !important;
+                height: 100vh !important;
+                z-index: 1000 !important;
+                transform: translateX(-100%) !important;
+            }
+            
+            .layout-menu.show {
+                transform: translateX(0) !important;
+            }
+            
+            .layout-page {
+                width: 100% !important;
+                margin-left: 0 !important;
+            }
+            
             .fixed-header {
                 left: 0 !important;
                 width: 100% !important;
                 padding: 8px 15px !important;
                 min-height: 50px !important;
             }
+            
             .content-with-fixed-header {
                 margin-top: 50px !important;
+            }
+            
+            .mobile-menu-toggle {
+                display: block !important;
+            }
+            
+            /* Hide desktop menu toggle */
+            .layout-menu-toggle {
+                display: none !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .fixed-header {
+                padding: 8px 15px !important;
+                min-height: 50px !important;
+            }
+            
+            .content-with-fixed-header {
+                margin-top: 50px !important;
+            }
+            
+            /* Adjust logo size on mobile */
+            .fixed-header img {
+                height: 35px !important;
+            }
+            
+            .fixed-header h4 {
+                font-size: 16px !important;
             }
         }
         
@@ -335,8 +413,12 @@
                 <!-- Navbar - FIXED HEADER -->
                 <div class="fixed-header" style="position: fixed; top: 0; left: 280px; right: 0; background: white; border-bottom: 1px solid #e5e7eb; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; width: calc(100% - 280px); min-height: 60px; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                     
-                    <!-- Left Side: Logo and Title -->
+                    <!-- Left Side: Hamburger Menu (Mobile) + Logo and Title -->
                     <div style="display: flex; align-items: center;">
+                        <!-- Hamburger Menu for Mobile -->
+                        <button class="mobile-menu-toggle d-xl-none" id="mobile-menu-toggle" style="background: none; border: none; margin-right: 15px; font-size: 24px; color: #374151; cursor: pointer;">
+                            <i class="ti ti-menu-2"></i>
+                        </button>
                         <img src="{{ asset('logopoint.png') }}" style="height:50px;" alt="">
                         <h4 style="margin: 0; color: #1f2937; font-weight: 700;">Sistem Poin Pelanggaran</h4>
                     </div>
@@ -418,9 +500,58 @@
         @csrf
     </form>
 
-    <!-- Force Logout Button to be Visible -->
+    <!-- Mobile Sidebar Toggle and Logout Button Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Mobile sidebar toggle functionality
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const layoutMenu = document.getElementById('layout-menu');
+            const layoutOverlay = document.querySelector('.layout-overlay');
+            const menuToggle = document.getElementById('menu-toggle');
+            
+            // Toggle sidebar on mobile
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    layoutMenu.classList.toggle('show');
+                    layoutOverlay.classList.toggle('show');
+                });
+            }
+            
+            // Close sidebar when clicking overlay
+            if (layoutOverlay) {
+                layoutOverlay.addEventListener('click', function() {
+                    layoutMenu.classList.remove('show');
+                    layoutOverlay.classList.remove('show');
+                });
+            }
+            
+            // Close sidebar when clicking menu toggle inside sidebar
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function() {
+                    layoutMenu.classList.remove('show');
+                    layoutOverlay.classList.remove('show');
+                });
+            }
+            
+            // Close sidebar when clicking menu links on mobile
+            const menuLinks = document.querySelectorAll('.menu-link');
+            menuLinks.forEach(function(link) {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 1200) {
+                        layoutMenu.classList.remove('show');
+                        layoutOverlay.classList.remove('show');
+                    }
+                });
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1200) {
+                    layoutMenu.classList.remove('show');
+                    layoutOverlay.classList.remove('show');
+                }
+            });
+            
             // Force logout button to be visible
             const logoutButtons = document.querySelectorAll('a[href*="logout"], a[onclick*="logout"]');
             logoutButtons.forEach(function(button) {

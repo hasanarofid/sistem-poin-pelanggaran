@@ -23,31 +23,31 @@
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped align-middle">
-                        <thead class="table-dark">
+                    <table class="table table-bordered mb-0" style="border: none;">
+                        <thead style="background-color: #f8f9fa;">
                             <tr>
-                                <th style="width: 5%;">No</th>
-                                <th style="width: 25%;">Nama Kategori</th>
-                                <th style="width: 15%;">Status</th>
-                                <th style="width: 10%;">Aksi</th>
+                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">No</th>
+                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Nama Kategori</th>
+                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Status</th>
+                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($kategori as $index => $value)
                             <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $value->nama_kategori ?? '-' }}</td>
-                                <td>{{ $value->is_aktif == 1 ? 'Aktif' : 'Tidak Aktif' }}</td>
-                                <td>
+                                <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $index + 1 }}</td>
+                                <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $value->nama_kategori ?? '-' }}</td>
+                                <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $value->is_aktif == 1 ? 'Aktif' : 'Tidak Aktif' }}</td>
+                                <td style="border: 1px solid #e5e7eb; padding: 12px;">
                                     <div class="d-flex gap-2">
                                         <button type="button"
-                                            class="btn btn-sm btn-warning btnEditKategori">
+                                            class="btn btn-sm btn-warning btnEditKategori" style="background: #059669; color: white; border: none; border-radius: 6px; padding: 6px 10px;">
                                             <i class="ti ti-edit"></i>
                                         </button>
                                         <form action="{{ route('admin.kategori.destroy', $value->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger">
+                                            <button type="submit" class="btn btn-sm" style="background: #dc2626; color: white; border: none; border-radius: 6px; padding: 6px 10px;" onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                 <i class="ti ti-trash"></i>
                                             </button>
                                         </form>
@@ -170,9 +170,17 @@
                 data: formData,
                 success: function(response) {
                     if (response.success) {
-                        $('#modalTambahKategori').modal('hide');
-                        $('#formTambahKategori')[0].reset();
-                        location.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: 'Data kategori berhasil disimpan',
+                            showConfirmButton: false,
+                            timer: 2000
+                        }).then(() => {
+                            $('#modalTambahKategori').modal('hide');
+                            $('#formTambahKategori')[0].reset();
+                            location.reload();
+                        });
                     }
                 },
                 error: function(xhr) {
@@ -219,8 +227,18 @@
             data: formData,
             success: function(response) {
                 if (response.success) {
-                    $("#modalEditKategori").modal("hide");
-                    location.reload();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: 'Data kategori berhasil disimpan',
+                        showConfirmButton: false,
+                        timer: 2000
+                    }).then(() => {
+                        $("#modalEditKategori").modal("hide");
+                        $('#formTambahKategori')[0].reset();
+                        location.reload();
+                    });
+
                 } else {
                     alert(response.message || "Gagal update data");
                 }

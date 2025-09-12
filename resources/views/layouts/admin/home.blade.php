@@ -524,6 +524,7 @@
 
     <!-- Page JS -->
     <script src="{{ asset('theme/assets/js/tables-datatables-basic.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @yield('script')
 
     <!-- Logout Form -->

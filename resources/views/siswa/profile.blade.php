@@ -42,7 +42,7 @@
                                 <p style="font-weight: 600; color: #374151;">
                                     {{ $model->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}</p>
                                 <p style="margin: 0; color: #6b7280;">Total Poin Pelanggaran</p>
-                                <p style="font-weight: 600; color: #dc2626;">150</p>
+                                <p style="font-weight: 600; color: #dc2626;">{{ $hasilPoin->total_poin }}</p>
                                 <!-- Button Ubah Password -->
                                 <button type="button" class="btn btn-warning mt-3" data-bs-toggle="modal"
                                     data-bs-target="#ubahPasswordModal">
@@ -62,24 +62,23 @@
                             </div>
                             <div class="card-body" style="max-height: 400px; overflow-y: auto; margin-top: 25px;">
                                 <!-- Item pelanggaran -->
+                                @foreach ($riwayatPelanggaran as $item)
                                 <div class="d-flex mb-4"
                                     style="position: relative; border-left: 4px solid #dc2626; padding-left: 15px;">
                                     <div style="flex: 1;">
                                         <div class="d-flex justify-content-between align-items-start">
                                             <div style="flex: 1;">
-                                                <p style="font-weight: 600; color: #dc2626; margin: 0 0 5px 0;">Terlambat
-                                                    masuk kelas</p>
-                                                <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">15 November 2024 -
-                                                    Wali Kelas XII RPL 1</p>
-                                                <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">Terlambat 15 menit
-                                                    tanpa keterangan</p>
+                                                <p style="font-weight: 600; color: #dc2626; margin: 0 0 5px 0;">{{ $item->nama_kategori }}</p>
+                                                <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">{{ \Carbon\Carbon::parse($item->tanggal)->format('d') }} {{ \Carbon\Carbon::parse($item->tanggal)->translatedFormat('F Y') }} - Wali Kelas {{ $kelas->nama_kelas }} {{ $kelas->subkelas }}</p>
+                                                <p style="margin: 0; color: #6b7280; font-size: 0.9rem;"> {{ $item->nama_pelanggaran }}</p>
                                             </div>
                                             <span class="badge"
-                                                style="background-color: #fef2f2; color: #dc2626; font-weight: 600; border: 1px solid #fecaca; padding: 6px 12px; border-radius: 6px;">+5
+                                                style="background-color: #fef2f2; color: #dc2626; font-weight: 600; border: 1px solid #fecaca; padding: 6px 12px; border-radius: 6px;">{{ $item->poin }}
                                                 poin</span>
                                         </div>
                                     </div>
                                 </div>
+                                @endforeach
                                 <!-- Ulangi item lain di sini -->
                             </div>
                         </div>

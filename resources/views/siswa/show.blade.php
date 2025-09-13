@@ -11,7 +11,7 @@
                         <a href="{{ route('admin.siswa.index') }}" class="btn btn-light">
                             <i class="fas fa-arrow-left"></i> &nbsp; Kembali
                         </a>
-                        <a href="{{ route('admin.siswa.edit', $siswa->id) }}" class="btn btn-warning">
+                        <a href="{{ request()->routeIs('admin.*') ? route('admin.siswa.edit', $siswa->id) : route('guru.siswa.edit', $siswa->id) }}" class="btn btn-warning">
                             <i class="fas fa-edit"></i> &nbsp; Edit
                         </a>
                     </div>

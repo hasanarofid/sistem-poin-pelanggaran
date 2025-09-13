@@ -68,7 +68,7 @@
         @empty
             <tr>
                 <td colspan="7" class="text-center" style="font-style:italic;">
-                    Tidak ada data siswa
+                    Tidak ada data pelanggaran
                 </td>
             </tr>
         @endforelse

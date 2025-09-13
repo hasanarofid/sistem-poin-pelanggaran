@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\InputPelanggaranT;
-use App\Models\JenisPelanggaran;
+use App\Models\InputRewardT;
+use App\Models\JenisReward;
 use App\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class InputPelanggaranController extends Controller
+class InputRewardController extends Controller
 {
     //index
     public function index()
     {
-        $inputPelanggaranT = InputPelanggaranT::with('jenispelanggaran', 'siswa')->get();
-        $siswa = Siswa::with(['kelas', 'point'])->orderBy('nama', 'asc')->get(); // Eager load kelas, point and order
-        $jenisPelanggaran = JenisPelanggaran::with('kategori')->orderBy('kode', 'asc')->get(); // Eager load kategori and order
-        return view('inputpelanggaran.index', compact('inputPelanggaranT', 'siswa', 'jenisPelanggaran'));
+        $inputRewardT = InputRewardT::with('jenisReward', 'siswa')->get();
+        $siswa = Siswa::get();
+        $jenisReward = JenisReward::where('is_aktif', true)->get();
+        return view('inputreward.index', compact('inputRewardT', 'siswa', 'jenisReward'));
     }
 
     public function store(Request $request)
@@ -25,7 +25,7 @@ class InputPelanggaranController extends Controller
         $pelapor_id = Auth::user()->id;
         $request->validate([
             'siswa_id'                  => 'required|string|max:255',
-            'jenis_pelanggaran_id'      => 'required|integer',
+            'jenis_reward_id'      => 'required|integer',
             'keterangan'                => 'nullable|string',
         ]);
 
@@ -33,30 +33,27 @@ class InputPelanggaranController extends Controller
         DB::beginTransaction();
         
         try {
-            // Simpan input pelanggaran
-            $inputPelanggaran = InputPelanggaranT::create([
+            // Simpan input reward
+            $inputReward = InputRewardT::create([
                 'siswa_id'              => $request->siswa_id,
-                'jenis_pelanggaran_id'  => $request->jenis_pelanggaran_id,
+                'jenis_reward_id'  => $request->jenis_reward_id,
                 'keterangan'            => $request->keterangan,
                 'pelapor_id'            => $pelapor_id,
             ]);
 
-            // Ambil data jenis pelanggaran untuk mendapatkan poin
-            $jenisPelanggaran = JenisPelanggaran::find($request->jenis_pelanggaran_id);
+            // Ambil data jenis reward untuk mendapatkan poin
+            $jenisReward = JenisReward::find($request->jenis_reward_id);
             
             // Ambil atau buat poin siswa
             $siswa = Siswa::find($request->siswa_id);
             $point = $siswa->getOrCreatePoint();
             
-            // Tentukan jenis transaksi berdasarkan poin
-            $jenisTransaksi = $jenisPelanggaran->poin < 0 ? 'pelanggaran' : 'reward';
-            
-            // Update poin dengan histori (poin bisa bertambah atau berkurang)
+            // Update poin dengan histori (poin bertambah untuk reward)
             $point->updatePoin(
-                $jenisPelanggaran->poin, // Poin sesuai dengan nilai di database
-                $jenisTransaksi,
-                $inputPelanggaran->id, // Selalu gunakan input_pelanggaran_id karena semua input masuk ke tabel ini
-                null, // input_reward_id tidak digunakan karena sistem menggunakan tabel yang sama
+                $jenisReward->poin, // Poin bertambah
+                'reward',
+                null,
+                $request->jenis_reward_id,
                 $request->keterangan,
                 $pelapor_id
             );
@@ -71,7 +68,7 @@ class InputPelanggaranController extends Controller
             }
 
             return redirect()
-                ->route('admin.input-poin.index')
+                ->route('admin.input-reward.index')
                 ->with('success', 'Data berhasil disimpan');
                 
         } catch (\Exception $e) {
@@ -85,25 +82,25 @@ class InputPelanggaranController extends Controller
             }
 
             return redirect()
-                ->route('admin.input-poin.index')
+                ->route('admin.input-reward.index')
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
     public function destroy($id)
     {
-        $pelanggaran = InputPelanggaranT::findOrFail($id);
-        $pelanggaran->delete();
+        $reward = InputRewardT::findOrFail($id);
+        $reward->delete();
 
         return redirect()
-            ->route('admin.input-poin.index')
+            ->route('admin.input-reward.index')
             ->with('success', 'Data berhasil dihapus');
     }
 
     public function edit($id)
     {
-        $pelanggaran = InputPelanggaranT::findOrFail($id);
-        return response()->json($pelanggaran);
+        $reward = InputRewardT::findOrFail($id);
+        return response()->json($reward);
     }
 
     public function update(Request $request, $id)
@@ -111,18 +108,18 @@ class InputPelanggaranController extends Controller
         $pelapor_id = Auth::user()->id;
         $request->validate([
             'siswa_id' => 'required',
-            'jenis_pelanggaran_id' => 'required',
+            'jenis_reward_id' => 'required',
             'keterangan' => 'nullable|string',
         ]);
 
-        $pelanggaran = InputPelanggaranT::findOrFail($id);
-        $pelanggaran->update([
+        $reward = InputRewardT::findOrFail($id);
+        $reward->update([
             'siswa_id' => $request->siswa_id,
-            'jenis_pelanggaran_id' => $request->jenis_pelanggaran_id,
+            'jenis_reward_id' => $request->jenis_reward_id,
             'keterangan' => $request->keterangan,
             'pelapor_id' => $pelapor_id,
         ]);
 
-        return response()->json(['success' => true, 'message' => 'Input Poin berhasil diperbarui']);
+        return response()->json(['success' => true, 'message' => 'Input Reward berhasil diperbarui']);
     }
 }

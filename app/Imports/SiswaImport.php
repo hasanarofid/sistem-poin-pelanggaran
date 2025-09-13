@@ -122,7 +122,7 @@ class SiswaImport implements ToCollection, WithHeadingRow
                     );
                     
                     // Cari atau buat siswa
-                    Siswa::updateOrCreate(
+                    $siswa = Siswa::updateOrCreate(
                         ['nis' => $row['nis']],
                         [
                             'nis' => $row['nis'],
@@ -138,6 +138,15 @@ class SiswaImport implements ToCollection, WithHeadingRow
                             'rfid' => $row['rfid'],
                             'finger' => $row['finger'],
                             'status' => true
+                        ]
+                    );
+
+                    // Buat default poin 100 untuk siswa baru (jika belum ada)
+                    \App\Point::firstOrCreate(
+                        ['siswa_id' => $siswa->id],
+                        [
+                            'siswa_id' => $siswa->id,
+                            'total_poin' => 100
                         ]
                     );
 

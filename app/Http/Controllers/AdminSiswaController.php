@@ -34,7 +34,7 @@ class AdminSiswaController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Siswa::with(['kelas', 'tahunAjaran']);
+        $query = Siswa::with(['kelas', 'tahunAjaran', 'point']);
         
         // Jika ada parameter search, tambahkan kondisi pencarian
         if ($request->has('search') && !empty($request->search)) {
@@ -100,8 +100,13 @@ class AdminSiswaController extends Controller
             'alamat_lengkap' => $request->alamat,
         ]);
         $request->merge(['user_id' => $user->id]);
-        Siswa::create($request->all());
+        $siswa = Siswa::create($request->all());
 
+        // Buat default poin 100 untuk siswa baru
+        \App\Point::create([
+            'siswa_id' => $siswa->id,
+            'total_poin' => 100
+        ]);
 
         return redirect()->route('admin.siswa.index')
             ->with('success', 'Siswa berhasil ditambahkan.');

@@ -60,6 +60,9 @@
                             <a href="javascript:void(0);" class="btn btn-success" onclick="exportExcel('{{ request()->routeIs('admin.*') ? route('admin.laporan.export') : route('guru.laporan.export') }}')">
                                 <i class="ti ti-printer me-1"></i> Cetak Excel
                             </a>
+                            <a href="javascript:void(0);" class="btn btn-info" onclick="exportExcelPerKelas('{{ request()->routeIs('admin.*') ? route('admin.laporan.export-per-kelas') : route('guru.laporan.export-per-kelas') }}')">
+                                <i class="ti ti-file-spreadsheet me-1"></i> Laporan Per Kelas
+                            </a>
                             <a href="javascript:void(0);" class="btn" onclick="exportPDF('{{ request()->routeIs('admin.*') ? route('admin.laporan.exportPDF') : route('guru.laporan.exportPDF') }}')" style="background: #ee3f3f; color: #fff;" onmouseover="this.style.background='#cc3333';" onmouseout="this.style.background='#ee3f3f';">
                                 <i class="ti ti-printer me-1"></i> Cetak PDF
                             </a>

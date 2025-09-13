@@ -1,82 +1,156 @@
+{{-- Start of Selection --}}
 @extends('layouts.admin.home')
 @section('title', 'Jenis Poin')
 @section('titelcard', 'Jenis Poin')
 @section('content')
-<div class="content-wrapper" style="margin: 0 !important; padding: 0 !important; width: 100% !important;">
-    <div class="container-xxl flex-grow-1 container-p-y" style="padding: 30px !important; width: 100% !important; max-width: none !important; margin: 0 !important;">
+<div class="container-xxl flex-grow-1 container-p-y">
+    <!-- Header Section -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <h4 class="fw-bold" style="color: #1f2937; font-size: 1.5rem; margin: 0;">
+                Jenis Poin
+            </h4>
+        </div>
+    </div>
 
-        <!-- Header Title & Buttons -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0" style="font-size: 28px; font-weight: 700; color: #1f2937;">Jenis Poin</h1>
+    <!-- Action Buttons -->
+    <div class="row mb-3">
+        <div class="col-12">
             <div class="d-flex gap-2">
-                <a href="#"
-                    class="btn btn-success d-flex align-items-center"
-                    style="padding: 10px 15px; font-size: 14px;"
-                    data-bs-toggle="modal" data-bs-target="#modalTambahPelanggaran">
-                    <i class="ti ti-plus" style="margin-right: 6px;"></i> Tambah Jenis Poin
+                <a href="#" class="btn btn-primary" style="background: #7c3aed; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 600;" data-bs-toggle="modal" data-bs-target="#modalTambahPelanggaran">
+                    <i class="ti ti-plus me-1"></i> Tambah Jenis Poin
                 </a>
             </div>
         </div>
+    </div>
 
-        <!-- Form Card -->
-        <!-- Form Card -->
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered mb-0" style="border: none;">
-                        <thead style="background-color: #f8f9fa;">
-                            <tr>
-                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">No</th>
-                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Nama Pelanggaran / Reward</th>
-                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Kategori</th>
-                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Poin Pelanggaran / Reward</th>
-                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Deskripsi</th>
-                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($jenisPelanggaran as $index => $pelanggaran)
-                            <tr>
-                                <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $index + 1 }}</td>
-                                <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $pelanggaran->nama_pelanggaran }}</td>
-                                <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $pelanggaran->kategori->nama_kategori ?? '-' }}</td>
-                                <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $pelanggaran->poin }}</td>
-                                <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $pelanggaran->deskripsi ?? '-' }}</td>
-                                <td style="border: 1px solid #e5e7eb; padding: 12px;">
-                                    <div class="d-flex gap-2">
-                                        <button type="button"
-                                            style="background: #059669; color: white; border: none; border-radius: 6px; padding: 6px 10px;"
-                                            class="btn btn-sm btnEditJenisPelanggaran"
-                                            data-id="{{ $pelanggaran->id }}"
-                                            data-nama="{{ $pelanggaran->nama_pelanggaran }}"
-                                            data-kategori="{{ $pelanggaran->kategori_id }}"
-                                            data-poin="{{ $pelanggaran->poin }}"
-                                            data-deskripsi="{{ $pelanggaran->deskripsi }}">
-                                            <i class="ti ti-edit"></i>
-                                        </button>
-                                        <form action="{{ route('admin.jenis-poin.destroy', $pelanggaran->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger">
-                                                <i class="ti ti-trash"></i>
+    <!-- Alert Messages -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+            {!! session('success') !!}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+            {!! session('error') !!}
+        </div>
+    @endif
+
+    <!-- Search Bar and Table Row -->
+    <div class="row">
+        <!-- Search Bar - Right Side -->
+        <div class="col-12">
+            <div class="d-flex justify-content-end mb-3">
+                <form method="GET" action="{{ route('admin.jenis-poin.index') }}" class="d-flex align-items-center">
+                    <div class="input-group" style="width: 300px;">
+                        <span class="input-group-text" style="border-radius: 8px 0 0 8px; border: 1px solid #d1d5db; background: white;">
+                            <i class="ti ti-search" style="color: #6b7280;"></i>
+                        </span>
+                        <input type="text" class="form-control" name="search" value="{{ request('search') }}" 
+                               placeholder="Cari jenis poin..." style="border-radius: 0 8px 8px 0; border: 1px solid #d1d5db; border-left: none;">
+                    </div>
+                    <button type="submit" class="btn btn-outline-secondary ms-2" style="border-radius: 8px; padding: 8px 16px;">
+                        <i class="ti ti-search me-1"></i> Cari
+                    </button>
+                    @if(request('search'))
+                        <a href="{{ route('admin.jenis-poin.index') }}" class="btn btn-outline-secondary ms-2" style="border-radius: 8px; padding: 8px 16px;">
+                            <i class="ti ti-x me-1"></i> Reset
+                        </a>
+                    @endif
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card" style="border: 1px solid #e5e7eb; border-radius: 8px;">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered mb-0" style="border: none;">
+                            <thead style="background-color: #f8f9fa;">
+                                <tr>
+                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">NO</th>
+                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">KODE</th>
+                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">NAMA</th>
+                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">KATEGORI</th>
+                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">POIN</th>
+                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">DESKRIPSI</th>
+                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none; text-align: center;">AKSI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($jenisPelanggaran as $index => $pelanggaran)
+                                <tr>
+                                    <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $loop->iteration + ($jenisPelanggaran->currentPage() - 1) * $jenisPelanggaran->perPage() }}</td>
+                                    <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151; font-weight: 600;">{{ $pelanggaran->kode ?? '-' }}</td>
+                                    <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $pelanggaran->nama_pelanggaran }}</td>
+                                    <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">
+                                        @php
+                                            $kategoriColor = $pelanggaran->kategori->nama_kategori == 'Pelanggaran' ? '#fee2e2' : '#dcfce7';
+                                            $kategoriTextColor = $pelanggaran->kategori->nama_kategori == 'Pelanggaran' ? '#dc2626' : '#166534';
+                                        @endphp
+                                        <span class="badge" style="background-color: {{ $kategoriColor }}; color: {{ $kategoriTextColor }}; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;">
+                                            {{ $pelanggaran->kategori->nama_kategori ?? '-' }}
+                                        </span>
+                                    </td>
+                                    <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151; text-align: center;">
+                                        @php
+                                            $poinColor = $pelanggaran->poin < 0 ? '#fee2e2' : '#dcfce7';
+                                            $poinTextColor = $pelanggaran->poin < 0 ? '#dc2626' : '#166534';
+                                        @endphp
+                                        <span class="badge" style="background-color: {{ $poinColor }}; color: {{ $poinTextColor }}; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                            {{ $pelanggaran->poin > 0 ? '+' : '' }}{{ $pelanggaran->poin }}
+                                        </span>
+                                    </td>
+                                    <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $pelanggaran->deskripsi ?? '-' }}</td>
+                                    <td style="border: 1px solid #e5e7eb; padding: 12px;">
+                                        <div class="d-flex gap-1">
+                                            <button type="button" class="btn btn-sm btnEditJenisPelanggaran" style="background: #059669; color: white; border: none; border-radius: 6px; padding: 6px 10px;" data-id="{{ $pelanggaran->id }}" data-kode="{{ $pelanggaran->kode }}" data-nama="{{ $pelanggaran->nama_pelanggaran }}" data-kategori="{{ $pelanggaran->kategori_id }}" data-poin="{{ $pelanggaran->poin }}" data-deskripsi="{{ $pelanggaran->deskripsi }}">
+                                                <i class="ti ti-edit"></i>
                                             </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="6" class="text-center">Belum ada data pelanggaran / reward.</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                                            <form action="{{ route('admin.jenis-poin.destroy', $pelanggaran->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm" style="background: #dc2626; color: white; border: none; border-radius: 6px; padding: 6px 10px;">
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="7" class="text-center" style="border: 1px solid #e5e7eb; padding: 40px; color: #6b7280; font-style: italic;">
+                                        Tidak ada data jenis poin
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    @if($jenisPelanggaran->hasPages())
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div class="text-muted">
+                            Menampilkan {{ $jenisPelanggaran->firstItem() }} sampai {{ $jenisPelanggaran->lastItem() }} dari {{ $jenisPelanggaran->total() }} data
+                        </div>
+                        <div>
+                            {{ $jenisPelanggaran->links() }}
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- Modal -->
+
+<!-- Modal Tambah Jenis Poin -->
 <div class="modal fade" id="modalTambahPelanggaran" tabindex="-1" aria-labelledby="modalTambahPelanggaranLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -91,6 +165,12 @@
             <form action="{{ route('admin.jenis-poin.store') }}" method="POST" id="formTambahPelanggaran">
                 @csrf
                 <div class="modal-body">
+
+                    <!-- Kode -->
+                    <div class="mb-3">
+                        <label for="kode" class="form-label">Kode</label>
+                        <input type="text" class="form-control" id="kode" name="kode" placeholder="Contoh: P1.1a, R.1" required>
+                    </div>
 
                     <!-- Nama Pelanggaran -->
                     <div class="mb-3">
@@ -112,7 +192,7 @@
                     <!-- Poin -->
                     <div class="mb-3">
                         <label for="poin" class="form-label">Poin Pelanggaran / Reward</label>
-                        <input type="number" class="form-control" id="poin" name="poin" min="1" max="50" placeholder="Masukkan poin (1-50)">
+                        <input type="number" class="form-control" id="poin" name="poin" min="-100" max="100" placeholder="Masukkan poin (negatif untuk pelanggaran, positif untuk reward)">
                     </div>
 
                     <!-- Deskripsi -->
@@ -134,6 +214,7 @@
     </div>
 </div>
 
+<!-- Modal Edit Jenis Poin -->
 <div class="modal fade" id="modalEditPelanggaran" tabindex="-1" aria-labelledby="modalEditPelanggaranLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -151,6 +232,12 @@
                 <input type="hidden" id="edit_id" name="id">
 
                 <div class="modal-body">
+
+                    <!-- Kode -->
+                    <div class="mb-3">
+                        <label for="edit_kode" class="form-label">Kode</label>
+                        <input type="text" class="form-control" id="edit_kode" name="kode" placeholder="Contoh: P1.1a, R.1" required>
+                    </div>
 
                     <!-- Nama Pelanggaran -->
                     <div class="mb-3">
@@ -172,7 +259,7 @@
                     <!-- Poin -->
                     <div class="mb-3">
                         <label for="edit_poin" class="form-label">Poin Pelanggaran / Reward</label>
-                        <input type="number" class="form-control" id="edit_poin" name="poin" min="1" max="50" placeholder="Masukkan poin (1-50)">
+                        <input type="number" class="form-control" id="edit_poin" name="poin" min="-100" max="100" placeholder="Masukkan poin (negatif untuk pelanggaran, positif untuk reward)">
                     </div>
 
                     <!-- Deskripsi -->
@@ -186,7 +273,7 @@
                 <!-- Footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="submit" class="btn btn-success">Update</button>
                 </div>
             </form>
 
@@ -194,118 +281,30 @@
     </div>
 </div>
 
-@endsection
-@section('script')
 <script>
-    $(document).ready(function() {
-        $('#kategori_id').select2({
-            dropdownParent: $('#modalTambahPelanggaran'),
-            placeholder: "Pilih kategori...",
-            allowClear: true,
-            width: '100%'
-        });
+$(document).ready(function() {
+    // Edit button click handler
+    $('.btnEditJenisPelanggaran').click(function() {
+        var id = $(this).data('id');
+        var kode = $(this).data('kode');
+        var nama = $(this).data('nama');
+        var kategori = $(this).data('kategori');
+        var poin = $(this).data('poin');
+        var deskripsi = $(this).data('deskripsi');
 
-        $('#edit_kategori_id').select2({
-            dropdownParent: $('#modalEditPelanggaran'),
-            placeholder: "Pilih kategori...",
-            allowClear: true,
-            width: '100%'
-        });
-        $('#formTambahPelanggaran').on('submit', function(e) {
-            e.preventDefault();
+        $('#edit_id').val(id);
+        $('#edit_kode').val(kode);
+        $('#edit_nama_pelanggaran').val(nama);
+        $('#edit_kategori_id').val(kategori);
+        $('#edit_poin').val(poin);
+        $('#edit_deskripsi').val(deskripsi);
 
-            let formData = $(this).serialize();
+        // Set form action
+        $('#formEditPelanggaran').attr('action', '{{ route("admin.jenis-poin.update", ":id") }}'.replace(':id', id));
 
-            $.ajax({
-                url: "{{ route('admin.jenis-poin.store') }}",
-                type: "POST",
-                data: formData,
-                success: function(response) {
-                    if (response.success) {
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                text: 'Data Jenis Poin berhasil disimpan',
-                                showConfirmButton: false,
-                                timer: 2000
-                            }).then(() => {
-                                $('#modalTambahPelanggaran').modal('hide');
-                                $('#formTambahPelanggaran')[0].reset();
-                                location.reload();
-                            });
-                        }
-                    }
-                },
-                error: function(xhr) {
-                    if (xhr.status === 422) {
-                        let errors = xhr.responseJSON.errors;
-                        let pesan = '';
-                        $.each(errors, function(key, value) {
-                            pesan += value[0] + "\n";
-                        });
-                        alert(pesan); // bisa diganti pakai toast/alert Bootstrap
-                    } else {
-                        alert("Gagal menyimpan data!");
-                    }
-                }
-            });
-        });
-
+        // Show modal
+        $('#modalEditPelanggaran').modal('show');
     });
-    // Klik tombol edit
-    $(document).on("click", ".btnEditJenisPelanggaran", function() {
-        let id = $(this).data("id");
-        let nama = $(this).data("nama");
-        let kategori_id = $(this).data("kategori");
-        let poin = $(this).data("poin");
-        let deskripsi = $(this).data("deskripsi");
-
-        // isi ke modal
-        $("#edit_id").val(id);
-        $("#edit_nama_pelanggaran").val(nama);
-        $("#edit_kategori_id").val(kategori_id).trigger("change"); // ✅ tambahkan trigger change
-        $("#edit_poin").val(poin);
-        $("#edit_deskripsi").val(deskripsi);
-
-        $("#modalEditPelanggaran").modal("show");
-    });
-
-    // Submit form edit
-    $("#formEditPelanggaran").on("submit", function(e) {
-        e.preventDefault();
-
-        let id = $("#edit_id").val();
-        let formData = $(this).serialize();
-
-        $.ajax({
-            url: "/admin/jenis-poin/" + id + "/update",
-            type: "PUT",
-            data: formData,
-            success: function(res) {
-                if (res.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: 'Data Jenis Poin berhasil disimpan',
-                        showConfirmButton: false,
-                        timer: 2000
-                    }).then(() => {
-                        $("#modalEditPelanggaran").modal("hide");
-                        $('#formTambahPelanggaran')[0].reset();
-                        location.reload();
-                    });
-
-                } else {
-                    alert(res.message || "Gagal update data");
-                }
-            },
-            error: function(xhr) {
-                console.log(xhr.responseText);
-                alert("Terjadi kesalahan saat update");
-            }
-        });
-    });
+});
 </script>
-
 @endsection

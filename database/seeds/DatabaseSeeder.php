@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
                 KelasSeeder::class,
                 TahunAjaranSeeder::class,
                 UserSeeder::class,
+                PointSystemSeeder::class,
             ]);
     }
 }

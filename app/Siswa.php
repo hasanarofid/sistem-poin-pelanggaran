@@ -51,4 +51,25 @@ class Siswa extends Model
     {
         return $this->kelas ? $this->kelas->nama_kelas . ' - ' . $this->kelas->subkelas : '-';
     }
+
+    // Relasi dengan point
+    public function point()
+    {
+        return $this->hasOne(Point::class, 'siswa_id');
+    }
+
+    // Relasi dengan histori poin
+    public function historiPoints()
+    {
+        return $this->hasMany(HistoriPoint::class, 'siswa_id');
+    }
+
+    // Method untuk mendapatkan atau membuat poin default
+    public function getOrCreatePoint()
+    {
+        return $this->point ?: Point::create([
+            'siswa_id' => $this->id,
+            'total_poin' => 100
+        ]);
+    }
 }

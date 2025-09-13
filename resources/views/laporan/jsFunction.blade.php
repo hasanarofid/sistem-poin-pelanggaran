@@ -23,6 +23,28 @@
         window.open(url, '_blank');
     }
 
+    function exportExcelPerKelas(route) {
+        let kelas = $('#kelas').val();
+        let sampai_tanggal = $('#sampaiTanggal').val();
+        let dari_tanggal = $('#dariTanggal').val();
+        
+        // Validasi: harus pilih kelas untuk laporan per kelas
+        if (!kelas) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan!',
+                text: 'Silakan pilih kelas terlebih dahulu untuk membuat laporan per kelas.',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        
+        let paramater = "kelas=" + kelas + "&sampai_tanggal=" + sampai_tanggal + "&dari_tanggal=" + dari_tanggal;
+
+        var url = route + "?" + paramater;
+        window.open(url, '_blank');
+    }
+
     function setSiswa(kelasId) {
         var siswa = $('#siswa');
         var selectedSiswaId = "{{ request('siswa') }}";

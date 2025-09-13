@@ -57,7 +57,7 @@ class GuruController extends Controller
             abort(403, 'Unauthorized access');
         }
 
-        $query = Siswa::with(['kelas', 'tahunAjaran']);
+        $query = Siswa::with(['kelas', 'tahunAjaran', 'point']);
         
         // Search functionality
         if ($request->has('search') && $request->search) {

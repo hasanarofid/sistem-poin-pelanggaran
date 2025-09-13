@@ -49,35 +49,22 @@ class SiswaController extends Controller
         $user = Auth::user();
         $model = Siswa::where('user_id', $user->id)->first();
         $kelas = Kelas::find($model->kelas_id);
-        $riwayatPelanggaran = DB::table('input_pelanggaran_t as t')
-            ->select(
-                't.created_at as tanggal',
-                'j.nama_pelanggaran',
-                'j.poin',
-                'k.nama_kategori'
-            )
-            ->leftJoin('jenis_pelanggaran as j', 't.jenis_pelanggaran_id', '=', 'j.id')
-            ->leftJoin('kategori_m as k', 'j.kategori_id', '=', 'k.id')
-            ->where('t.siswa_id', $model->id)
-            ->orderBy('t.created_at', 'desc')
+        
+        // Ambil poin siswa dari tabel point_t
+        $point = $model->getOrCreatePoint();
+        
+        // Ambil histori poin (pelanggaran dan reward)
+        $riwayatPoin = \App\HistoriPoint::with(['jenisPelanggaran', 'jenisReward', 'inputBy'])
+            ->where('siswa_id', $model->id)
+            ->orderBy('created_at', 'desc')
             ->get();
-        $hasilPoin = DB::table('input_pelanggaran_t as t')
-            ->select(
-                DB::raw('SUM(j.poin) as total_poin')
-            )
-            ->leftJoin('siswa as s', 't.siswa_id', '=', 's.id')
-            ->leftJoin('jenis_pelanggaran as j', 't.jenis_pelanggaran_id', '=', 'j.id')
-            ->leftJoin('kelas as k', 's.kelas_id', '=', 'k.id')
-            ->leftJoin('users as u', 't.pelapor_id', '=', 'u.id')
-            ->where('s.id', $model->id)
-            ->groupBy('s.id')
-            ->first();
+        
         // Pastikan user adalah siswa berdasarkan role (prioritas utama) atau username
         if ($user->role !== 'siswa' && $user->username !== 'siswa') {
             abort(403, 'Unauthorized access');
         }
 
-        return view('siswa.profile', compact('user', 'model', 'kelas', 'hasilPoin', 'riwayatPelanggaran'));
+        return view('siswa.profile', compact('user', 'model', 'kelas', 'point', 'riwayatPoin'));
     }
 
     //ubahpassword

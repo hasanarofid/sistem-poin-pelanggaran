@@ -85,6 +85,7 @@
                                     <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">KELAS</th>
                                     <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">JENIS KELAMIN</th>
                                     <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">TAHUN AJARAN</th>
+                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">POIN</th>
                                     <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">STATUS</th>
                                     <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none; text-align: center;">AKSI</th>
                                 </tr>
@@ -98,6 +99,16 @@
                                     <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $item->nama_kelas_lengkap }}</td>
                                     <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $item->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}</td>
                                     <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $item->tahunAjaran->tahun_ajaran ?? '-' }}</td>
+                                    <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151; text-align: center;">
+                                        @php
+                                            $totalPoin = $item->point ? $item->point->total_poin : 100;
+                                            $badgeColor = $totalPoin >= 80 ? '#dcfce7' : ($totalPoin >= 60 ? '#fef3c7' : '#fee2e2');
+                                            $textColor = $totalPoin >= 80 ? '#166534' : ($totalPoin >= 60 ? '#92400e' : '#dc2626');
+                                        @endphp
+                                        <span class="badge" style="background-color: {{ $badgeColor }}; color: {{ $textColor }}; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                                            {{ $totalPoin }}
+                                        </span>
+                                    </td>
                                     <td style="border: 1px solid #e5e7eb; padding: 12px;">
                                         <span class="badge" style="background-color: {{ $item->status ? '#dcfce7' : '#fee2e2' }}; color: {{ $item->status ? '#166534' : '#dc2626' }}; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;">
                                             {{ $item->status ? 'Aktif' : 'Tidak Aktif' }}
@@ -166,7 +177,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="8" class="text-center" style="border: 1px solid #e5e7eb; padding: 40px; color: #6b7280; font-style: italic;">
+                                    <td colspan="9" class="text-center" style="border: 1px solid #e5e7eb; padding: 40px; color: #6b7280; font-style: italic;">
                                         Tidak ada data siswa
                                     </td>
                                 </tr>

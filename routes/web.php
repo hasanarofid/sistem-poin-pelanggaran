@@ -82,10 +82,26 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
         Route::put('/{id}/update', 'InputPelanggaranController@update')->name('update');
     });
     
+    Route::prefix('jenis-reward')->name('admin.jenis-reward.')->group(function () {
+        Route::get('/', 'JenisRewardController@index')->name('index');
+        Route::post('/store', 'JenisRewardController@store')->name('store');
+        Route::put('/{id}/update', 'JenisRewardController@update')->name('update');
+        Route::delete('/admin/jenis-reward/{id}', 'JenisRewardController@destroy')->name('destroy');
+    });
+    
+    Route::prefix('input-reward')->name('admin.input-reward.')->group(function () {
+        Route::get('/', 'InputRewardController@index')->name('index');
+        Route::post('/store', 'InputRewardController@store')->name('store');
+        Route::delete('/admin/input-reward/{id}', 'InputRewardController@destroy')->name('destroy');
+        Route::get('/{id}/edit', 'InputRewardController@edit')->name('edit');
+        Route::put('/{id}/update', 'InputRewardController@update')->name('update');
+    });
+    
     // route menu laporan untuk admin
     Route::prefix('laporan')->group(function () {
         Route::get('/', 'LaporanController@index')->name('admin.laporan.index');
         Route::get('/export/excel', 'LaporanController@export')->name('admin.laporan.export');
+        Route::get('/export/excel-per-kelas', 'LaporanController@exportPerKelas')->name('admin.laporan.export-per-kelas');
         Route::get('/export/pdf', 'LaporanController@exportPDF')->name('admin.laporan.exportPDF');
     });
 
@@ -113,6 +129,7 @@ Route::prefix('guru')->middleware(['auth', 'role.guru'])->group(function () {
     Route::post('/input-poin/store', 'InputPelanggaranController@store')->name('guru.input-poin.store');
     Route::get('/laporan', 'LaporanController@index')->name('guru.laporan');
     Route::get('/export/excel', 'LaporanController@export')->name('guru.laporan.export');
+    Route::get('/export/excel-per-kelas', 'LaporanController@exportPerKelas')->name('guru.laporan.export-per-kelas');
     Route::get('/export/pdf', 'LaporanController@exportPDF')->name('guru.laporan.exportPDF');
 
     // route menu siswa untuk guru (CRUD lengkap)

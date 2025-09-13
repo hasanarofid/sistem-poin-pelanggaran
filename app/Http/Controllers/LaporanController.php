@@ -337,4 +337,70 @@ class LaporanController extends Controller
         }
         // return $pdf->download('Laporan Pelanggaran.pdf');
     }
+
+    public function exportPerKelas(Request $request)
+    {
+        $dari_tanggal = $request->get('dari_tanggal');
+        $sampai_tanggal = $request->get('sampai_tanggal');
+        $kelas_id = $request->get('kelas');
+
+        // Validasi: kelas harus dipilih
+        if (!$kelas_id) {
+            return redirect()->back()->with('error', 'Silakan pilih kelas terlebih dahulu.');
+        }
+
+        // Ambil data kelas
+        $kelas = Kelas::find($kelas_id);
+        if (!$kelas) {
+            return redirect()->back()->with('error', 'Kelas tidak ditemukan.');
+        }
+
+        // Ambil semua siswa di kelas tersebut
+        $siswa = Siswa::with(['kelas', 'point'])
+            ->where('kelas_id', $kelas_id)
+            ->orderBy('nama', 'asc')
+            ->get();
+
+        // Ambil semua jenis pelanggaran untuk header
+        $jenisPelanggaran = \App\Models\JenisPelanggaran::with('kategori')
+            ->orderBy('kode', 'asc')
+            ->get();
+
+        // Ambil data histori poin untuk setiap siswa dalam rentang tanggal
+        $historiData = [];
+        foreach ($siswa as $s) {
+            $histori = DB::table('historipoint_t as h')
+                ->select(
+                    'h.poin_perubahan',
+                    'h.created_at',
+                    'j.kode',
+                    'j.nama_pelanggaran',
+                    'j.poin'
+                )
+                ->leftJoin('input_pelanggaran_t as i', 'h.input_pelanggaran_id', '=', 'i.id')
+                ->leftJoin('jenis_pelanggaran as j', 'i.jenis_pelanggaran_id', '=', 'j.id')
+                ->where('h.siswa_id', $s->id)
+                ->when($dari_tanggal, function ($query, $dari_tanggal) {
+                    return $query->where('h.created_at', '>=', $dari_tanggal . ' 00:00:00');
+                })
+                ->when($sampai_tanggal, function ($query, $sampai_tanggal) {
+                    return $query->where('h.created_at', '<=', $sampai_tanggal . ' 23:59:59');
+                })
+                ->get();
+
+            $historiData[$s->id] = $histori;
+        }
+
+        // Buat data untuk Excel
+        $data = [
+            'kelas' => $kelas,
+            'siswa' => $siswa,
+            'jenisPelanggaran' => $jenisPelanggaran,
+            'historiData' => $historiData,
+            'dari_tanggal' => $dari_tanggal,
+            'sampai_tanggal' => $sampai_tanggal
+        ];
+
+        return Excel::download(new \App\Exports\LaporanPerKelasExport($data), 'Laporan_Poin_Per_Kelas_' . $kelas->nama_kelas . '_' . $kelas->subkelas . '.xlsx');
+    }
 }

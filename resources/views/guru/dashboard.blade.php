@@ -15,7 +15,7 @@
                                 Anda telah berhasil login sebagai <span class="fw-bold">Guru</span>.
                                 Silakan gunakan menu di sidebar untuk mengakses fitur yang tersedia.
                             </p>
-                            <a href="{{ route('guru.input-pelanggaran') }}" class="btn btn-sm btn-outline-primary">Input Pelanggaran</a>
+                            <a href="{{ route('guru.input-poin') }}" class="btn btn-sm btn-outline-primary">Input Poin</a>
                             <a href="{{ route('guru.laporan') }}" class="btn btn-sm btn-outline-secondary">Lihat Laporan</a>
                         </div>
                     </div>

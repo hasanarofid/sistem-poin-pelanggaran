@@ -1,19 +1,19 @@
 @extends('layouts.admin.home')
-@section('title', 'Jenis Pelanggaran')
-@section('titelcard', 'Jenis Pelanggaran')
+@section('title', 'Jenis Poin')
+@section('titelcard', 'Jenis Poin')
 @section('content')
 <div class="content-wrapper" style="margin: 0 !important; padding: 0 !important; width: 100% !important;">
     <div class="container-xxl flex-grow-1 container-p-y" style="padding: 30px !important; width: 100% !important; max-width: none !important; margin: 0 !important;">
 
         <!-- Header Title & Buttons -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0" style="font-size: 28px; font-weight: 700; color: #1f2937;">Jenis Pelanggaran</h1>
+            <h1 class="mb-0" style="font-size: 28px; font-weight: 700; color: #1f2937;">Jenis Poin</h1>
             <div class="d-flex gap-2">
                 <a href="#"
                     class="btn btn-success d-flex align-items-center"
                     style="padding: 10px 15px; font-size: 14px;"
                     data-bs-toggle="modal" data-bs-target="#modalTambahPelanggaran">
-                    <i class="ti ti-plus" style="margin-right: 6px;"></i> Tambah Jenis Pelanggaran
+                    <i class="ti ti-plus" style="margin-right: 6px;"></i> Tambah Jenis Poin
                 </a>
             </div>
         </div>
@@ -27,9 +27,9 @@
                         <thead style="background-color: #f8f9fa;">
                             <tr>
                                 <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">No</th>
-                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Nama Pelanggaran</th>
+                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Nama Pelanggaran / Reward</th>
                                 <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Kategori</th>
-                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Poin Pelanggaran</th>
+                                <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Poin Pelanggaran / Reward</th>
                                 <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Deskripsi</th>
                                 <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">Aksi</th>
                             </tr>
@@ -54,7 +54,7 @@
                                             data-deskripsi="{{ $pelanggaran->deskripsi }}">
                                             <i class="ti ti-edit"></i>
                                         </button>
-                                        <form action="{{ route('admin.jenis-pelanggaran.destroy', $pelanggaran->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                        <form action="{{ route('admin.jenis-poin.destroy', $pelanggaran->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-danger">
@@ -66,7 +66,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="6" class="text-center">Belum ada data pelanggaran.</td>
+                                <td colspan="6" class="text-center">Belum ada data pelanggaran / reward.</td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -83,18 +83,18 @@
 
             <!-- Header -->
             <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="modalTambahPelanggaranLabel">Tambah Jenis Pelanggaran</h5>
+                <h5 class="modal-title fw-bold" id="modalTambahPelanggaranLabel">Tambah Jenis Poin</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
             <!-- Body -->
-            <form action="{{ route('admin.jenis-pelanggaran.store') }}" method="POST" id="formTambahPelanggaran">
+            <form action="{{ route('admin.jenis-poin.store') }}" method="POST" id="formTambahPelanggaran">
                 @csrf
                 <div class="modal-body">
 
                     <!-- Nama Pelanggaran -->
                     <div class="mb-3">
-                        <label for="nama_pelanggaran" class="form-label">Nama Pelanggaran</label>
+                        <label for="nama_pelanggaran" class="form-label">Nama Pelanggaran / Reward</label>
                         <input type="text" class="form-control" id="nama_pelanggaran" name="nama_pelanggaran" placeholder="">
                     </div>
 
@@ -111,7 +111,7 @@
 
                     <!-- Poin -->
                     <div class="mb-3">
-                        <label for="poin" class="form-label">Poin Pelanggaran</label>
+                        <label for="poin" class="form-label">Poin Pelanggaran / Reward</label>
                         <input type="number" class="form-control" id="poin" name="poin" min="1" max="50" placeholder="Masukkan poin (1-50)">
                     </div>
 
@@ -140,7 +140,7 @@
 
             <!-- Header -->
             <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="modalEditPelanggaranLabel">Edit Jenis Pelanggaran</h5>
+                <h5 class="modal-title fw-bold" id="modalEditPelanggaranLabel">Edit Jenis Poin</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
@@ -154,7 +154,7 @@
 
                     <!-- Nama Pelanggaran -->
                     <div class="mb-3">
-                        <label for="edit_nama_pelanggaran" class="form-label">Nama Pelanggaran</label>
+                        <label for="edit_nama_pelanggaran" class="form-label">Nama Pelanggaran / Reward</label>
                         <input type="text" class="form-control" id="edit_nama_pelanggaran" name="nama_pelanggaran" placeholder="">
                     </div>
 
@@ -171,7 +171,7 @@
 
                     <!-- Poin -->
                     <div class="mb-3">
-                        <label for="edit_poin" class="form-label">Poin Pelanggaran</label>
+                        <label for="edit_poin" class="form-label">Poin Pelanggaran / Reward</label>
                         <input type="number" class="form-control" id="edit_poin" name="poin" min="1" max="50" placeholder="Masukkan poin (1-50)">
                     </div>
 
@@ -205,7 +205,7 @@
             let formData = $(this).serialize();
 
             $.ajax({
-                url: "{{ route('admin.jenis-pelanggaran.store') }}",
+                url: "{{ route('admin.jenis-poin.store') }}",
                 type: "POST",
                 data: formData,
                 success: function(response) {
@@ -214,7 +214,7 @@
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Berhasil!',
-                                text: 'Data jenis pelanggaran berhasil disimpan',
+                                text: 'Data Jenis Poin berhasil disimpan',
                                 showConfirmButton: false,
                                 timer: 2000
                             }).then(() => {
@@ -267,7 +267,7 @@
         let formData = $(this).serialize();
 
         $.ajax({
-            url: "/admin/jenis-pelanggaran/" + id + "/update",
+            url: "/admin/jenis-poin/" + id + "/update",
             type: "PUT",
             data: formData,
             success: function(res) {
@@ -275,7 +275,7 @@
                     Swal.fire({
                         icon: 'success',
                         title: 'Berhasil!',
-                        text: 'Data jenis pelanggaran berhasil disimpan',
+                        text: 'Data Jenis Poin berhasil disimpan',
                         showConfirmButton: false,
                         timer: 2000
                     }).then(() => {

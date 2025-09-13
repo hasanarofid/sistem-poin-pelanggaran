@@ -40,6 +40,8 @@ Route::get('/umpan-balik/{generate}', 'UmpanbalikController@umpan');
 Route::get('/umpan-balik-view/{generate}', 'UmpanbalikController@umpanview');
 Route::post('/kirimumpanbalik', 'UmpanbalikController@saveumpan')->name('kirimumpanbalik');
 Route::get('/tanggapan', 'UmpanbalikController@tanggapan')->name('tanggapan');
+Route::get('/laporan/setkelas', 'LaporanController@setkelas')->name('laporan.setkelas');
+Route::get('/laporan/setsiswa', 'LaporanController@setsiswa')->name('laporan.setsiswa');
 
 Route::get('/', function () {
     return redirect('/login');
@@ -85,9 +87,9 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
     
     // route menu laporan untuk admin
     Route::prefix('laporan')->group(function () {
-        Route::get('/', 'LaporanController@index')->name('laporan.index');
-        Route::get('/setkelas', 'LaporanController@setkelas')->name('laporan.setkelas');
-        Route::get('/export/excel', 'LaporanController@export')->name('laporan.export');
+        Route::get('/', 'LaporanController@index')->name('admin.laporan.index');
+        Route::get('/export/excel', 'LaporanController@export')->name('admin.laporan.export');
+        Route::get('/export/pdf', 'LaporanController@exportPDF')->name('admin.laporan.exportPDF');
     });
 
     // route menu siswa untuk admin (CRUD lengkap)
@@ -112,8 +114,8 @@ Route::prefix('guru')->middleware(['auth', 'role.guru'])->group(function () {
     Route::get('/dashboard', 'GuruController@dashboard')->name('guru.dashboard');
     Route::get('/input-pelanggaran', 'InputPelanggaranController@index')->name('guru.input-pelanggaran');
     Route::get('/laporan', 'LaporanController@index')->name('guru.laporan');
-    Route::get('/laporan/setkelas', 'LaporanController@setkelas')->name('laporan.setkelas');
-    Route::get('/export/excel', 'LaporanController@export')->name('laporan.export');
+    Route::get('/export/excel', 'LaporanController@export')->name('guru.laporan.export');
+    Route::get('/export/pdf', 'LaporanController@exportPDF')->name('guru.laporan.exportPDF');
 
     // route menu siswa untuk guru (CRUD lengkap)
     Route::prefix('siswa')->group(function () {

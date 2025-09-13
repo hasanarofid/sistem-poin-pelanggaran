@@ -58,10 +58,10 @@
                     <div data-i18n="Profile">Input Pelanggaran</div>
                 </a>
             </li>
-            <li class="menu-item {{ request()->routeIs('laporan.*') ? 'active' : '' }}" style="margin: 2px 10px;">
-                <a href="{{ route('laporan.index') }}"
+            <li class="menu-item {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}" style="margin: 2px 10px;">
+                <a href="{{ route('admin.laporan.index') }}"
                     class="menu-link"
-                    style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('laporan.*') ? 'background: #4a5568 !important;' : '' }}">
+                    style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('admin.laporan.*') ? 'background: #4a5568 !important;' : '' }}">
                     <i class="menu-icon tf-icons ti ti-file-text" style="margin-right: 12px;"></i>
                     <div data-i18n="Profile">Laporan</div>
                 </a>

@@ -64,7 +64,7 @@
                             </ul>
                         </div>
 
-                        <form action="{{ route('admin.siswa.import') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ request()->routeIs('admin.*') ? route('admin.siswa.import') : route('guru.siswa.import') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="form-group">
                                 <label for="file">Pilih File Excel/CSV <span class="text-danger">*</span></label>

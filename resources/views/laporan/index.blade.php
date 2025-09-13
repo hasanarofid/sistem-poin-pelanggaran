@@ -14,32 +14,54 @@
             <!-- Filter Card -->
             <div class="card mb-4">
                 <div class="card-body">
-                    <form method="GET" action="{{ request()->routeIs('admin.*') ? route('laporan.index') : route('guru.laporan') }}" class="row g-3 align-items-end">
-                        <div class="col-md-4">
-                            <label for="dariTanggal" class="form-label">Dari Tanggal</label>
-                            <input type="date" class="form-control" id="dariTanggal" name="dari_tanggal" value="{{ request('dari_tanggal', \Carbon\Carbon::now()->startOfMonth()->format('Y-m-d')) }}">
+                    <div class="alert" style="border: 1px solid red; padding: 15px; border-radius: 5px;">
+                        <h5 style="font-weight: bold;"><i class="icon fas fa-info-circle"></i> Petunjuk Penggunaan Filter</h5>
+                        <ul>
+                            <li>Filter tanggal maksimal 1 bulan saja untuk menghindari beban sistem yang berlebihan.</li>
+                            <li>Untuk memfilter siswa perorangan, pilih kelas terlebih dahulu.</li>
+                            <li>Setelah mengisi form, klik tombol "Filter" untuk menampilkan data pelanggaran.</li>
+                            <li>Gunakan tombol "Reset" untuk menghapus semua isian form yang telah diisi.</li>
+                        </ul>
+                    </div>
+                    <form method="GET" action="{{ request()->routeIs('admin.*') ? route('admin.laporan.index') : route('guru.laporan') }}" class="row g-3 align-items-end">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="dariTanggal" class="form-label">Dari Tanggal</label>
+                                <input type="date" class="form-control" id="dariTanggal" name="dari_tanggal" value="{{ request('dari_tanggal', \Carbon\Carbon::now()->startOfMonth()->format('Y-m-d')) }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="sampaiTanggal" class="form-label">Sampai Tanggal</label>
+                                <input type="date" class="form-control" id="sampaiTanggal" name="sampai_tanggal" value="{{ request('sampai_tanggal', \Carbon\Carbon::now()->endOfMonth()->format('Y-m-d')) }}">
+                            </div>
                         </div>
-                        <div class="col-md-4">
-                            <label for="sampaiTanggal" class="form-label">Sampai Tanggal</label>
-                            <input type="date" class="form-control" id="sampaiTanggal" name="sampai_tanggal" value="{{ request('sampai_tanggal', \Carbon\Carbon::now()->endOfMonth()->format('Y-m-d')) }}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="kelas" class="form-label">Kelas</label>
+                                <select id="kelas" class="form-select select2" name="kelas" onchange="setSiswa(this.value)">
+                                    <option value="" {{ request('kelas') == '' ? 'selected' : '' }}>Semua Kelas</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="siswa" class="form-label">Siswa</label>
+                                <select id="siswa" class="form-select select2" name="siswa">
+                                    <option value="" {{ request('siswa') == '' ? 'selected' : '' }}>Semua Siswa</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="col-md-4">
-                            <label for="kelas" class="form-label">Kelas</label>
-                            <select id="kelas" class="form-select select2" name="kelas">
-                                <option value="" {{ request('kelas') == '' ? 'selected' : '' }}>Semua Kelas</option>
-                            </select>
-                        </div>
-                        <div class="col-md-12 d-flex align-items-center justify-content-end gap-2 flex-wrap">
+                        <div class="col-md-12 d-flex align-items-center justify-content-end gap-2 flex-wrap" style="margin-top: 35px;">
                             <button type="submit" class="btn btn-primary">
                                 <i class="menu-icon tf-icons ti ti-search"></i> Filter
                             </button>
-                            @if(request()->hasAny(['dari_tanggal', 'sampai_tanggal', 'kelas']))
-                                <a href="{{ request()->routeIs('admin.*') ? route('laporan.index') : route('laporan.index') }}" class="btn btn-secondary">
+                            @if(request()->hasAny(['dari_tanggal', 'sampai_tanggal', 'kelas', 'siswa']))
+                                <a href="{{ request()->routeIs('admin.*') ? route('admin.laporan.index') : route('guru.laporan') }}" class="btn btn-secondary">
                                     <i class="menu-icon tf-icons ti ti-refresh"></i> Reset
                                 </a>
                             @endif
-                            <a href="javascript:void(0);" class="btn btn-success" onclick="exportExcel()">
-                                <i class="ti ti-printer me-1"></i> Print Excel
+                            <a href="javascript:void(0);" class="btn btn-success" onclick="exportExcel('{{ request()->routeIs('admin.*') ? route('admin.laporan.export') : route('guru.laporan.export') }}')">
+                                <i class="ti ti-printer me-1"></i> Cetak Excel
+                            </a>
+                            <a href="javascript:void(0);" class="btn" onclick="exportPDF('{{ request()->routeIs('admin.*') ? route('admin.laporan.exportPDF') : route('guru.laporan.exportPDF') }}')" style="background: #ee3f3f; color: #fff;" onmouseover="this.style.background='#cc3333';" onmouseout="this.style.background='#ee3f3f';">
+                                <i class="ti ti-printer me-1"></i> Cetak PDF
                             </a>
                         </div>
                     </form>
@@ -116,7 +138,7 @@
                                     <tr>
                                         <td colspan="7" class="text-center"
                                             style="border:1px solid #e5e7eb; padding:12px; color:#6b7280; font-style:italic;">
-                                            Tidak ada data siswa
+                                            Tidak ada data 
                                         </td>
                                     </tr>
                                 @endforelse

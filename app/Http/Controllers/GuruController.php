@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SiswaExport;
 use App\Imports\SiswaImport;
+use App\User;
+use Illuminate\Support\Facades\Hash;
 
 class GuruController extends Controller
 {
@@ -101,13 +103,6 @@ class GuruController extends Controller
      */
     public function siswaStore(Request $request)
     {
-        $user = Auth::user();
-        
-        // Pastikan user adalah guru
-        if ($user->role !== 'guru' && $user->username !== 'guru') {
-            abort(403, 'Unauthorized access');
-        }
-
         $validator = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
             'nis' => 'required|string|unique:siswa,nis',
@@ -123,6 +118,14 @@ class GuruController extends Controller
                 ->withInput();
         }
 
+        $user = User::create([
+            'name' => $request->nama,
+            'username' => $request->nis,
+            'password' => Hash::make('siswa123'),
+            'role' => 'siswa',
+            'alamat_lengkap' => $request->alamat,
+        ]);
+        $request->merge(['user_id' => $user->id]);
         Siswa::create($request->all());
 
         return redirect()->route('guru.siswa.index')
@@ -178,13 +181,6 @@ class GuruController extends Controller
      */
     public function siswaUpdate(Request $request, $id)
     {
-        $user = Auth::user();
-        
-        // Pastikan user adalah guru
-        if ($user->role !== 'guru' && $user->username !== 'guru') {
-            abort(403, 'Unauthorized access');
-        }
-
         $validator = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
             'nis' => 'required|string|unique:siswa,nis,' . $id,
@@ -271,26 +267,49 @@ class GuruController extends Controller
      */
     public function siswaImport(Request $request)
     {
-        $user = Auth::user();
-        
-        // Pastikan user adalah guru
-        if ($user->role !== 'guru' && $user->username !== 'guru') {
-            abort(403, 'Unauthorized access');
-        }
+        ini_set('max_execution_time', 300);
 
-        $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:xlsx,xls,csv'
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'file' => 'required|mimes:xlsx,xls,csv'
+        // ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator);
-        }
+        // if ($validator->fails()) {
+        //     return redirect()->back()
+        //         ->withErrors($validator);
+        // }
 
         try {
-            Excel::import(new SiswaImport, $request->file('file'));
-            return redirect()->route('guru.siswa.index')
-                ->with('success', 'Data siswa berhasil diimpor.');
+            $import = new SiswaImport();
+            Excel::import($import, $request->file('file'));
+            
+            // Buat pesan berdasarkan hasil import
+            $messages = [];
+            
+            if ($import->successCount > 0) {
+                $messages[] = "Berhasil mengimpor {$import->successCount} data siswa.";
+            }
+            
+            if ($import->errorCount > 0) {
+                $errorMessage = "Terjadi {$import->errorCount} error:<br>";
+                foreach ($import->errors as $error) {
+                    $errorMessage .= "• " . $error . "<br>";
+                }
+                $messages[] = $errorMessage;
+            }
+            
+            if (empty($messages)) {
+                $messages[] = "Tidak ada data yang diproses.";
+            }
+            
+            // Jika ada error, tampilkan sebagai error, jika tidak tampilkan sebagai success
+            if ($import->errorCount > 0) {
+                return redirect()->back()
+                    ->with('error', implode("<br>", $messages));
+            } else {
+                return redirect()->route('guru.siswa.index')
+                    ->with('success', implode("<br>", $messages));
+            }
+            
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan saat mengimpor data: ' . $e->getMessage());

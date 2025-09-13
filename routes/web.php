@@ -66,36 +66,22 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
         Route::get('/', 'JenisPelanggaranController@index')->name('index');
         Route::post('/store', 'JenisPelanggaranController@store')->name('store');
         Route::put('/{id}/update', 'JenisPelanggaranController@update')->name('update');
-        Route::delete('/admin/jenis-poin/{id}', 'JenisPelanggaranController@destroy')->name('destroy');
+        Route::delete('/{id}', 'JenisPelanggaranController@destroy')->name('destroy');
     });
     Route::prefix('kategori')->name('admin.kategori.')->group(function () {
         Route::get('/', 'KategoriController@index')->name('index');
         Route::post('/store', 'KategoriController@store')->name('store');
         Route::put('/{id}/update', 'KategoriController@update')->name('update');
-        Route::delete('/admin/kategori/{id}', 'KategoriController@destroy')->name('destroy');
+        Route::delete('/{id}', 'KategoriController@destroy')->name('destroy');
     });
     Route::prefix('input-poin')->name('admin.input-poin.')->group(function () {
         Route::get('/', 'InputPelanggaranController@index')->name('index');
         Route::post('/store', 'InputPelanggaranController@store')->name('store');
-        Route::delete('/admin/input-poin/{id}', 'InputPelanggaranController@destroy')->name('destroy');
+        Route::delete('/{id}', 'InputPelanggaranController@destroy')->name('destroy');
         Route::get('/{id}/edit', 'InputPelanggaranController@edit')->name('edit');
         Route::put('/{id}/update', 'InputPelanggaranController@update')->name('update');
     });
     
-    Route::prefix('jenis-reward')->name('admin.jenis-reward.')->group(function () {
-        Route::get('/', 'JenisRewardController@index')->name('index');
-        Route::post('/store', 'JenisRewardController@store')->name('store');
-        Route::put('/{id}/update', 'JenisRewardController@update')->name('update');
-        Route::delete('/admin/jenis-reward/{id}', 'JenisRewardController@destroy')->name('destroy');
-    });
-    
-    Route::prefix('input-reward')->name('admin.input-reward.')->group(function () {
-        Route::get('/', 'InputRewardController@index')->name('index');
-        Route::post('/store', 'InputRewardController@store')->name('store');
-        Route::delete('/admin/input-reward/{id}', 'InputRewardController@destroy')->name('destroy');
-        Route::get('/{id}/edit', 'InputRewardController@edit')->name('edit');
-        Route::put('/{id}/update', 'InputRewardController@update')->name('update');
-    });
     
     // route menu laporan untuk admin
     Route::prefix('laporan')->group(function () {

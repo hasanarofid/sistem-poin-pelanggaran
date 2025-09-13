@@ -32,7 +32,7 @@
             <!-- Pilih Siswa -->
             <div class="mb-3">
               <label for="siswa_id" class="form-label">Pilih Siswa</label>
-              <select id="siswa_id" name="siswa_id" class="form-select">
+              <select id="siswa_id" name="siswa_id" class="form-select select2">
                 <option value="">Pilih siswa...</option>
                 @foreach($siswa as $value)
                 <option value="{{$value->id}}">{{$value->nama}}</option>
@@ -77,6 +77,8 @@
 <script>
   $(document).ready(function() {
     // Submit form tambah pelanggaran
+    $('#siswa_id').select2();
+
     $('#siswa_id').val('');
     $('#jenis_pelanggaran_id').val('');
     $('#keterangan').val('');

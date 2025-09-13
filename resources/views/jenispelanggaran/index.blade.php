@@ -101,7 +101,7 @@
                     <!-- Kategori -->
                     <div class="mb-3">
                         <label for="kategori_id" class="form-label">Kategori</label>
-                        <select id="kategori_id" name="kategori_id" class="form-select">
+                        <select id="kategori_id" name="kategori_id" class="form-select select2">
                             <option value="">Pilih kategori...</option>
                             @foreach($kategori as $value)
                             <option value="{{$value->id}}">{{$value->nama_kategori}}</option>
@@ -161,7 +161,7 @@
                     <!-- Kategori -->
                     <div class="mb-3">
                         <label for="edit_kategori_id" class="form-label">Kategori</label>
-                        <select id="edit_kategori_id" name="kategori_id" class="form-select">
+                        <select id="edit_kategori_id" name="kategori_id" class="form-select select2">
                             <option value="">Pilih kategori...</option>
                             @foreach($kategori as $value)
                             <option value="{{$value->id}}">{{$value->nama_kategori}}</option>
@@ -198,7 +198,19 @@
 @section('script')
 <script>
     $(document).ready(function() {
-        // Submit form tambah pelanggaran
+        $('#kategori_id').select2({
+            dropdownParent: $('#modalTambahPelanggaran'),
+            placeholder: "Pilih kategori...",
+            allowClear: true,
+            width: '100%'
+        });
+
+        $('#edit_kategori_id').select2({
+            dropdownParent: $('#modalEditPelanggaran'),
+            placeholder: "Pilih kategori...",
+            allowClear: true,
+            width: '100%'
+        });
         $('#formTambahPelanggaran').on('submit', function(e) {
             e.preventDefault();
 
@@ -252,7 +264,7 @@
         // isi ke modal
         $("#edit_id").val(id);
         $("#edit_nama_pelanggaran").val(nama);
-        $("#edit_kategori_id").val(kategori_id);
+        $("#edit_kategori_id").val(kategori_id).trigger("change"); // ✅ tambahkan trigger change
         $("#edit_poin").val(poin);
         $("#edit_deskripsi").val(deskripsi);
 

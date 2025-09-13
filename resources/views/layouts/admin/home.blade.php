@@ -37,6 +37,9 @@
     <link rel="stylesheet" href="{{ asset('theme/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
     <link rel="stylesheet" href="{{ asset('theme/assets/vendor/libs/node-waves/node-waves.css') }}" />
     <link rel="stylesheet" href="{{ asset('theme/assets/vendor/libs/typeahead-js/typeahead.css') }}" />
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ asset('css/responsive-pagination.css') }}" />
 
     <link rel="stylesheet" href="{{ asset('theme/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css') }}" />
     <link rel="stylesheet"
@@ -430,43 +433,404 @@
         .footer-container a:hover {
             text-decoration: underline !important;
         }
+        
+        /* Mobile Menu Toggle Hover Effect */
+        .mobile-menu-toggle {
+            background: none !important;
+            border: none !important;
+            cursor: pointer !important;
+            z-index: 1001 !important;
+            position: relative !important;
+            touch-action: manipulation !important;
+            -webkit-tap-highlight-color: transparent !important;
+        }
+        
+        .mobile-menu-toggle:hover {
+            background-color: #f3f4f6 !important;
+            transform: scale(1.05) !important;
+        }
+        
+        .mobile-menu-toggle:active {
+            transform: scale(0.95) !important;
+            background-color: #e5e7eb !important;
+        }
+        
+        .mobile-menu-toggle:focus {
+            outline: 2px solid #3b82f6 !important;
+            outline-offset: 2px !important;
+        }
+        
+        /* Profile Dropdown Hover Effects */
+        .nav-link:hover {
+            background-color: #f3f4f6 !important;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f3f4f6 !important;
+        }
+        
+        /* Mobile Sidebar Styles */
+        #layout-menu {
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        #layout-menu.show {
+            transform: translateX(0) !important;
+        }
+        
+        @media (max-width: 1199.98px) {
+            .layout-wrapper {
+                display: block !important;
+            }
+            
+            .layout-container {
+                display: block !important;
+            }
+            
+            #layout-menu {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                height: 100vh !important;
+                z-index: 1002 !important;
+                transform: translateX(-100%) !important;
+                width: 260px !important;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3) !important;
+            }
+            
+            #layout-menu.show {
+                transform: translateX(0) !important;
+            }
+            
+            .layout-overlay {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background: rgba(0, 0, 0, 0.5) !important;
+                z-index: 1001 !important;
+                opacity: 0 !important;
+                visibility: hidden !important;
+                transition: opacity 0.3s ease-in-out !important;
+            }
+            
+            .layout-overlay.show {
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+            
+            .fixed-header {
+                left: 0 !important;
+                width: 100% !important;
+            }
+            
+            .layout-page {
+                width: 100% !important;
+                margin-left: 0 !important;
+            }
+            
+            .mobile-menu-toggle {
+                display: flex !important;
+            }
+        }
+        
+        /* Ensure sidebar stays open on larger screens */
+        @media (min-width: 1200px) {
+            .layout-wrapper {
+                display: flex !important;
+                flex-direction: row !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .layout-container {
+                display: flex !important;
+                flex-direction: row !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            #layout-menu {
+                position: relative !important;
+                transform: translateX(0) !important;
+                width: 260px !important;
+                min-width: 260px !important;
+                max-width: 260px !important;
+                box-shadow: none !important;
+                flex-shrink: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .layout-overlay {
+                display: none !important;
+            }
+            
+            .mobile-menu-toggle {
+                display: none !important;
+            }
+            
+            .fixed-header {
+                left: 260px !important;
+                width: calc(100% - 260px) !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .layout-page {
+                width: calc(100% - 260px) !important;
+                margin-left: 0 !important;
+                flex: 1 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .content-wrapper {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .layout-page .container-xxl {
+                margin-left: 10px !important;
+                padding-left: 20px !important;
+            }
+        }
+        
+        /* Desktop sidebar toggle functionality */
+        @media (min-width: 1200px) {
+            .sidebar-collapsed #layout-menu {
+                width: 0 !important;
+                min-width: 0 !important;
+                max-width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            .sidebar-collapsed .fixed-header {
+                left: 0 !important;
+                width: 100% !important;
+            }
+            
+            .sidebar-collapsed .layout-page {
+                width: 100% !important;
+                margin-left: 0 !important;
+            }
+            
+            .sidebar-collapsed .layout-page .container-xxl {
+                margin-left: 10px !important;
+                padding-left: 20px !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .fixed-header {
+                padding: 8px 15px !important;
+            }
+            
+            .fixed-header h4 {
+                font-size: 16px !important;
+            }
+            
+            .fixed-header img {
+                height: 40px !important;
+            }
+            
+            .avatar {
+                width: 35px !important;
+                height: 35px !important;
+                font-size: 14px !important;
+            }
+            
+            .nav-link {
+                padding: 6px 8px !important;
+            }
+            
+            .nav-link div {
+                display: none !important;
+            }
+            
+            .nav-link .avatar {
+                margin-right: 0 !important;
+            }
+        }
+        
+        /* Sidebar hover improvements */
+        .menu-link {
+            transition: all 0.3s ease !important;
+            position: relative !important;
+        }
+        
+        .menu-link:hover {
+            background-color: #4a5568 !important;
+            color: white !important;
+            transform: translateX(5px) !important;
+        }
+        
+        .menu-link:hover div {
+            color: white !important;
+            opacity: 1 !important;
+        }
+        
+        .menu-link div {
+            transition: all 0.3s ease !important;
+            opacity: 1 !important;
+        }
+        
+        /* Active menu item styling */
+        .menu-item.active .menu-link {
+            background-color: #4a5568 !important;
+            color: white !important;
+        }
+        
+        .menu-item.active .menu-link div {
+            color: white !important;
+            opacity: 1 !important;
+        }
+        
+        /* Content spacing improvements */
+        .content-wrapper {
+            padding-top: 10px !important;
+            background: #f8f9fa !important;
+            min-height: calc(100vh - 60px) !important;
+            margin: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        
+        .container-xxl {
+            padding-top: 10px !important;
+            background: white !important;
+            border-radius: 8px !important;
+            margin: 10px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        /* Remove left spacing */
+        .layout-page .content-wrapper {
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+        }
+        
+        .layout-page .container-xxl {
+            margin-left: 10px !important;
+            padding-left: 20px !important;
+        }
+        
+        /* Layout improvements */
+        .layout-wrapper {
+            background: #f8f9fa !important;
+            min-height: 100vh !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .layout-container {
+            background: #f8f9fa !important;
+            width: 100% !important;
+            min-height: 100vh !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        /* Sidebar base styles */
+        #layout-menu {
+            background: #1a1a1a !important;
+            min-height: 100vh !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        /* Layout page styles */
+        .layout-page {
+            display: flex !important;
+            flex-direction: column !important;
+            min-height: 100vh !important;
+            position: relative !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        /* Content wrapper styles */
+        .content-wrapper {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        @media (max-width: 768px) {
+            .container-xxl {
+                padding-top: 8px !important;
+                padding-left: 15px !important;
+                padding-right: 15px !important;
+                margin: 5px !important;
+            }
+            
+            .content-wrapper {
+                background: white !important;
+            }
+        }
     </style>
 </head>
 
 <body>
     <!-- Layout wrapper -->
-    <div class="layout-wrapper layout-content-navbar" style="display: flex; width: 100%;">
-        <div class="layout-container" style="display: flex; width: 100%;">
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+            <!-- Mobile Overlay -->
+            <div class="layout-overlay"></div>
+            
             <!-- Menu -->
             @include('layouts.admin.sidebar')
             <!-- / Menu -->
 
             <!-- Layout container -->
-            <div class="layout-page" style="flex: 1; margin-left: 0 !important; width: calc(100% - 280px) !important; display: flex; flex-direction: column;">
+            <div class="layout-page">
                 <!-- Navbar - FIXED HEADER -->
-                <div class="fixed-header" style="position: fixed; top: 0; left: 280px; right: 0; background: white; border-bottom: 1px solid #e5e7eb; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; width: calc(100% - 280px); min-height: 60px; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <div class="fixed-header" style="position: fixed; top: 0; left: 260px; right: 0; background: white; border-bottom: 1px solid #e5e7eb; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; width: calc(100% - 260px); min-height: 60px; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                     
                     <!-- Left Side: Hamburger Menu (Mobile) + Logo and Title -->
                     <div style="display: flex; align-items: center;">
-                        <!-- Hamburger Menu for Mobile -->
-                        <button type="button" class="mobile-menu-toggle d-xl-none" id="mobile-menu-toggle" style="background: none; border: none; margin-right: 15px; font-size: 24px; color: #374151; cursor: pointer; z-index: 1001; position: relative;">
+                        <!-- Hamburger Menu for Mobile - PERBESAR ICON -->
+                        <button type="button" class="mobile-menu-toggle d-xl-none" id="mobile-menu-toggle" style="background: none; border: none; margin-right: 15px; font-size: 32px; color: #374151; cursor: pointer; z-index: 1001; position: relative; padding: 12px; min-width: 56px; min-height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: all 0.2s; touch-action: manipulation; -webkit-tap-highlight-color: transparent;">
                             <i class="ti ti-menu-2"></i>
                         </button>
                         <img src="{{ asset('logopoint.png') }}" style="height:50px;" alt="">
                         <h4 style="margin: 0; color: #1f2937; font-weight: 700;">Sistem Poin Pelanggaran</h4>
                     </div>
-                    <!-- Right Side: User Info and Logout Button -->
-                    <div style="display: flex; align-items: center; gap: 20px;">
-                        <div style="text-align: right;">
-                            <div style="font-size: 11px; color: #9ca3af; margin-bottom: 1px;"> Login Sebagai {{ ucwords(Auth::user()->role) }}</div>
-                            <div style="font-size: 13px; font-weight: 500; color: #374151;">{{ Auth::user()->name ?? 'Administrator' }}</div>
+                    
+                    <!-- Right Side: Profile Dropdown -->
+                    <div class="navbar-nav align-items-center">
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; text-decoration: none; color: #374151; transition: background-color 0.2s;">
+                                <div class="avatar avatar-online" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 16px;">
+                                    {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
+                                </div>
+                                <div style="text-align: left;">
+                                    <div style="font-size: 12px; color: #9ca3af; margin-bottom: 1px;">Login Sebagai {{ ucwords(Auth::user()->role) }}</div>
+                                    <div style="font-size: 14px; font-weight: 500; color: #374151;">{{ Auth::user()->name ?? 'Administrator' }}</div>
+                                </div>
+                                <i class="ti ti-chevron-down" style="font-size: 16px; color: #9ca3af;"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end" style="min-width: 200px; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                                <div class="dropdown-header" style="padding: 12px 16px; border-bottom: 1px solid #e5e7eb; background: #f9fafb;">
+                                    <div style="font-size: 14px; font-weight: 600; color: #374151;">{{ Auth::user()->name ?? 'Administrator' }}</div>
+                                    <div style="font-size: 12px; color: #9ca3af;">{{ Auth::user()->username ?? 'admin@example.com' }}</div>
+                                </div>
+                                {{-- <a class="dropdown-item" href="#" style="padding: 12px 16px; color: #374151; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s;">
+                                    <i class="ti ti-user" style="font-size: 16px; color: #6b7280;"></i>
+                                    <span>Profile</span>
+                                </a>
+                                <a class="dropdown-item" href="#" style="padding: 12px 16px; color: #374151; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s;">
+                                    <i class="ti ti-settings" style="font-size: 16px; color: #6b7280;"></i>
+                                    <span>Settings</span>
+                                </a> --}}
+                                <div class="dropdown-divider" style="margin: 8px 0; border-top: 1px solid #e5e7eb;"></div>
+                                <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="padding: 12px 16px; color: #dc2626; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s;">
+                                    <i class="ti ti-logout" style="font-size: 16px; color: #dc2626;"></i>
+                                    <span>Logout</span>
+                                </a>
+                            </div>
                         </div>
-                      
-                        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                           style="background: #dc2626; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; box-shadow: 0 3px 6px rgba(220, 38, 38, 0.3); color: white; text-decoration: none; white-space: nowrap; display: inline-block;">
-                            <i class="ti ti-arrow-left" style="margin-right: 5px;"></i>
-                            Keluar
-                        </a>
                     </div>
 
                 </div>
@@ -474,7 +838,7 @@
                 <!-- / Navbar -->
 
                 <!-- Content wrapper -->
-                <div class="content-wrapper content-with-fixed-header" style="flex: 1; display: flex; flex-direction: column; margin-top: 60px;">
+                <div class="content-wrapper content-with-fixed-header" style="flex: 1; display: flex; flex-direction: column; margin-top: 60px; padding-top: 10px;">
                     @yield('content')
                 </div>
                 
@@ -544,6 +908,7 @@
             const layoutMenu = document.getElementById('layout-menu');
             const layoutOverlay = document.querySelector('.layout-overlay');
             const menuToggle = document.getElementById('menu-toggle');
+            const layoutWrapper = document.querySelector('.layout-wrapper');
             
             console.log('Mobile menu toggle element:', mobileMenuToggle);
             console.log('Layout menu element:', layoutMenu);
@@ -551,36 +916,63 @@
             
             // Toggle sidebar on mobile
             if (mobileMenuToggle) {
-                mobileMenuToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Mobile menu toggle clicked');
-                    
-                    if (layoutMenu) {
-                        layoutMenu.classList.toggle('show');
-                        console.log('Layout menu classes:', layoutMenu.className);
-                    }
-                    
-                    if (layoutOverlay) {
-                        layoutOverlay.classList.toggle('show');
-                        console.log('Layout overlay classes:', layoutOverlay.className);
-                    }
-                });
+                // Remove any existing event listeners first
+                mobileMenuToggle.removeEventListener('click', handleMobileToggle);
+                mobileMenuToggle.removeEventListener('touchstart', handleMobileTouch);
                 
-                // Also add touch events for mobile
-                mobileMenuToggle.addEventListener('touchstart', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Mobile menu toggle touched');
-                    
-                    if (layoutMenu) {
-                        layoutMenu.classList.toggle('show');
+                // Add click event
+                mobileMenuToggle.addEventListener('click', handleMobileToggle);
+                
+                // Add touch event for mobile
+                mobileMenuToggle.addEventListener('touchstart', handleMobileTouch, { passive: false });
+                
+                function handleMobileToggle(e) {
+                    if (window.innerWidth < 1200) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Mobile menu toggle clicked');
+                        
+                        if (layoutMenu) {
+                            layoutMenu.classList.toggle('show');
+                            console.log('Layout menu classes:', layoutMenu.className);
+                        }
+                        
+                        if (layoutOverlay) {
+                            layoutOverlay.classList.toggle('show');
+                            console.log('Layout overlay classes:', layoutOverlay.className);
+                        }
+                        
+                        // Prevent body scroll when menu is open
+                        if (layoutMenu.classList.contains('show')) {
+                            document.body.style.overflow = 'hidden';
+                        } else {
+                            document.body.style.overflow = '';
+                        }
                     }
-                    
-                    if (layoutOverlay) {
-                        layoutOverlay.classList.toggle('show');
+                }
+                
+                function handleMobileTouch(e) {
+                    if (window.innerWidth < 1200) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Mobile menu toggle touched');
+                        
+                        if (layoutMenu) {
+                            layoutMenu.classList.toggle('show');
+                        }
+                        
+                        if (layoutOverlay) {
+                            layoutOverlay.classList.toggle('show');
+                        }
+                        
+                        // Prevent body scroll when menu is open
+                        if (layoutMenu.classList.contains('show')) {
+                            document.body.style.overflow = 'hidden';
+                        } else {
+                            document.body.style.overflow = '';
+                        }
                     }
-                });
+                }
             } else {
                 console.error('Mobile menu toggle element not found');
             }
@@ -590,6 +982,7 @@
                 layoutOverlay.addEventListener('click', function() {
                     layoutMenu.classList.remove('show');
                     layoutOverlay.classList.remove('show');
+                    document.body.style.overflow = '';
                 });
             }
             
@@ -598,8 +991,55 @@
                 menuToggle.addEventListener('click', function() {
                     layoutMenu.classList.remove('show');
                     layoutOverlay.classList.remove('show');
+                    document.body.style.overflow = '';
                 });
             }
+            
+            // Desktop sidebar toggle functionality
+            function toggleDesktopSidebar() {
+                if (window.innerWidth >= 1200) {
+                    if (layoutWrapper) {
+                        layoutWrapper.classList.toggle('sidebar-collapsed');
+                        console.log('Desktop sidebar toggled:', layoutWrapper.classList.contains('sidebar-collapsed'));
+                    }
+                }
+            }
+            
+            // Add desktop toggle functionality to mobile menu toggle
+            if (mobileMenuToggle) {
+                // Remove existing event listeners
+                mobileMenuToggle.removeEventListener('click', handleDesktopToggle);
+                
+                // Add new event listener
+                mobileMenuToggle.addEventListener('click', handleDesktopToggle);
+                
+                function handleDesktopToggle(e) {
+                    if (window.innerWidth >= 1200) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        toggleDesktopSidebar();
+                    }
+                }
+            }
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1200) {
+                    // Desktop view - remove mobile classes
+                    if (layoutMenu) {
+                        layoutMenu.classList.remove('show');
+                    }
+                    if (layoutOverlay) {
+                        layoutOverlay.classList.remove('show');
+                    }
+                    document.body.style.overflow = '';
+                } else {
+                    // Mobile view - remove desktop classes
+                    if (layoutWrapper) {
+                        layoutWrapper.classList.remove('sidebar-collapsed');
+                    }
+                }
+            });
             
             // Close sidebar when clicking menu links on mobile
             const menuLinks = document.querySelectorAll('.menu-link');
@@ -620,34 +1060,75 @@
                 }
             });
             
-            // Alternative toggle method using jQuery if available
-            if (typeof $ !== 'undefined') {
-                $(document).ready(function() {
-                    $('#mobile-menu-toggle').on('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('jQuery mobile menu toggle clicked');
-                        
-                        $('#layout-menu').toggleClass('show');
-                        $('.layout-overlay').toggleClass('show');
-                    });
-                });
-            }
+            // Enhanced mobile menu toggle - REMOVED DUPLICATE
             
-            // Fallback method using direct event delegation
+            // Alternative toggle method using jQuery if available - REMOVED DUPLICATE
+            
+            // Close menu when clicking outside or on overlay
             document.addEventListener('click', function(e) {
-                if (e.target && e.target.closest('#mobile-menu-toggle')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Event delegation mobile menu toggle clicked');
+                const menu = document.getElementById('layout-menu');
+                const overlay = document.querySelector('.layout-overlay');
+                const toggle = document.getElementById('mobile-menu-toggle');
+                
+                // Only handle mobile menu closing on mobile screens
+                if (window.innerWidth <= 1199) {
+                    // Close when clicking on overlay
+                    if (e.target === overlay) {
+                        menu.classList.remove('show');
+                        overlay.classList.remove('show');
+                        document.body.style.overflow = '';
+                        return;
+                    }
                     
+                    // Close when clicking outside menu and toggle
+                    if (menu && menu.classList.contains('show') && 
+                        !menu.contains(e.target) && 
+                        !toggle.contains(e.target)) {
+                        menu.classList.remove('show');
+                        if (overlay) overlay.classList.remove('show');
+                        document.body.style.overflow = '';
+                    }
+                }
+            });
+            
+            // Close menu when pressing escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
                     const menu = document.getElementById('layout-menu');
                     const overlay = document.querySelector('.layout-overlay');
                     
-                    if (menu) menu.classList.toggle('show');
-                    if (overlay) overlay.classList.toggle('show');
+                    if (menu && menu.classList.contains('show') && window.innerWidth <= 1199) {
+                        menu.classList.remove('show');
+                        if (overlay) overlay.classList.remove('show');
+                        document.body.style.overflow = '';
+                    }
                 }
             });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                const menu = document.getElementById('layout-menu');
+                const overlay = document.querySelector('.layout-overlay');
+                
+                if (window.innerWidth >= 1200) {
+                    // Desktop view - ensure menu is visible
+                    if (menu) {
+                        menu.classList.remove('show');
+                        menu.style.transform = 'translateX(0)';
+                    }
+                    if (overlay) {
+                        overlay.classList.remove('show');
+                    }
+                    document.body.style.overflow = '';
+                } else {
+                    // Mobile view - ensure menu is hidden by default
+                    if (menu && !menu.classList.contains('show')) {
+                        menu.style.transform = 'translateX(-100%)';
+                    }
+                }
+            });
+            
+            // Initialize mobile menu on page load - REMOVED DUPLICATE
             
             // Force logout button to be visible
             const logoutButtons = document.querySelectorAll('a[href*="logout"], a[onclick*="logout"]');

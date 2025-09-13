@@ -34,7 +34,7 @@
                                     <span class="ti ti-alert-triangle text-white"></span>
                                 </div>
                             </div>
-                            <h4 class="mb-0 text-danger">0</h4>
+                            <h4 class="mb-0 text-danger">{{ $pelanggaran_bulan_ini }}</h4>
                             <small class="text-muted">Kasus tercatat</small>
                         </div>
                     </div>
@@ -48,7 +48,7 @@
                                     <span class="ti ti-user-x text-white"></span>
                                 </div>
                             </div>
-                            <h4 class="mb-0 text-warning">2</h4>
+                            <h4 class="mb-0 text-warning">{{ $siswa_bermasalah }}</h4>
                             <small class="text-muted">Poin ≥ 20</small>
                         </div>
                     </div>
@@ -62,7 +62,7 @@
                                     <span class="ti ti-gavel text-white"></span>
                                 </div>
                             </div>
-                            <h4 class="mb-0 text-secondary">1</h4>
+                            <h4 class="mb-0 text-secondary">{{ $sanksi_aktif }}</h4>
                             <small class="text-muted">Poin ≥ 30</small>
                         </div>
                     </div>
@@ -71,29 +71,147 @@
 
             <!-- Main Sections -->
             <div class="row mb-4">
-                <!-- Statistik Pelanggaran -->
+                <!-- Trend Pelanggaran Chart -->
                 <div class="col-xl-8 col-12 mb-4">
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Statistik Pelanggaran</h5>
+                            <h5 class="card-title mb-0">Trend Pelanggaran Mingguan</h5>
                             <small class="text-muted">
                                 <i class="ti ti-refresh me-1"></i>
                                 Update otomatis
                             </small>
                         </div>
                         <div class="card-body">
-                            <div class="text-center py-5">
-                                <p class="text-muted">No data available for the chart</p>
-                            </div>
+                            <canvas id="trendChart" height="100"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- Pelanggaran Terbaru -->
+                <!-- Pelanggaran Hari Ini -->
                 <div class="col-xl-4 col-12 mb-4">
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Pelanggaran Terbaru</h5>
+                            <h5 class="card-title mb-0">Pelanggaran Hari Ini</h5>
+                            <small class="text-danger">
+                                <i class="ti ti-circle-filled me-1" style="font-size: 8px;"></i>
+                                Real-time
+                            </small>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                @forelse($pelanggaran_hari_ini as $pelanggaran)
+                                <div class="list-group-item border-0 px-0">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">{{ $pelanggaran->siswa->nama ?? 'N/A' }} - {{ $pelanggaran->siswa->kelas->subkelas ?? 'N/A' }}</h6>
+                                            <p class="mb-1 text-muted">{{ $pelanggaran->jenispelanggaran->nama_pelanggaran ?? 'N/A' }}</p>
+                                            <small class="text-muted">{{ $pelanggaran->created_at->format('d/m/Y H:i') }}</small>
+                                        </div>
+                                        <span class="badge bg-danger">{{ $pelanggaran->jenispelanggaran->poin ?? 0 }}</span>
+                                    </div>
+                                </div>
+                                @empty
+                                <div class="text-center py-3">
+                                    <p class="text-muted">Tidak ada pelanggaran hari ini</p>
+                                </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sisi Pelanggaran -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="mb-3" style="color: #dc2626; font-weight: 600;">
+                        <i class="ti ti-alert-triangle me-2"></i>Sisi Pelanggaran
+                    </h4>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <!-- Kelas dengan Pelanggar Terbanyak -->
+                <div class="col-xl-4 col-md-6 col-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Kelas dengan Pelanggar Terbanyak</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                @forelse($kelas_pelanggar_terbanyak as $index => $kelas)
+                                <div class="list-group-item border-0 px-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>{{ $index + 1 }}. {{ $kelas->kelas ?? 'N/A' }}</span>
+                                        <span class="badge bg-danger">{{ $kelas->jumlah_siswa }} siswa</span>
+                                    </div>
+                                </div>
+                                @empty
+                                <div class="text-center py-3">
+                                    <p class="text-muted">Tidak ada data</p>
+                                </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Trend Pelanggaran dengan Pelanggar Terbanyak -->
+                <div class="col-xl-4 col-md-6 col-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Trend Pelanggaran Mingguan</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="trendPelanggaranChart" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Siswa dengan Pelanggaran Terbanyak -->
+                <div class="col-xl-4 col-md-6 col-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Siswa dengan Pelanggaran Terbanyak</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                @forelse($siswa_pelanggaran_terbanyak as $index => $siswa)
+                                <div class="list-group-item border-0 px-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span>{{ $index + 1 }}. {{ $siswa->nama ?? 'N/A' }}</span>
+                                            <br><small class="text-muted">{{ $siswa->kelas ?? 'N/A' }}</small>
+                                        </div>
+                                        <span class="badge bg-danger">{{ $siswa->jumlah_pelanggaran }}x</span>
+                                    </div>
+                                </div>
+                                @empty
+                                <div class="text-center py-3">
+                                    <p class="text-muted">Tidak ada data</p>
+                                </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sisi Reward -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="mb-3" style="color: #059669; font-weight: 600;">
+                        <i class="ti ti-award me-2"></i>Sisi Reward
+                    </h4>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <!-- Reward Hari Ini -->
+                <div class="col-xl-4 col-md-6 col-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Reward Hari Ini</h5>
                             <small class="text-success">
                                 <i class="ti ti-circle-filled me-1" style="font-size: 8px;"></i>
                                 Real-time
@@ -101,125 +219,114 @@
                         </div>
                         <div class="card-body">
                             <div class="list-group list-group-flush">
+                                @forelse($reward_hari_ini as $reward)
                                 <div class="list-group-item border-0 px-0">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
-                                            <h6 class="mb-1">Ahmad Rizki - XII RPL 1</h6>
-                                            <p class="mb-1 text-muted">Terlambat masuk kelas - Wali Kelas XII RPL 1</p>
-                                            <small class="text-muted">15/11/2024</small>
+                                            <h6 class="mb-1">{{ $reward->siswa->nama ?? 'N/A' }} - {{ $reward->siswa->kelas->subkelas ?? 'N/A' }}</h6>
+                                            <p class="mb-1 text-muted">{{ $reward->jenispelanggaran->nama_pelanggaran ?? 'N/A' }}</p>
+                                            <small class="text-muted">{{ $reward->created_at->format('d/m/Y H:i') }}</small>
                                         </div>
-                                        <span class="badge bg-danger">+5</span>
+                                        <span class="badge bg-success">+{{ $reward->jenispelanggaran->poin ?? 0 }}</span>
                                     </div>
                                 </div>
-                                <div class="list-group-item border-0 px-0">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <h6 class="mb-1">Siti Nurhaliza - XI BD 2</h6>
-                                            <p class="mb-1 text-muted">Mengganggu teman - Wali Kelas XI BD 2</p>
-                                            <small class="text-muted">12/11/2024</small>
-                                        </div>
-                                        <span class="badge bg-danger">+15</span>
-                                    </div>
+                                @empty
+                                <div class="text-center py-3">
+                                    <p class="text-muted">Tidak ada reward hari ini</p>
                                 </div>
-                                <div class="list-group-item border-0 px-0">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <h6 class="mb-1">Ahmad Rizki - XII RPL 1</h6>
-                                            <p class="mb-1 text-muted">Tidak mengerjakan tugas - Wali Kelas XII RPL 1</p>
-                                            <small class="text-muted">10/11/2024</small>
-                                        </div>
-                                        <span class="badge bg-danger">+10</span>
-                                    </div>
-                                </div>
+                                @endforelse
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Bottom Cards -->
-            <div class="row">
+                
+                <!-- Kelas dengan Reward Terbanyak -->
                 <div class="col-xl-4 col-md-6 col-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Kelas dengan Reward Terbanyak</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                @forelse($kelas_reward_terbanyak as $index => $kelas)
+                                <div class="list-group-item border-0 px-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>{{ $index + 1 }}. {{ $kelas->kelas ?? 'N/A' }}</span>
+                                        <span class="badge bg-success">{{ $kelas->jumlah_siswa }} siswa</span>
+                                    </div>
+                                </div>
+                                @empty
+                                <div class="text-center py-3">
+                                    <p class="text-muted">Tidak ada data</p>
+                                </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Trend Reward dengan Penerima Terbanyak -->
+                <div class="col-xl-4 col-md-6 col-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Trend Reward Mingguan</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="trendRewardChart" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- Siswa dengan Reward Positif Terbanyak -->
+                <div class="col-xl-6 col-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Siswa dengan Reward Positif Terbanyak</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                @forelse($siswa_reward_terbanyak as $index => $siswa)
+                                <div class="list-group-item border-0 px-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span>{{ $index + 1 }}. {{ $siswa->nama ?? 'N/A' }}</span>
+                                            <br><small class="text-muted">{{ $siswa->kelas ?? 'N/A' }}</small>
+                                        </div>
+                                        <span class="badge bg-success">{{ $siswa->jumlah_reward }}x</span>
+                                    </div>
+                                </div>
+                                @empty
+                                <div class="text-center py-3">
+                                    <p class="text-muted">Tidak ada data</p>
+                                </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Top Pelanggaran -->
+                <div class="col-xl-6 col-12 mb-4">
                     <div class="card h-100">
                         <div class="card-header">
                             <h5 class="card-title mb-0">Top Pelanggaran</h5>
                         </div>
                         <div class="card-body">
                             <div class="list-group list-group-flush">
+                                @forelse($top_pelanggaran as $index => $pelanggaran)
                                 <div class="list-group-item border-0 px-0">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <span>1 Terlambat masuk kelas</span>
-                                        <span class="badge bg-danger">1x</span>
+                                        <span>{{ $index + 1 }}. {{ $pelanggaran->nama_pelanggaran ?? 'N/A' }}</span>
+                                        <span class="badge bg-danger">{{ $pelanggaran->jumlah }}x</span>
                                     </div>
                                 </div>
-                                <div class="list-group-item border-0 px-0">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span>2 Mengganggu teman</span>
-                                        <span class="badge bg-danger">1x</span>
-                                    </div>
+                                @empty
+                                <div class="text-center py-3">
+                                    <p class="text-muted">Tidak ada data</p>
                                 </div>
-                                <div class="list-group-item border-0 px-0">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span>3 Tidak mengerjakan tugas</span>
-                                        <span class="badge bg-danger">1x</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-xl-4 col-md-6 col-12 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Kelas Bermasalah</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="list-group list-group-flush">
-                                <div class="list-group-item border-0 px-0">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span>1 XI BD 2</span>
-                                        <span class="badge bg-warning">1 siswa</span>
-                                    </div>
-                                </div>
-                                <div class="list-group-item border-0 px-0">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span>2 XII DPIB 1</span>
-                                        <span class="badge bg-warning">1 siswa</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-xl-4 col-md-6 col-12 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Trend Mingguan</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-end" style="height: 120px;">
-                                <div class="text-center">
-                                    <div class="bg-light" style="width: 20px; height: 0px; margin: 0 auto 5px;"></div>
-                                    <small class="text-muted">Rab</small>
-                                </div>
-                                <div class="text-center">
-                                    <div class="bg-light" style="width: 20px; height: 0px; margin: 0 auto 5px;"></div>
-                                    <small class="text-muted">Kam</small>
-                                </div>
-                                <div class="text-center">
-                                    <div class="bg-light" style="width: 20px; height: 0px; margin: 0 auto 5px;"></div>
-                                    <small class="text-muted">Jum</small>
-                                </div>
-                                <div class="text-center">
-                                    <div class="bg-light" style="width: 20px; height: 0px; margin: 0 auto 5px;"></div>
-                                    <small class="text-muted">Sab</small>
-                                </div>
-                                <div class="text-center">
-                                    <div class="bg-light" style="width: 20px; height: 0px; margin: 0 auto 5px;"></div>
-                                    <small class="text-muted">Min</small>
-                                </div>
+                                @endforelse
                             </div>
                         </div>
                     </div>
@@ -227,4 +334,116 @@
             </div>
         </div>
     </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Trend Chart (Main)
+            const trendCtx = document.getElementById('trendChart').getContext('2d');
+            const trendData = @json($trend_pelanggaran);
+            
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: trendData.map(item => item.day),
+                    datasets: [{
+                        label: 'Pelanggaran',
+                        data: trendData.map(item => item.count),
+                        borderColor: '#dc2626',
+                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Trend Pelanggaran Chart
+            const trendPelanggaranCtx = document.getElementById('trendPelanggaranChart').getContext('2d');
+            
+            new Chart(trendPelanggaranCtx, {
+                type: 'bar',
+                data: {
+                    labels: trendData.map(item => item.day),
+                    datasets: [{
+                        label: 'Pelanggaran',
+                        data: trendData.map(item => item.count),
+                        backgroundColor: 'rgba(220, 38, 38, 0.8)',
+                        borderColor: '#dc2626',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Trend Reward Chart
+            const trendRewardCtx = document.getElementById('trendRewardChart').getContext('2d');
+            const rewardData = @json($trend_reward);
+            
+            new Chart(trendRewardCtx, {
+                type: 'bar',
+                data: {
+                    labels: rewardData.map(item => item.day),
+                    datasets: [{
+                        label: 'Reward',
+                        data: rewardData.map(item => item.count),
+                        backgroundColor: 'rgba(5, 150, 105, 0.8)',
+                        borderColor: '#059669',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 @endsection

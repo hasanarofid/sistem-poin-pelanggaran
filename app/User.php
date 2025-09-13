@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'username', 'password','nip','role','alamat_lengkap',
+        'name', 'email', 'username', 'password','nip','role','alamat_lengkap','kelas_id',
     ];
 
     /**
@@ -59,6 +59,11 @@ class User extends Authenticatable
       public function kabupaten()
     {
         return $this->hasOne(Kabupaten::class, 'id', 'kabupaten_id');
+    }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'kelas_id');
     }
 
    

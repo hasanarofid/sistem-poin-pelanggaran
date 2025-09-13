@@ -26,30 +26,7 @@ class UserSeeder extends Seeder
                 'kota' => 'Jakarta',
                 'no_telp' => '081234567890'
             ],
-            [
-                'name' => 'Guru',
-                'username' => 'guru',
-                'email' => 'guru@example.com',
-                'password' => Hash::make('guru12'),
-                'role' => 'guru',
-                'nip' => 'GRU001',
-                'kabupaten_id' => 1,
-                'alamat_lengkap' => 'Alamat Guru',
-                'kota' => 'Jakarta',
-                'no_telp' => '081234567891'
-            ],
-            [
-                'name' => 'Siswa',
-                'username' => 'siswa',
-                'email' => 'siswa@example.com',
-                'password' => Hash::make('siswa123'),
-                'role' => 'siswa',
-                'nip' => 'SWA001',
-                'kabupaten_id' => 1,
-                'alamat_lengkap' => 'Alamat Siswa',
-                'kota' => 'Jakarta',
-                'no_telp' => '081234567892'
-            ]
+           
         ];
 
         foreach ($users as $user) {

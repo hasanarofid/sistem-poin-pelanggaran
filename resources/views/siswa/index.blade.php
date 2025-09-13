@@ -3,9 +3,9 @@
 @section('title', 'Data Siswa')
 @section('titelcard', 'Data Siswa')
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
+<div class="container-xxl flex-grow-1 container-p-y" style="padding-top: 10px !important;">
     <!-- Header Section -->
-    <div class="row mb-3">
+    <div class="row mb-1">
         <div class="col-12">
             <h4 class="fw-bold" style="color: #1f2937; font-size: 1.5rem; margin: 0;">
                 Data Siswa
@@ -16,15 +16,15 @@
     <!-- Action Buttons -->
     <div class="row mb-3">
         <div class="col-12">
-            <div class="d-flex gap-2">
+            <div class="d-flex flex-wrap gap-2">
                 <a href="{{ request()->routeIs('admin.*') ? route('admin.siswa.create') : route('guru.siswa.create') }}" class="btn btn-primary" style="background: #7c3aed; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 600;">
-                    <i class="ti ti-plus me-1"></i> Tambah Siswa
+                    <i class="ti ti-plus me-1"></i> <span class="btn-text">Tambah Siswa</span>
                 </a>
                 <a href="{{ request()->routeIs('admin.*') ? route('admin.siswa.export') : route('guru.siswa.export') }}" class="btn btn-success" style="background: #059669; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 600;">
-                    <i class="ti ti-arrow-up me-1"></i> Export Excel
+                    <i class="ti ti-arrow-up me-1"></i> <span class="btn-text">Export Excel</span>
                 </a>
                 <a href="{{ request()->routeIs('admin.*') ? route('admin.siswa.import.form') : route('guru.siswa.import.form') }}" class="btn btn-info" style="background: #0891b2; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 600;">
-                    <i class="ti ti-arrow-down me-1"></i> Import Excel
+                    <i class="ti ti-arrow-down me-1"></i> <span class="btn-text">Import Excel</span>
                 </a>
             </div>
         </div>
@@ -46,25 +46,29 @@
 
     <!-- Search Bar and Table Row -->
     <div class="row">
-        <!-- Search Bar - Right Side -->
+        <!-- Search Bar - Responsive -->
         <div class="col-12">
-            <div class="d-flex justify-content-end mb-3">
-                <form method="GET" action="{{ request()->routeIs('admin.*') ? route('admin.siswa.index') : route('guru.siswa.index') }}" class="d-flex align-items-center">
-                    <div class="input-group" style="width: 300px;">
-                        <span class="input-group-text" style="border-radius: 8px 0 0 8px; border: 1px solid #d1d5db; background: white;">
-                            <i class="ti ti-search" style="color: #6b7280;"></i>
-                        </span>
-                        <input type="text" class="form-control" name="search" value="{{ request('search') }}" 
-                               placeholder="Cari siswa..." style="border-radius: 0 8px 8px 0; border: 1px solid #d1d5db; border-left: none;">
+            <div class="search-container mb-3">
+                <form method="GET" action="{{ request()->routeIs('admin.*') ? route('admin.siswa.index') : route('guru.siswa.index') }}" class="search-form">
+                    <div class="search-input-group">
+                        <div class="input-group search-group">
+                            <span class="input-group-text" style="border-radius: 8px 0 0 8px; border: 1px solid #d1d5db; background: white;">
+                                <i class="ti ti-search" style="color: #6b7280;"></i>
+                            </span>
+                            <input type="text" class="form-control" name="search" value="{{ request('search') }}" 
+                                   placeholder="Cari siswa..." style="border-radius: 0 8px 8px 0; border: 1px solid #d1d5db; border-left: none;">
+                        </div>
+                        <div class="search-buttons">
+                            <button type="submit" class="btn btn-outline-secondary" style="border-radius: 8px; padding: 8px 16px;">
+                                <i class="ti ti-search me-1"></i> <span class="search-text">Cari</span>
+                            </button>
+                            @if(request('search'))
+                                <a href="{{ request()->routeIs('admin.*') ? route('admin.siswa.index') : route('guru.siswa.index') }}" class="btn btn-outline-secondary" style="border-radius: 8px; padding: 8px 16px;">
+                                    <i class="ti ti-x me-1"></i> <span class="reset-text">Reset</span>
+                                </a>
+                            @endif
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-outline-secondary ms-2" style="border-radius: 8px; padding: 8px 16px;">
-                        <i class="ti ti-search me-1"></i> Cari
-                    </button>
-                    @if(request('search'))
-                        <a href="{{ request()->routeIs('admin.*') ? route('admin.siswa.index') : route('guru.siswa.index') }}" class="btn btn-outline-secondary ms-2" style="border-radius: 8px; padding: 8px 16px;">
-                            <i class="ti ti-x me-1"></i> Reset
-                        </a>
-                    @endif
                 </form>
             </div>
         </div>
@@ -75,6 +79,18 @@
         <div class="col-12">
             <div class="card" style="border: 1px solid #e5e7eb; border-radius: 8px;">
                 <div class="card-body">
+                    <!-- Pagination Info -->
+                    @if($siswa->hasPages())
+                        <div class="pagination-info">
+                            <div>
+                                Menampilkan {{ $siswa->firstItem() ?? 0 }} - {{ $siswa->lastItem() ?? 0 }} dari {{ $siswa->total() }} data
+                            </div>
+                            <div>
+                                Halaman {{ $siswa->currentPage() }} dari {{ $siswa->lastPage() }}
+                            </div>
+                        </div>
+                    @endif
+                    
                     <div class="table-responsive">
                         <table class="table table-bordered mb-0" style="border: none;">
                             <thead style="background-color: #f8f9fa;">
@@ -188,7 +204,7 @@
 
                     <!-- Pagination -->
                     @if($siswa->hasPages())
-                        <div class="d-flex justify-content-center mt-4 pb-3">
+                        <div class="pagination-wrapper mt-4 pb-3">
                             {{ $siswa->appends(request()->query())->links() }}
                         </div>
                     @endif
@@ -200,33 +216,307 @@
 
 <style>
 /* Custom pagination styling */
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
 .pagination {
     margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
 }
 
 .pagination .page-link {
     color: #374151;
     border: 1px solid #d1d5db;
     padding: 8px 12px;
-    margin: 0 2px;
     border-radius: 6px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
 
 .pagination .page-link:hover {
     background-color: #f3f4f6;
     border-color: #9ca3af;
+    color: #1f2937;
+    transform: translateY(-1px);
 }
 
 .pagination .page-item.active .page-link {
     background-color: #3b82f6;
     border-color: #3b82f6;
     color: white;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
 }
 
 .pagination .page-item.disabled .page-link {
     color: #9ca3af;
     background-color: #f9fafb;
     border-color: #e5e7eb;
+    cursor: not-allowed;
+}
+
+.pagination .page-item.disabled .page-link:hover {
+    transform: none;
+    background-color: #f9fafb;
+}
+
+/* Mobile Responsive Pagination */
+@media (max-width: 768px) {
+    .pagination-wrapper {
+        padding: 0 10px;
+    }
+    
+    .pagination {
+        gap: 2px;
+    }
+    
+    .pagination .page-link {
+        padding: 6px 8px;
+        min-width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
+    
+    /* Hide some page numbers on very small screens */
+    .pagination .page-item:not(.active):not(.disabled):not(:first-child):not(:last-child):not(:nth-child(2)):not(:nth-last-child(2)) {
+        display: none;
+    }
+    
+    /* Show ellipsis for hidden pages */
+    .pagination .page-item:nth-child(3):not(.active):not(.disabled)::after,
+    .pagination .page-item:nth-last-child(3):not(.active):not(.disabled)::after {
+        content: '...';
+        display: inline-block;
+        padding: 6px 4px;
+        color: #9ca3af;
+        font-weight: bold;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination .page-link {
+        padding: 4px 6px;
+        min-width: 32px;
+        height: 32px;
+        font-size: 12px;
+    }
+    
+    /* Show only first, last, current, and adjacent pages */
+    .pagination .page-item:not(.active):not(.disabled):not(:first-child):not(:last-child):not(:nth-child(2)):not(:nth-last-child(2)):not(:nth-child(3)):not(:nth-last-child(3)) {
+        display: none;
+    }
+}
+
+/* Pagination Info */
+.pagination-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #6b7280;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+@media (max-width: 768px) {
+    .pagination-info {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+        font-size: 13px;
+    }
+}
+
+/* Table Responsive Improvements */
+.table-responsive {
+    border-radius: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 13px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 8px 6px !important;
+        font-size: 12px;
+    }
+    
+    /* Hide less important columns on mobile */
+    .table th:nth-child(5),
+    .table td:nth-child(5),
+    .table th:nth-child(6),
+    .table td:nth-child(6) {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .table th,
+    .table td {
+        padding: 6px 4px !important;
+        font-size: 11px;
+    }
+    
+    /* Hide more columns on very small screens */
+    .table th:nth-child(4),
+    .table td:nth-child(4),
+    .table th:nth-child(7),
+    .table td:nth-child(7) {
+        display: none;
+    }
+}
+
+/* Action buttons responsive */
+@media (max-width: 768px) {
+    .btn-sm {
+        padding: 4px 6px !important;
+        font-size: 11px !important;
+    }
+    
+    .btn-group .btn {
+        margin: 0 1px !important;
+    }
+}
+
+/* Responsive Top Section */
+.search-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+}
+
+.search-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.search-group {
+    width: 300px;
+    min-width: 200px;
+}
+
+@media (max-width: 768px) {
+    .search-container {
+        justify-content: stretch;
+    }
+    
+    .search-form {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .search-input-group {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .search-group {
+        width: 100%;
+        min-width: 150px;
+    }
+    
+    .search-buttons {
+        width: 100%;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .search-text,
+    .reset-text {
+        display: none;
+    }
+    
+    .btn-text {
+        display: none;
+    }
+    
+    .d-flex.flex-wrap {
+        gap: 8px !important;
+    }
+    
+    .btn {
+        padding: 8px 12px !important;
+        font-size: 13px !important;
+        flex: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-group {
+        width: 100%;
+        min-width: 120px;
+    }
+    
+    .search-buttons {
+        gap: 8px;
+    }
+    
+    .btn {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+        flex: 1;
+    }
+    
+    .d-flex.flex-wrap {
+        gap: 6px !important;
+    }
+}
+
+/* Header spacing improvements */
+.container-xxl {
+    padding-top: 10px !important;
+}
+
+@media (max-width: 768px) {
+    .container-xxl {
+        padding-top: 8px !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    .row.mb-1 {
+        margin-bottom: 5px !important;
+    }
+    
+    .row.mb-2 {
+        margin-bottom: 8px !important;
+    }
+    
+    .row.mb-3 {
+        margin-bottom: 12px !important;
+    }
 }
 
 /* Error styling untuk modal */
@@ -246,6 +536,63 @@
     color: #dc3545 !important;
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth scrolling to pagination
+    const paginationLinks = document.querySelectorAll('.pagination .page-link');
+    paginationLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Add loading state
+            const wrapper = document.querySelector('.pagination-wrapper');
+            if (wrapper) {
+                wrapper.style.opacity = '0.6';
+                wrapper.style.pointerEvents = 'none';
+            }
+            
+            // Scroll to top of table
+            const table = document.querySelector('.table-responsive');
+            if (table) {
+                table.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+    
+    // Add touch support for pagination on mobile
+    if ('ontouchstart' in window) {
+        const paginationItems = document.querySelectorAll('.pagination .page-item');
+        paginationItems.forEach(item => {
+            const link = item.querySelector('.page-link');
+            if (link && !item.classList.contains('disabled')) {
+                link.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.95)';
+                });
+                
+                link.addEventListener('touchend', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            }
+        });
+    }
+    
+    // Add keyboard navigation for pagination
+    document.addEventListener('keydown', function(e) {
+        const activePage = document.querySelector('.pagination .page-item.active');
+        if (activePage) {
+            const prevLink = document.querySelector('.pagination .page-item:first-child .page-link');
+            const nextLink = document.querySelector('.pagination .page-item:last-child .page-link');
+            
+            if (e.key === 'ArrowLeft' && prevLink && !prevLink.closest('.page-item').classList.contains('disabled')) {
+                e.preventDefault();
+                prevLink.click();
+            } else if (e.key === 'ArrowRight' && nextLink && !nextLink.closest('.page-item').classList.contains('disabled')) {
+                e.preventDefault();
+                nextLink.click();
+            }
+        }
+    });
+});
+</script>
 @endsection
 @section('script')
     @include('siswa.jsFunction')

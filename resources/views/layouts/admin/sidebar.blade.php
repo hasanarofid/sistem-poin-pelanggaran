@@ -11,9 +11,9 @@
     <ul class="menu-inner py-1" style="margin-top: 0; padding: 10px 0;">
         @php
             $user = auth()->user();
-            $isAdmin = $user &&  $user->role === 'admin';
-            $isGuru = $user &&  $user->role === 'guru';
-            $isSiswa = $user &&  $user->role === 'siswa';
+            $isAdmin = $user && ($user->role === 'admin' || $user->role === 'Admin');
+            $isGuru = $user && ($user->role === 'guru' || $user->role === 'Guru');
+            $isSiswa = $user && ($user->role === 'siswa' || $user->role === 'Siswa');
         @endphp
 
         {{-- Dashboard --}}
@@ -25,8 +25,8 @@
             @elseif($isSiswa)
                 <a href="{{ route('siswa.dashboard') }}" class="menu-link" style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('siswa.dashboard') ? 'background: #4a5568 !important;' : '' }}">
             @endif
-                <i class="menu-icon tf-icons ti ti-dashboard" style="margin-right: 12px;"></i>
-                <div data-i18n="Profile">Dashboard</div>
+                <i class="menu-icon tf-icons ti ti-dashboard" style="margin-right: 12px; color: white;"></i>
+                <div data-i18n="Profile" style="color: white; font-weight: 500;">Dashboard</div>
             </a>
         </li>
 
@@ -34,36 +34,36 @@
         @if($isAdmin)
             <li class="menu-item {{ request()->routeIs('admin.siswa.*') ? 'active' : '' }}" style="margin: 2px 10px;">
                 <a href="{{ route('admin.siswa.index') }}" class="menu-link" style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('admin.siswa.*') ? 'background: #4a5568 !important;' : '' }}">
-                    <i class="menu-icon tf-icons ti ti-users" style="margin-right: 12px;"></i>
-                    <div data-i18n="Profile">Data Siswa</div>
+                    <i class="menu-icon tf-icons ti ti-users" style="margin-right: 12px; color: white;"></i>
+                    <div data-i18n="Profile" style="color: white; font-weight: 500;">Data Siswa</div>
                 </a>
             </li>
             <li class="menu-item {{ request()->routeIs('admin.kategori.*') ? 'active' : '' }}" style="margin: 2px 10px;">
                 <a href="{{ route('admin.kategori.index') }}" class="menu-link" style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('admin.kategori.*') ? 'background: #4a5568 !important;' : '' }}">
-                    <i class="menu-icon tf-icons ti ti-users" style="margin-right: 12px;"></i>
-                    <div data-i18n="Profile">Kategori</div>
+                    <i class="menu-icon tf-icons ti ti-category" style="margin-right: 12px; color: white;"></i>
+                    <div data-i18n="Profile" style="color: white; font-weight: 500;">Kategori</div>
                 </a>
             </li>
             <li class="menu-item {{ request()->routeIs('admin.jenis-poin.*') ? 'active' : '' }}" style="margin: 2px 10px;">
                 <a href="{{ route('admin.jenis-poin.index') }}" class="menu-link" style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('admin.jenis-poin.*') ? 'background: #4a5568 !important;' : '' }}">
-                    <i class="menu-icon tf-icons ti ti-users" style="margin-right: 12px;"></i>
-                    <div data-i18n="Profile">Jenis Poin</div>
+                    <i class="menu-icon tf-icons ti ti-star" style="margin-right: 12px; color: white;"></i>
+                    <div data-i18n="Profile" style="color: white; font-weight: 500;">Jenis Poin</div>
                 </a>
             </li>
             <li class="menu-item {{ request()->routeIs('admin.input-poin.*') ? 'active' : '' }}" style="margin: 2px 10px;">
                 <a href="{{ route('admin.input-poin.index') }}"
                     class="menu-link"
                     style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('admin.input-poin.*') ? 'background: #4a5568 !important;' : '' }}">
-                    <i class="menu-icon tf-icons ti ti-edit" style="margin-right: 12px;"></i>
-                    <div data-i18n="Profile">Input Poin</div>
+                    <i class="menu-icon tf-icons ti ti-edit" style="margin-right: 12px; color: white;"></i>
+                    <div data-i18n="Profile" style="color: white; font-weight: 500;">Input Poin</div>
                 </a>
             </li>
             <li class="menu-item {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}" style="margin: 2px 10px;">
                 <a href="{{ route('admin.laporan.index') }}"
                     class="menu-link"
                     style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('admin.laporan.*') ? 'background: #4a5568 !important;' : '' }}">
-                    <i class="menu-icon tf-icons ti ti-file-text" style="margin-right: 12px;"></i>
-                    <div data-i18n="Profile">Laporan</div>
+                    <i class="menu-icon tf-icons ti ti-file-text" style="margin-right: 12px; color: white;"></i>
+                    <div data-i18n="Profile" style="color: white; font-weight: 500;">Laporan</div>
                 </a>
             </li>
         @endif
@@ -72,24 +72,24 @@
         @if($isGuru)
             <li class="menu-item {{ request()->routeIs('guru.siswa.*') ? 'active' : '' }}" style="margin: 2px 10px;">
                 <a href="{{ route('guru.siswa.index') }}" class="menu-link" style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('guru.siswa.*') ? 'background: #4a5568 !important;' : '' }}">
-                    <i class="menu-icon tf-icons ti ti-users" style="margin-right: 12px;"></i>
-                    <div data-i18n="Profile">Data Siswa</div>
+                    <i class="menu-icon tf-icons ti ti-users" style="margin-right: 12px; color: white;"></i>
+                    <div data-i18n="Profile" style="color: white; font-weight: 500;">Data Siswa</div>
                 </a>
             </li>
             <li class="menu-item {{ request()->routeIs('guru.input-poin') ? 'active' : '' }}" style="margin: 2px 10px;">
                 <a href="{{ route('guru.input-poin') }}"
                     class="menu-link"
                     style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('guru.input-poin') ? 'background: #4a5568 !important;' : '' }}">
-                    <i class="menu-icon tf-icons ti ti-edit" style="margin-right: 12px;"></i>
-                    <div data-i18n="Profile">Input Poin</div>
+                    <i class="menu-icon tf-icons ti ti-edit" style="margin-right: 12px; color: white;"></i>
+                    <div data-i18n="Profile" style="color: white; font-weight: 500;">Input Poin</div>
                 </a>
             </li>
             <li class="menu-item {{ request()->routeIs('guru.laporan') ? 'active' : '' }}" style="margin: 2px 10px;">
                 <a href="{{ route('guru.laporan') }}"
                     class="menu-link"
                     style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('guru.laporan') ? 'background: #4a5568 !important;' : '' }}">
-                    <i class="menu-icon tf-icons ti ti-file-text" style="margin-right: 12px;"></i>
-                    <div data-i18n="Profile">Laporan</div>
+                    <i class="menu-icon tf-icons ti ti-file-text" style="margin-right: 12px; color: white;"></i>
+                    <div data-i18n="Profile" style="color: white; font-weight: 500;">Laporan</div>
                 </a>
             </li>
         @endif
@@ -100,8 +100,8 @@
                 <a href="{{ route('siswa.profile') }}"
                     class="menu-link"
                     style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('siswa.profile') ? 'background: #4a5568 !important;' : '' }}">
-                    <i class="menu-icon tf-icons ti ti-user" style="margin-right: 12px;"></i>
-                    <div data-i18n="Profile">Profile Saya</div>
+                    <i class="menu-icon tf-icons ti ti-user" style="margin-right: 12px; color: white;"></i>
+                    <div data-i18n="Profile" style="color: white; font-weight: 500;">Profile Saya</div>
                 </a>
             </li>
         @endif

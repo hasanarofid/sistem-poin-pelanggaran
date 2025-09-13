@@ -3,9 +3,9 @@
 @section('title', 'Jenis Poin')
 @section('titelcard', 'Jenis Poin')
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
+<div class="container-xxl flex-grow-1 container-p-y" style="padding-top: 10px !important;">
     <!-- Header Section -->
-    <div class="row mb-3">
+    <div class="row mb-1">
         <div class="col-12">
             <h4 class="fw-bold" style="color: #1f2937; font-size: 1.5rem; margin: 0;">
                 Jenis Poin
@@ -16,9 +16,9 @@
     <!-- Action Buttons -->
     <div class="row mb-3">
         <div class="col-12">
-            <div class="d-flex gap-2">
+            <div class="d-flex flex-wrap gap-2">
                 <a href="#" class="btn btn-primary" style="background: #7c3aed; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 600;" data-bs-toggle="modal" data-bs-target="#modalTambahPelanggaran">
-                    <i class="ti ti-plus me-1"></i> Tambah Jenis Poin
+                    <i class="ti ti-plus me-1"></i> <span class="btn-text">Tambah Jenis Poin</span>
                 </a>
             </div>
         </div>
@@ -40,25 +40,29 @@
 
     <!-- Search Bar and Table Row -->
     <div class="row">
-        <!-- Search Bar - Right Side -->
+        <!-- Search Bar - Responsive -->
         <div class="col-12">
-            <div class="d-flex justify-content-end mb-3">
-                <form method="GET" action="{{ route('admin.jenis-poin.index') }}" class="d-flex align-items-center">
-                    <div class="input-group" style="width: 300px;">
-                        <span class="input-group-text" style="border-radius: 8px 0 0 8px; border: 1px solid #d1d5db; background: white;">
-                            <i class="ti ti-search" style="color: #6b7280;"></i>
-                        </span>
-                        <input type="text" class="form-control" name="search" value="{{ request('search') }}" 
-                               placeholder="Cari jenis poin..." style="border-radius: 0 8px 8px 0; border: 1px solid #d1d5db; border-left: none;">
+            <div class="search-container mb-3">
+                <form method="GET" action="{{ route('admin.jenis-poin.index') }}" class="search-form">
+                    <div class="search-input-group">
+                        <div class="input-group search-group">
+                            <span class="input-group-text" style="border-radius: 8px 0 0 8px; border: 1px solid #d1d5db; background: white;">
+                                <i class="ti ti-search" style="color: #6b7280;"></i>
+                            </span>
+                            <input type="text" class="form-control" name="search" value="{{ request('search') }}" 
+                                   placeholder="Cari jenis poin..." style="border-radius: 0 8px 8px 0; border: 1px solid #d1d5db; border-left: none;">
+                        </div>
+                        <div class="search-buttons">
+                            <button type="submit" class="btn btn-outline-secondary" style="border-radius: 8px; padding: 8px 16px;">
+                                <i class="ti ti-search me-1"></i> <span class="search-text">Cari</span>
+                            </button>
+                            @if(request('search'))
+                                <a href="{{ route('admin.jenis-poin.index') }}" class="btn btn-outline-secondary" style="border-radius: 8px; padding: 8px 16px;">
+                                    <i class="ti ti-x me-1"></i> <span class="reset-text">Reset</span>
+                                </a>
+                            @endif
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-outline-secondary ms-2" style="border-radius: 8px; padding: 8px 16px;">
-                        <i class="ti ti-search me-1"></i> Cari
-                    </button>
-                    @if(request('search'))
-                        <a href="{{ route('admin.jenis-poin.index') }}" class="btn btn-outline-secondary ms-2" style="border-radius: 8px; padding: 8px 16px;">
-                            <i class="ti ti-x me-1"></i> Reset
-                        </a>
-                    @endif
                 </form>
             </div>
         </div>
@@ -69,6 +73,18 @@
         <div class="col-12">
             <div class="card" style="border: 1px solid #e5e7eb; border-radius: 8px;">
                 <div class="card-body">
+                    <!-- Pagination Info -->
+                    @if($jenisPelanggaran->hasPages())
+                        <div class="pagination-info">
+                            <div>
+                                Menampilkan {{ $jenisPelanggaran->firstItem() ?? 0 }} - {{ $jenisPelanggaran->lastItem() ?? 0 }} dari {{ $jenisPelanggaran->total() }} data
+                            </div>
+                            <div>
+                                Halaman {{ $jenisPelanggaran->currentPage() }} dari {{ $jenisPelanggaran->lastPage() }}
+                            </div>
+                        </div>
+                    @endif
+                    
                     <div class="table-responsive">
                         <table class="table table-bordered mb-0" style="border: none;">
                             <thead style="background-color: #f8f9fa;">
@@ -135,13 +151,8 @@
 
                     <!-- Pagination -->
                     @if($jenisPelanggaran->hasPages())
-                    <div class="d-flex justify-content-between align-items-center mt-3">
-                        <div class="text-muted">
-                            Menampilkan {{ $jenisPelanggaran->firstItem() }} sampai {{ $jenisPelanggaran->lastItem() }} dari {{ $jenisPelanggaran->total() }} data
-                        </div>
-                        <div>
-                            {{ $jenisPelanggaran->links() }}
-                        </div>
+                    <div class="pagination-wrapper">
+                        {{ $jenisPelanggaran->links() }}
                     </div>
                     @endif
                 </div>
@@ -304,6 +315,337 @@ $(document).ready(function() {
 
         // Show modal
         $('#modalEditPelanggaran').modal('show');
+    });
+});
+</script>
+
+<style>
+/* Responsive Top Section */
+.search-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+}
+
+.search-input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.search-group {
+    width: 300px;
+    min-width: 200px;
+}
+
+/* Responsive Pagination */
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    padding: 15px 0;
+}
+
+.pagination-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px 0;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 5px;
+}
+
+.page-item {
+    margin: 0;
+}
+
+.page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #374151;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.page-link:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+    color: #1f2937;
+}
+
+.page-item.active .page-link {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: white;
+}
+
+.page-item.disabled .page-link {
+    background: #f9fafb;
+    border-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* Responsive Table */
+.table-responsive {
+    overflow-x: auto;
+    border-radius: 8px;
+}
+
+.table th,
+.table td {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+/* Responsive Buttons */
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .search-container {
+        justify-content: stretch;
+    }
+    
+    .search-form {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .search-input-group {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .search-group {
+        width: 100%;
+        min-width: 150px;
+    }
+    
+    .search-buttons {
+        width: 100%;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .search-text,
+    .reset-text {
+        display: none;
+    }
+    
+    .btn-text {
+        display: none;
+    }
+    
+    .d-flex.flex-wrap {
+        gap: 8px !important;
+    }
+    
+    .btn {
+        padding: 8px 12px !important;
+        font-size: 13px !important;
+        flex: 1;
+    }
+    
+    .container-xxl {
+        padding-top: 8px !important;
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    
+    .row.mb-1 {
+        margin-bottom: 5px !important;
+    }
+    
+    .row.mb-3 {
+        margin-bottom: 12px !important;
+    }
+    
+    .pagination-info {
+        flex-direction: column;
+        gap: 5px;
+        text-align: center;
+        font-size: 12px;
+    }
+    
+    .pagination {
+        gap: 3px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .page-link {
+        min-width: 35px;
+        height: 35px;
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 8px 6px !important;
+        font-size: 12px;
+    }
+    
+    .btn-sm {
+        padding: 4px 8px !important;
+        font-size: 11px !important;
+    }
+    
+    /* Hide less important columns on mobile */
+    .table th:nth-child(4),
+    .table td:nth-child(4),
+    .table th:nth-child(6),
+    .table td:nth-child(6) {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-group {
+        width: 100%;
+        min-width: 120px;
+    }
+    
+    .search-buttons {
+        gap: 8px;
+    }
+    
+    .btn {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+        flex: 1;
+    }
+    
+    .d-flex.flex-wrap {
+        gap: 6px !important;
+    }
+    
+    .pagination {
+        gap: 2px;
+    }
+    
+    .page-link {
+        min-width: 30px;
+        height: 30px;
+        padding: 4px 6px;
+        font-size: 11px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 6px 4px !important;
+        font-size: 11px;
+    }
+    
+    .btn-sm {
+        padding: 3px 6px !important;
+        font-size: 10px !important;
+    }
+}
+
+/* Smart hiding for pagination on small screens */
+@media (max-width: 576px) {
+    .pagination .page-item:nth-child(n+4):nth-last-child(n+4) {
+        display: none;
+    }
+    
+    .pagination .page-item:nth-child(3)::after {
+        content: '...';
+        display: inline-block;
+        padding: 0 5px;
+        color: #6b7280;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add smooth scrolling to pagination
+    const paginationLinks = document.querySelectorAll('.pagination .page-link');
+    paginationLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Add loading state
+            const wrapper = document.querySelector('.pagination-wrapper');
+            if (wrapper) {
+                wrapper.style.opacity = '0.6';
+                wrapper.style.pointerEvents = 'none';
+            }
+            
+            // Scroll to top of table
+            const table = document.querySelector('.table-responsive');
+            if (table) {
+                table.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+    
+    // Add touch support for pagination on mobile
+    if ('ontouchstart' in window) {
+        const paginationItems = document.querySelectorAll('.pagination .page-item');
+        paginationItems.forEach(item => {
+            const link = item.querySelector('.page-link');
+            if (link && !item.classList.contains('disabled')) {
+                link.addEventListener('touchstart', function() {
+                    this.style.transform = 'scale(0.95)';
+                });
+                
+                link.addEventListener('touchend', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            }
+        });
+    }
+    
+    // Add keyboard navigation for pagination
+    document.addEventListener('keydown', function(e) {
+        const activePage = document.querySelector('.pagination .page-item.active');
+        if (activePage) {
+            const prevLink = document.querySelector('.pagination .page-item:first-child .page-link');
+            const nextLink = document.querySelector('.pagination .page-item:last-child .page-link');
+            
+            if (e.key === 'ArrowLeft' && prevLink && !prevLink.closest('.page-item').classList.contains('disabled')) {
+                e.preventDefault();
+                prevLink.click();
+            } else if (e.key === 'ArrowRight' && nextLink && !nextLink.closest('.page-item').classList.contains('disabled')) {
+                e.preventDefault();
+                nextLink.click();
+            }
+        }
     });
 });
 </script>

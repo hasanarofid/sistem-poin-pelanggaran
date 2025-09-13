@@ -14,20 +14,53 @@ class InputPelanggaranController extends Controller
     //index
     public function index()
     {
-        $inputPelanggaranT = InputPelanggaranT::with('jenispelanggaran', 'siswa')->get();
-        $siswa = Siswa::with(['kelas', 'point'])->orderBy('nama', 'asc')->get(); // Eager load kelas, point and order
-        $jenisPelanggaran = JenisPelanggaran::with('kategori')->orderBy('kode', 'asc')->get(); // Eager load kategori and order
+        $user = Auth::user();
+        
+        // Filter berdasarkan role
+        if ($user->role === 'Guru') {
+            // Untuk guru, hanya tampilkan siswa di kelasnya
+            $kelasId = $user->kelas_id;
+            $inputPelanggaranT = InputPelanggaranT::with('jenispelanggaran', 'siswa')
+                ->whereHas('siswa', function($q) use ($kelasId) {
+                    $q->where('kelas_id', $kelasId);
+                })->get();
+            $siswa = Siswa::with(['kelas', 'point'])
+                ->where('kelas_id', $kelasId)
+                ->orderBy('nama', 'asc')->get();
+        } else {
+            // Untuk admin, tampilkan semua data
+            $inputPelanggaranT = InputPelanggaranT::with('jenispelanggaran', 'siswa')->get();
+            $siswa = Siswa::with(['kelas', 'point'])->orderBy('nama', 'asc')->get();
+        }
+        
+        $jenisPelanggaran = JenisPelanggaran::with('kategori')->orderBy('kode', 'asc')->get();
         return view('inputpelanggaran.index', compact('inputPelanggaranT', 'siswa', 'jenisPelanggaran'));
     }
 
     public function store(Request $request)
     {
-        $pelapor_id = Auth::user()->id;
+        $user = Auth::user();
+        $pelapor_id = $user->id;
         $request->validate([
             'siswa_id'                  => 'required|string|max:255',
             'jenis_pelanggaran_id'      => 'required|integer',
             'keterangan'                => 'nullable|string',
         ]);
+
+        // Validasi untuk guru: pastikan siswa adalah dari kelas guru
+        if ($user->role === 'Guru') {
+            $siswa = Siswa::find($request->siswa_id);
+            if (!$siswa || $siswa->kelas_id !== $user->kelas_id) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Anda hanya dapat menginput poin untuk siswa di kelas yang Anda ajar.'
+                    ]);
+                }
+                return redirect()->back()
+                    ->with('error', 'Anda hanya dapat menginput poin untuk siswa di kelas yang Anda ajar.');
+            }
+        }
 
         // Mulai transaksi database
         DB::beginTransaction();
@@ -44,8 +77,10 @@ class InputPelanggaranController extends Controller
             // Ambil data jenis pelanggaran untuk mendapatkan poin
             $jenisPelanggaran = JenisPelanggaran::find($request->jenis_pelanggaran_id);
             
-            // Ambil atau buat poin siswa
-            $siswa = Siswa::find($request->siswa_id);
+            // Ambil atau buat poin siswa (jika belum diambil di validasi)
+            if (!isset($siswa)) {
+                $siswa = Siswa::find($request->siswa_id);
+            }
             $point = $siswa->getOrCreatePoint();
             
             // Tentukan jenis transaksi berdasarkan poin
@@ -69,8 +104,10 @@ class InputPelanggaranController extends Controller
                 ]);
             }
 
+            // Redirect berdasarkan role
+            $redirectRoute = $user->role === 'Guru' ? 'guru.input-poin' : 'admin.input-poin.index';
             return redirect()
-                ->route('admin.input-poin.index')
+                ->route($redirectRoute)
                 ->with('success', 'Data berhasil disimpan');
                 
         } catch (\Exception $e) {
@@ -83,8 +120,10 @@ class InputPelanggaranController extends Controller
                 ]);
             }
 
+            // Redirect berdasarkan role
+            $redirectRoute = $user->role === 'Guru' ? 'guru.input-poin' : 'admin.input-poin.index';
             return redirect()
-                ->route('admin.input-poin.index')
+                ->route($redirectRoute)
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }

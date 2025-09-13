@@ -80,10 +80,10 @@
                                     <i class="fas fa-upload" id="uploadIcon"></i> &nbsp; <span id="btnText">Import
                                         Data</span>
                                 </button>
-                                <a href="{{ route('admin.siswa.template.download') }}" class="btn btn-success">
+                                <a href="{{ request()->routeIs('admin.*') ? route('admin.siswa.template.download') : route('guru.siswa.template.download') }}" class="btn btn-success">
                                     <i class="fas fa-download"></i> &nbsp; Download Template
                                 </a>
-                                <a href="{{ route('admin.siswa.index') }}" class="btn btn-secondary">
+                                <a href="{{ request()->routeIs('admin.*') ? route('admin.siswa.index') : route('guru.siswa.index') }}" class="btn btn-secondary">
                                     <i class="fas fa-arrow-left"></i> &nbsp; Kembali
                                 </a>
                             </div>

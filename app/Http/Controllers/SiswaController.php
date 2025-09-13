@@ -54,7 +54,7 @@ class SiswaController extends Controller
         $point = $model->getOrCreatePoint();
         
         // Ambil histori poin (pelanggaran dan reward)
-        $riwayatPoin = \App\HistoriPoint::with(['jenisPelanggaran', 'jenisReward', 'inputBy'])
+        $riwayatPoin = \App\HistoriPoint::with(['jenisPelanggaran', 'inputBy'])
             ->where('siswa_id', $model->id)
             ->orderBy('created_at', 'desc')
             ->get();

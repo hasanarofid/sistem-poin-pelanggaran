@@ -9,9 +9,19 @@ use Illuminate\Http\Request;
 class KategoriController extends Controller
 {
     //index
-    public function index()
+    public function index(Request $request)
     {
-        $kategori = Kategori::get();
+        $query = Kategori::query();
+
+        // Search functionality
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama_kategori', 'like', "%{$search}%");
+            });
+        }
+
+        $kategori = $query->orderBy('nama_kategori', 'asc')->paginate(10);
         return view('kategori.index', compact('kategori'));
     }
 

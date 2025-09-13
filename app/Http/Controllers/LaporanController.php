@@ -17,12 +17,13 @@ class LaporanController extends Controller
     //index
     public function index()
     {
+        $user = \Illuminate\Support\Facades\Auth::user();
         $dari_tanggal = request('dari_tanggal');
         $sampai_tanggal = request('sampai_tanggal');
         $kelas = request('kelas');
         $siswa = request('siswa');
 
-        $allData = DB::table('input_pelanggaran_t as t')
+        $query = DB::table('input_pelanggaran_t as t')
             ->select(
                 't.id as pelanggaran_id',
                 't.created_at as tanggal',
@@ -38,8 +39,14 @@ class LaporanController extends Controller
             ->leftJoin('siswa as s', 't.siswa_id', '=', 's.id')
             ->leftJoin('jenis_pelanggaran as j', 't.jenis_pelanggaran_id', '=', 'j.id')
             ->leftJoin('kelas as k', 's.kelas_id', '=', 'k.id')
-            ->leftJoin('users as u', 't.pelapor_id', '=', 'u.id')
-            ->when($dari_tanggal, function ($query, $dari_tanggal) {
+            ->leftJoin('users as u', 't.pelapor_id', '=', 'u.id');
+
+        // Filter berdasarkan role guru
+        if ($user->role === 'Guru') {
+            $query->where('k.id', $user->kelas_id);
+        }
+
+        $query->when($dari_tanggal, function ($query, $dari_tanggal) {
                 return $query->where('t.created_at', '>=', $dari_tanggal . ' 00:00:00');
             })
             ->when($sampai_tanggal, function ($query, $sampai_tanggal) {
@@ -50,8 +57,9 @@ class LaporanController extends Controller
             })
             ->when($siswa, function ($query, $siswa) {
                 return $query->where('s.id', $siswa);
-            })
-            ->get();
+            });
+
+        $allData = $query->get();
 
         // group dulu
         $grouped = $allData->groupBy(function ($item) {
@@ -78,84 +86,70 @@ class LaporanController extends Controller
 
     public function setkelas(Request $request)
     {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        
+        $query = DB::table('kelas')
+            ->select(
+                'kelas.nama_kelas',
+                'kelas.subkelas',
+                'kelas.id',
+            )
+            ->where('kelas.status', true);
+
+        // Filter berdasarkan role guru
+        if ($user->role === 'Guru') {
+            $query->where('kelas.id', $user->kelas_id);
+        }
+
         // Jika ada parameter id, cari kelas berdasarkan id
         if (!empty($request->id)) {
-            $data = DB::table('kelas')
-                ->select(
-                    'kelas.nama_kelas',
-                    'kelas.subkelas',
-                    'kelas.id',
-                )
-                ->where('kelas.status', true)
-                ->where('kelas.id', $request->id)
-                ->get();
+            $data = $query->where('kelas.id', $request->id)->get();
         } elseif (!empty($request->term)) {
             $cari = $request->term;
-            $data = DB::table('kelas')
-                ->select(
-                    'kelas.nama_kelas',
-                    'kelas.subkelas',
-                    'kelas.id',
-                )
-                ->where('kelas.status', true)
-                ->where(function ($query) use ($cari) {
+            $data = $query->where(function ($query) use ($cari) {
                     $query->where('kelas.nama_kelas', 'LIKE', '%' . $cari . '%')
                         ->orWhere('kelas.subkelas', 'LIKE', '%' . $cari . '%');
                 })
                 ->limit(10)
                 ->get();
         } else {
-            $data = DB::table('kelas')
-                ->select(
-                    'kelas.nama_kelas',
-                    'kelas.subkelas',
-                    'kelas.id',
-                )
-                ->where('kelas.status', true)
-                ->limit(10)
-                ->get();
+            $data = $query->limit(10)->get();
         }
         return response()->json($data);
     }
 
     public function setsiswa(Request $request)
     {
-        // Jika ada parameter id, cari kelas berdasarkan id
+        $user = \Illuminate\Support\Facades\Auth::user();
+        
+        $query = DB::table('siswa')
+            ->select(
+                'siswa.nama',
+                'siswa.id',
+            )
+            ->leftJoin('kelas as k', 'siswa.kelas_id', '=', 'k.id')
+            ->where('siswa.status', true);
+
+        // Filter berdasarkan role guru
+        if ($user->role === 'Guru') {
+            $query->where('k.id', $user->kelas_id);
+        } else {
+            // Untuk admin, gunakan kelas_id dari request jika ada
+            if ($request->kelas_id) {
+                $query->where('k.id', $request->kelas_id);
+            }
+        }
+
+        // Jika ada parameter id, cari siswa berdasarkan id
         if (!empty($request->id)) {
-            $data = DB::table('siswa')
-                ->select(
-                    'siswa.nama',
-                    'siswa.id',
-                )
-                ->leftJoin('kelas as k', 'siswa.kelas_id', '=', 'k.id')
-                ->where('siswa.status', true)
-                ->where('siswa.id', $request->id)
-                ->where('k.id', $request->kelas_id)
-                ->get();
+            $data = $query->where('siswa.id', $request->id)->get();
         } elseif (!empty($request->term)) {
             $cari = $request->term;
-            $data = DB::table('siswa')
-                ->select(
-                    'siswa.nama',
-                    'siswa.id',
-                )
-                ->leftJoin('kelas as k', 'siswa.kelas_id', '=', 'k.id')
-                ->where('siswa.status', true)
-                ->where('k.id', $request->kelas_id)
-                ->where('siswa.nama', 'LIKE', '%' . $cari . '%')
+            $data = $query->where('siswa.nama', 'LIKE', '%' . $cari . '%')
                 ->limit(10)
                 ->get();
         } else {
-            $data = DB::table('siswa')
-                ->select(
-                    'siswa.nama',
-                    'siswa.id',
-                )
-                ->leftJoin('kelas as k', 'siswa.kelas_id', '=', 'k.id')
-                ->where('siswa.status', true)
-                ->where('k.id', $request->kelas_id)
-                ->limit(10)
-                ->get();
+            $data = $query->limit(10)->get();
         }
         return response()->json($data);
     }

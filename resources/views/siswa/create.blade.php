@@ -40,11 +40,15 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="kelas_id">Kelas <span class="text-danger">*</span></label>
-                                        <select id="kelas_id" class="form-select select2" name="kelas_id">
-                                            <option value="" {{ request('kelas') == '' ? 'selected' : '' }}>-- Pilih
-                                                Kelas --</option>
+                                        <select id="kelas_id" class="form-select select2" name="kelas_id" required>
+                                            <option value="">-- Pilih Kelas --</option>
+                                            @foreach ($kelas as $k)
+                                                <option value="{{ $k->id }}" {{ old('kelas_id') == $k->id ? 'selected' : '' }}>
+                                                    {{ $k->subkelas }}
+                                                </option>
+                                            @endforeach
                                         </select>
-                                        @error('kelas')
+                                        @error('kelas_id')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -197,6 +201,14 @@
             });
         }
 
+        // Untuk guru, tidak perlu AJAX karena sudah terbatas kelasnya
+        @if(request()->routeIs('guru.*'))
+        kelas.select2({
+            placeholder: '-- Pilih Kelas --',
+            allowClear: false
+        });
+        @else
+        // Untuk admin, tetap pakai AJAX
         kelas.select2({
             ajax: {
                 url: "{{ route('laporan.setkelas') }}",
@@ -221,5 +233,6 @@
                 cache: true
             },
         });
+        @endif
     </script>
 @endsection

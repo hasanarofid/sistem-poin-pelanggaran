@@ -43,14 +43,9 @@ Route::get('/tanggapan', 'UmpanbalikController@tanggapan')->name('tanggapan');
 Route::get('/laporan/setkelas', 'LaporanController@setkelas')->name('laporan.setkelas');
 Route::get('/laporan/setsiswa', 'LaporanController@setsiswa')->name('laporan.setsiswa');
 
-Route::get('/', function () {
-    return redirect('/login');
-});
-
-
 // route panel dashboard admin
 Route::get('/', 'AdminController@index')->name('admin.index')->middleware(['auth', 'role.admin']);
-Route::get('/dashboard', 'AdminController@index')->name('admin.index')->middleware(['auth', 'role.admin']);
+Route::get('/dashboard', 'AdminController@index')->name('admin.dashboard')->middleware(['auth', 'role.admin']);
 Route::get('/chart-data', 'AdminController@chartData')->name('admin.chartData')->middleware(['auth', 'role.admin']);
 Route::get('/chart-data2', 'AdminController@chartData2')->name('admin.chartData2')->middleware(['auth', 'role.admin']);
 Route::get('/chartDataRaportPendidikan', 'AdminController@chartDataRaportPendidikan')->name('admin.chartDataRaportPendidikan')->middleware(['auth', 'role.admin']);

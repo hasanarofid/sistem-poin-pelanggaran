@@ -8,15 +8,20 @@ use App\SekolahM;
 use App\Kabupaten;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Hash;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 use App\MasterTupoksi;
 use App\Models\InputPelanggaranT;
 use App\TanggapanUmpanbalikT;
 use App\Models\RencanaKerjaT;
 use App\Models\UmpanbalikT;
 use App\Siswa;
+use App\Models\JenisPelanggaran;
+use App\Models\Kategori;
+use App\Point;
+use App\HistoriPoint;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -37,6 +42,137 @@ class AdminController extends Controller
                     $total_rencankerja = RencanaKerjaT::get()->count();
                     $total_umpanbalik = UmpanbalikT::get()->count();
                     $total_siswa = Siswa::get()->count();
+                    
+                    // Data untuk dashboard sistem poin pelanggaran
+                    $today = Carbon::today();
+                    $thisMonth = Carbon::now()->month;
+                    $thisYear = Carbon::now()->year;
+                    
+                    // Pelanggaran bulan ini
+                    $pelanggaran_bulan_ini = InputPelanggaranT::whereHas('jenispelanggaran', function($q) {
+                        $q->where('poin', '<', 0);
+                    })
+                    ->whereMonth('created_at', $thisMonth)
+                    ->whereYear('created_at', $thisYear)
+                    ->count();
+                    
+                    // Siswa bermasalah (poin <= 80, karena default 100)
+                    $siswa_bermasalah = Point::where('total_poin', '<=', 20)->count();
+                    
+                    // Sanksi aktif (poin <= 70, karena default 100)
+                    $sanksi_aktif = Point::where('total_poin', '<=', 30)->count();
+                    
+                    // Pelanggaran hari ini
+                    $pelanggaran_hari_ini = InputPelanggaranT::with(['siswa', 'jenispelanggaran'])
+                        ->whereHas('jenispelanggaran', function($q) {
+                            $q->where('poin', '<', 0);
+                        })
+                        ->whereDate('created_at', $today)
+                        ->orderBy('created_at', 'desc')
+                        ->limit(10)
+                        ->get();
+                    
+                    // Reward hari ini
+                    $reward_hari_ini = InputPelanggaranT::with(['siswa', 'jenispelanggaran'])
+                        ->whereHas('jenispelanggaran', function($q) {
+                            $q->where('poin', '>', 0);
+                        })
+                        ->whereDate('created_at', $today)
+                        ->orderBy('created_at', 'desc')
+                        ->limit(10)
+                        ->get();
+                    
+                    // Kelas dengan pelanggar terbanyak
+                    $kelas_pelanggar_terbanyak = DB::table('input_pelanggaran_t')
+                        ->join('siswa', 'input_pelanggaran_t.siswa_id', '=', 'siswa.id')
+                        ->join('kelas', 'siswa.kelas_id', '=', 'kelas.id')
+                        ->join('jenis_pelanggaran', 'input_pelanggaran_t.jenis_pelanggaran_id', '=', 'jenis_pelanggaran.id')
+                        ->where('jenis_pelanggaran.poin', '<', 0)
+                        ->select('kelas.subkelas as kelas', DB::raw('COUNT(DISTINCT siswa.id) as jumlah_siswa'))
+                        ->groupBy('kelas.id', 'kelas.subkelas')
+                        ->orderBy('jumlah_siswa', 'desc')
+                        ->limit(5)
+                        ->get();
+                    
+                    // Kelas dengan reward terbanyak
+                    $kelas_reward_terbanyak = DB::table('input_pelanggaran_t')
+                        ->join('siswa', 'input_pelanggaran_t.siswa_id', '=', 'siswa.id')
+                        ->join('kelas', 'siswa.kelas_id', '=', 'kelas.id')
+                        ->join('jenis_pelanggaran', 'input_pelanggaran_t.jenis_pelanggaran_id', '=', 'jenis_pelanggaran.id')
+                        ->where('jenis_pelanggaran.poin', '>', 0)
+                        ->select('kelas.subkelas as kelas', DB::raw('COUNT(DISTINCT siswa.id) as jumlah_siswa'))
+                        ->groupBy('kelas.id', 'kelas.subkelas')
+                        ->orderBy('jumlah_siswa', 'desc')
+                        ->limit(5)
+                        ->get();
+                    
+                    // Siswa dengan pelanggaran terbanyak
+                    $siswa_pelanggaran_terbanyak = DB::table('input_pelanggaran_t')
+                        ->join('siswa', 'input_pelanggaran_t.siswa_id', '=', 'siswa.id')
+                        ->join('kelas', 'siswa.kelas_id', '=', 'kelas.id')
+                        ->join('jenis_pelanggaran', 'input_pelanggaran_t.jenis_pelanggaran_id', '=', 'jenis_pelanggaran.id')
+                        ->where('jenis_pelanggaran.poin', '<', 0)
+                        ->select('siswa.nama', 'kelas.subkelas as kelas', DB::raw('COUNT(*) as jumlah_pelanggaran'))
+                        ->groupBy('siswa.id', 'siswa.nama', 'kelas.subkelas')
+                        ->orderBy('jumlah_pelanggaran', 'desc')
+                        ->limit(5)
+                        ->get();
+                    
+                    // Siswa dengan reward terbanyak
+                    $siswa_reward_terbanyak = DB::table('input_pelanggaran_t')
+                        ->join('siswa', 'input_pelanggaran_t.siswa_id', '=', 'siswa.id')
+                        ->join('kelas', 'siswa.kelas_id', '=', 'kelas.id')
+                        ->join('jenis_pelanggaran', 'input_pelanggaran_t.jenis_pelanggaran_id', '=', 'jenis_pelanggaran.id')
+                        ->where('jenis_pelanggaran.poin', '>', 0)
+                        ->select('siswa.nama', 'kelas.subkelas as kelas', DB::raw('COUNT(*) as jumlah_reward'))
+                        ->groupBy('siswa.id', 'siswa.nama', 'kelas.subkelas')
+                        ->orderBy('jumlah_reward', 'desc')
+                        ->limit(5)
+                        ->get();
+                    
+                    // Top pelanggaran
+                    $top_pelanggaran = DB::table('input_pelanggaran_t')
+                        ->join('jenis_pelanggaran', 'input_pelanggaran_t.jenis_pelanggaran_id', '=', 'jenis_pelanggaran.id')
+                        ->where('jenis_pelanggaran.poin', '<', 0)
+                        ->select('jenis_pelanggaran.nama_pelanggaran', DB::raw('COUNT(*) as jumlah'))
+                        ->groupBy('jenis_pelanggaran.id', 'jenis_pelanggaran.nama_pelanggaran')
+                        ->orderBy('jumlah', 'desc')
+                        ->limit(5)
+                        ->get();
+                    
+                    // Trend pelanggaran mingguan (7 hari terakhir)
+                    $trend_pelanggaran = [];
+                    for ($i = 6; $i >= 0; $i--) {
+                        $date = Carbon::now()->subDays($i);
+                        $count = InputPelanggaranT::whereHas('jenispelanggaran', function($q) {
+                            $q->where('poin', '<', 0);
+                        })
+                        ->whereDate('created_at', $date)
+                        ->count();
+                        
+                        $dayNames = ['Sun' => 'Min', 'Mon' => 'Sen', 'Tue' => 'Sel', 'Wed' => 'Rab', 'Thu' => 'Kam', 'Fri' => 'Jum', 'Sat' => 'Sab'];
+                        $trend_pelanggaran[] = [
+                            'day' => $dayNames[$date->format('D')] ?? $date->format('D'),
+                            'count' => $count
+                        ];
+                    }
+                    
+                    // Trend reward mingguan (7 hari terakhir)
+                    $trend_reward = [];
+                    for ($i = 6; $i >= 0; $i--) {
+                        $date = Carbon::now()->subDays($i);
+                        $count = InputPelanggaranT::whereHas('jenispelanggaran', function($q) {
+                            $q->where('poin', '>', 0);
+                        })
+                        ->whereDate('created_at', $date)
+                        ->count();
+                        
+                        $dayNames = ['Sun' => 'Min', 'Mon' => 'Sen', 'Tue' => 'Sel', 'Wed' => 'Rab', 'Thu' => 'Kam', 'Fri' => 'Jum', 'Sat' => 'Sab'];
+                        $trend_reward[] = [
+                            'day' => $dayNames[$date->format('D')] ?? $date->format('D'),
+                            'count' => $count
+                        ];
+                    }
                     // }else if(Auth::user()->role == 'Admin' || Auth::user()->role == 'Stakeholder' ){
                 //     $kelompok_kabupaten = Kabupaten::find(Auth::user()->kabupaten_id)->kelompok_kabupaten;
                 //     $kabupaten = Kabupaten::where('kelompok_kabupaten',$kelompok_kabupaten)->get();
@@ -98,7 +234,19 @@ class AdminController extends Controller
                     'currentYear',
                     'years',
                     'listPengawas',
-                    'total_siswa'
+                    'total_siswa',
+                    'pelanggaran_bulan_ini',
+                    'siswa_bermasalah',
+                    'sanksi_aktif',
+                    'pelanggaran_hari_ini',
+                    'reward_hari_ini',
+                    'kelas_pelanggar_terbanyak',
+                    'kelas_reward_terbanyak',
+                    'siswa_pelanggaran_terbanyak',
+                    'siswa_reward_terbanyak',
+                    'top_pelanggaran',
+                    'trend_pelanggaran',
+                    'trend_reward'
                     ) );
             }
         }

@@ -12,7 +12,6 @@ class HistoriPoint extends Model
         'point_id',
         'jenis',
         'input_pelanggaran_id',
-        'input_reward_id',
         'poin_sebelum',
         'poin_perubahan',
         'poin_sesudah',
@@ -44,12 +43,6 @@ class HistoriPoint extends Model
         return $this->belongsTo(\App\Models\InputPelanggaranT::class, 'input_pelanggaran_id');
     }
 
-    // Relasi dengan input reward
-    public function inputReward()
-    {
-        return $this->belongsTo(\App\Models\InputRewardT::class, 'input_reward_id');
-    }
-
     // Relasi dengan jenis pelanggaran melalui input pelanggaran
     public function jenisPelanggaran()
     {
@@ -60,19 +53,6 @@ class HistoriPoint extends Model
             'id', // Foreign key on jenis_pelanggaran table
             'input_pelanggaran_id', // Local key on historipoint_t table
             'jenis_pelanggaran_id' // Local key on input_pelanggaran_t table
-        );
-    }
-
-    // Relasi dengan jenis reward melalui input reward
-    public function jenisReward()
-    {
-        return $this->hasOneThrough(
-            \App\Models\JenisReward::class,
-            \App\Models\InputRewardT::class,
-            'id', // Foreign key on input_reward_t table
-            'id', // Foreign key on jenis_reward table
-            'input_reward_id', // Local key on historipoint_t table
-            'jenis_reward_id' // Local key on input_reward_t table
         );
     }
 

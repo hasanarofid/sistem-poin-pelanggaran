@@ -19,7 +19,6 @@ class CreateHistoripointTTable extends Migration
             $table->unsignedBigInteger('point_id');
             $table->string('jenis'); // pelanggaran atau reward
             $table->unsignedBigInteger('input_pelanggaran_id')->nullable();
-            $table->unsignedBigInteger('input_reward_id')->nullable();
             $table->integer('poin_sebelum');
             $table->integer('poin_perubahan');
             $table->integer('poin_sesudah');
@@ -30,7 +29,6 @@ class CreateHistoripointTTable extends Migration
             $table->foreign('siswa_id')->references('id')->on('siswa')->onDelete('cascade');
             $table->foreign('point_id')->references('id')->on('point_t')->onDelete('cascade');
             $table->foreign('input_pelanggaran_id')->references('id')->on('input_pelanggaran_t')->onDelete('set null');
-            $table->foreign('input_reward_id')->references('id')->on('input_pelanggaran_t')->onDelete('set null');
             $table->foreign('input_by')->references('id')->on('users')->onDelete('cascade');
         });
     }

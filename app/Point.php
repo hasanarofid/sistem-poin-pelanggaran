@@ -29,7 +29,7 @@ class Point extends Model
     }
 
     // Method untuk update poin dengan histori
-    public function updatePoin($perubahan, $jenisTransaksi, $inputPelanggaranId = null, $inputRewardId = null, $keterangan = null, $inputBy = null)
+    public function updatePoin($perubahan, $jenisTransaksi, $inputPelanggaranId = null, $keterangan = null, $inputBy = null)
     {
         $poinSebelum = $this->total_poin;
         $poinSesudah = $poinSebelum + $perubahan;
@@ -43,7 +43,6 @@ class Point extends Model
             'point_id' => $this->id,
             'jenis' => $jenisTransaksi,
             'input_pelanggaran_id' => $inputPelanggaranId,
-            'input_reward_id' => $inputRewardId,
             'poin_sebelum' => $poinSebelum,
             'poin_perubahan' => $perubahan,
             'poin_sesudah' => $poinSesudah,

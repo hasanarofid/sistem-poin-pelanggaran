@@ -56,7 +56,6 @@ class InputPelanggaranController extends Controller
                 $jenisPelanggaran->poin, // Poin sesuai dengan nilai di database
                 $jenisTransaksi,
                 $inputPelanggaran->id, // Selalu gunakan input_pelanggaran_id karena semua input masuk ke tabel ini
-                null, // input_reward_id tidak digunakan karena sistem menggunakan tabel yang sama
                 $request->keterangan,
                 $pelapor_id
             );

@@ -40,7 +40,7 @@ class JenisPelanggaranController extends Controller
         }
 
         return redirect()
-            ->route('admin.jenis-pelanggaran.index')
+            ->route('admin.jenis-poin.index')
             ->with('success', 'Data berhasil disimpan');
     }
 
@@ -50,7 +50,7 @@ class JenisPelanggaranController extends Controller
         $pelanggaran->delete();
 
         return redirect()
-            ->route('admin.jenis-pelanggaran.index')
+            ->route('admin.jenis-poin.index')
             ->with('success', 'Data berhasil dihapus');
     }
 
@@ -69,7 +69,7 @@ class JenisPelanggaranController extends Controller
         // Kalau pakai AJAX, balikan JSON
         return response()->json([
             'success' => true,
-            'message' => 'Jenis pelanggaran berhasil diperbarui'
+            'message' => 'Jenis Poin berhasil diperbarui'
         ]);
     }
 }

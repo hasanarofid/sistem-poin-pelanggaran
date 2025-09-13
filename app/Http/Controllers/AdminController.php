@@ -12,9 +12,11 @@ use DataTables;
 use Illuminate\Support\Facades\Hash;
 use Auth;
 use App\MasterTupoksi;
+use App\Models\InputPelanggaranT;
 use App\TanggapanUmpanbalikT;
 use App\Models\RencanaKerjaT;
 use App\Models\UmpanbalikT;
+use App\Siswa;
 
 class AdminController extends Controller
 {
@@ -34,6 +36,7 @@ class AdminController extends Controller
                     $total_stockholder = User::where('role','Stakeholder')->get()->count();
                     $total_rencankerja = RencanaKerjaT::get()->count();
                     $total_umpanbalik = UmpanbalikT::get()->count();
+                    $total_siswa = Siswa::get()->count();
                     // }else if(Auth::user()->role == 'Admin' || Auth::user()->role == 'Stakeholder' ){
                 //     $kelompok_kabupaten = Kabupaten::find(Auth::user()->kabupaten_id)->kelompok_kabupaten;
                 //     $kabupaten = Kabupaten::where('kelompok_kabupaten',$kelompok_kabupaten)->get();
@@ -81,6 +84,7 @@ class AdminController extends Controller
             ];
         }
 
+
         $listPengawas = User::where('role','pengawas')->get();
                 return view('adminNew.index',
                 compact(
@@ -93,7 +97,8 @@ class AdminController extends Controller
                     'months',
                     'currentYear',
                     'years',
-                    'listPengawas'
+                    'listPengawas',
+                    'total_siswa'
                     ) );
             }
         }

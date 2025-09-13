@@ -61,15 +61,12 @@ Route::get('/spider-web-data', 'AdminController@getSpiderWebData')->name('admin.
 
 // Routes untuk Admin
 Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
-    // route menu input pelanggaran untuk admin
-    Route::prefix('input-pelanggaran')->group(function () {
-        Route::get('/', 'InputPelanggaranController@index')->name('input-pelanggaran.index');
-    });
-    Route::prefix('jenis-pelanggaran')->name('admin.jenis-pelanggaran.')->group(function () {
+
+    Route::prefix('jenis-poin')->name('admin.jenis-poin.')->group(function () {
         Route::get('/', 'JenisPelanggaranController@index')->name('index');
         Route::post('/store', 'JenisPelanggaranController@store')->name('store');
         Route::put('/{id}/update', 'JenisPelanggaranController@update')->name('update');
-        Route::delete('/admin/jenis-pelanggaran/{id}', 'JenisPelanggaranController@destroy')->name('destroy');
+        Route::delete('/admin/jenis-poin/{id}', 'JenisPelanggaranController@destroy')->name('destroy');
     });
     Route::prefix('kategori')->name('admin.kategori.')->group(function () {
         Route::get('/', 'KategoriController@index')->name('index');
@@ -77,10 +74,10 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
         Route::put('/{id}/update', 'KategoriController@update')->name('update');
         Route::delete('/admin/kategori/{id}', 'KategoriController@destroy')->name('destroy');
     });
-    Route::prefix('input-pelanggaran')->name('admin.input-pelanggaran.')->group(function () {
+    Route::prefix('input-poin')->name('admin.input-poin.')->group(function () {
         Route::get('/', 'InputPelanggaranController@index')->name('index');
         Route::post('/store', 'InputPelanggaranController@store')->name('store');
-        Route::delete('/admin/input-pelanggaran/{id}', 'InputPelanggaranController@destroy')->name('destroy');
+        Route::delete('/admin/input-poin/{id}', 'InputPelanggaranController@destroy')->name('destroy');
         Route::get('/{id}/edit', 'InputPelanggaranController@edit')->name('edit');
         Route::put('/{id}/update', 'InputPelanggaranController@update')->name('update');
     });
@@ -112,7 +109,8 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
 // Routes untuk Guru
 Route::prefix('guru')->middleware(['auth', 'role.guru'])->group(function () {
     Route::get('/dashboard', 'GuruController@dashboard')->name('guru.dashboard');
-    Route::get('/input-pelanggaran', 'InputPelanggaranController@index')->name('guru.input-pelanggaran');
+    Route::get('/input-poin', 'InputPelanggaranController@index')->name('guru.input-poin');
+    Route::post('/input-poin/store', 'InputPelanggaranController@store')->name('guru.input-poin.store');
     Route::get('/laporan', 'LaporanController@index')->name('guru.laporan');
     Route::get('/export/excel', 'LaporanController@export')->name('guru.laporan.export');
     Route::get('/export/pdf', 'LaporanController@exportPDF')->name('guru.laporan.exportPDF');

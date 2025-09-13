@@ -20,7 +20,7 @@
                                     <span class="ti ti-users text-white"></span>
                                 </div>
                             </div>
-                            <h4 class="mb-0 text-primary">4</h4>
+                            <h4 class="mb-0 text-primary">{{$total_siswa}}</h4>
                             <small class="text-muted">Siswa terdaftar</small>
                         </div>
                     </div>

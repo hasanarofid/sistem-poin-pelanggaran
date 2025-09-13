@@ -222,7 +222,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="pelanggaran" class="form-label">Jenis Pelanggaran</label>
+                            <label for="pelanggaran" class="form-label">Jenis Poin</label>
                             <select id="pelanggaran" class="form-select">
                                 <option selected>Pilih pelanggaran...</option>
                                 <option>Terlambat masuk kelas</option>

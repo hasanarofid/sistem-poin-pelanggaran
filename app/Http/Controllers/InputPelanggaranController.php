@@ -43,7 +43,7 @@ class InputPelanggaranController extends Controller
         }
 
         return redirect()
-            ->route('admin.input-pelanggaran.index')
+            ->route('admin.input-poin.index')
             ->with('success', 'Data berhasil disimpan');
     }
 
@@ -53,7 +53,7 @@ class InputPelanggaranController extends Controller
         $pelanggaran->delete();
 
         return redirect()
-            ->route('admin.input-pelanggaran.index')
+            ->route('admin.input-poin.index')
             ->with('success', 'Data berhasil dihapus');
     }
 
@@ -80,6 +80,6 @@ class InputPelanggaranController extends Controller
             'pelapor_id' => $pelapor_id,
         ]);
 
-        return response()->json(['success' => true, 'message' => 'Input Pelanggaran berhasil diperbarui']);
+        return response()->json(['success' => true, 'message' => 'Input Poin berhasil diperbarui']);
     }
 }

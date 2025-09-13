@@ -1,13 +1,13 @@
 @extends('layouts.admin.home')
-@section('title', 'Input Pelanggaran')
-@section('titelcard', 'Input Pelanggaran')
+@section('title', 'Input Poin')
+@section('titelcard', 'Input Poin')
 @section('content')
 <div class="content-wrapper" style="margin: 0 !important; padding: 0 !important; width: 100% !important;">
   <div class="container-xxl flex-grow-1 container-p-y" style="padding: 30px !important; width: 100% !important; max-width: none !important; margin: 0 !important;">
 
     <!-- Header Title & Buttons -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="mb-0" style="font-size: 28px; font-weight: 700; color: #1f2937;">Input Pelanggaran</h1>
+      <h1 class="mb-0" style="font-size: 28px; font-weight: 700; color: #1f2937;">Input Poin</h1>
       <div class="d-flex gap-2">
         <!-- <span class="badge rounded-pill bg-dark" style="padding: 10px 15px; font-size: 14px;">
           <i class="ti ti-cloud" style="margin-right: 6px;"></i> Auto-sync ke Spreadsheet
@@ -16,7 +16,7 @@
           class="btn btn-success d-flex align-items-center"
           style="padding: 10px 15px; font-size: 14px;"
           data-bs-toggle="modal" data-bs-target="#modalTambahPelanggaran">
-          <i class="ti ti-plus" style="margin-right: 6px;"></i> Tambah Input Pelanggaran
+          <i class="ti ti-plus" style="margin-right: 6px;"></i> Tambah Input Poin
         </a> -->
       </div>
     </div>
@@ -24,7 +24,9 @@
     <!-- Form Card -->
     <div class="card">
       <div class="card-body">
-        <form action="{{ route('admin.input-pelanggaran.store') }}" method="POST" id="formTambahInputPelanggaran">
+        <form action="{{ request()->routeIs('admin.*') ? route('admin.input-poin.store') : route('guru.input-poin.store') }}"
+          method="POST"
+          id="formTambahInputPelanggaran">
           @csrf
           <div class="modal-body">
             <!-- Pilih Siswa -->
@@ -38,11 +40,11 @@
               </select>
             </div>
 
-            <!-- Jenis Pelanggaran -->
+            <!-- Jenis Poin -->
             <div class="mb-3">
-              <label for="jenis_pelanggaran_id" class="form-label">Jenis Pelanggaran</label>
+              <label for="jenis_pelanggaran_id" class="form-label">Jenis Poin</label>
               <select id="jenis_pelanggaran_id" name="jenis_pelanggaran_id" class="form-select">
-                <option value="">Jenis Pelanggaran...</option>
+                <option value="">Jenis Poin...</option>
                 @foreach($jenisPelanggaran as $value)
                 <option value="{{ $value->id }}">
                   {{ $value->nama_pelanggaran }} ({{ $value->poin }} point)
@@ -81,10 +83,12 @@
     $('#formTambahInputPelanggaran').on('submit', function(e) {
       e.preventDefault();
 
-      let formData = $(this).serialize();
+      let form = $(this);
+      let formData = form.serialize();
+      let actionUrl = form.attr('action'); // <- otomatis ambil action form
 
       $.ajax({
-        url: "{{ route('admin.input-pelanggaran.store') }}",
+        url: actionUrl,
         type: "POST",
         data: formData,
         success: function(response) {
@@ -101,7 +105,6 @@
               $('#keterangan').val('');
               location.reload();
             });
-
           }
         },
         error: function(xhr) {
@@ -111,13 +114,22 @@
             $.each(errors, function(key, value) {
               pesan += value[0] + "\n";
             });
-            alert(pesan); // bisa diganti pakai toast/alert Bootstrap
+            Swal.fire({
+              icon: 'error',
+              title: 'Validasi gagal',
+              text: pesan
+            });
           } else {
-            alert("Gagal menyimpan data!");
+            Swal.fire({
+              icon: 'error',
+              title: 'Gagal!',
+              text: 'Terjadi kesalahan server'
+            });
           }
         }
       });
     });
+
 
   });
 </script>

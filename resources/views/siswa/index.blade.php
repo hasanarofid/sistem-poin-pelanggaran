@@ -632,7 +632,7 @@ document.addEventListener('DOMContentLoaded', function() {
             $kelas.select2({
                 dropdownParent: $modal,
                 ajax: {
-                    url: "{{ route('laporan.setkelas') }}",
+                    url: "{{ route('laporan.updateKelas') }}",
                     dataType: 'json',
                     delay: 250,
                     type: "GET",

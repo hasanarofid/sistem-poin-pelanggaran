@@ -42,6 +42,7 @@ Route::post('/kirimumpanbalik', 'UmpanbalikController@saveumpan')->name('kirimum
 Route::get('/tanggapan', 'UmpanbalikController@tanggapan')->name('tanggapan');
 Route::get('/laporan/setkelas', 'LaporanController@setkelas')->name('laporan.setkelas');
 Route::get('/laporan/setsiswa', 'LaporanController@setsiswa')->name('laporan.setsiswa');
+Route::get('/laporan/updateKelas', 'LaporanController@updateKelas')->name('laporan.updateKelas');
 
 // route panel dashboard admin
 Route::get('/', 'AdminController@index')->name('admin.index')->middleware(['auth', 'role.admin']);

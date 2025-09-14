@@ -397,4 +397,31 @@ class LaporanController extends Controller
 
         return Excel::download(new \App\Exports\LaporanPerKelasExport($data), 'Laporan_Poin_Per_Kelas_' . $kelas->nama_kelas . '_' . $kelas->subkelas . '.xlsx');
     }
+
+    public function updateKelas(Request $request)
+    {
+        $query = DB::table('kelas')
+            ->select(
+                'kelas.nama_kelas',
+                'kelas.subkelas',
+                'kelas.id',
+            )
+            ->where('kelas.status', true);
+
+        // Jika ada parameter id, cari kelas berdasarkan id
+        if (!empty($request->id)) {
+            $data = $query->where('kelas.id', $request->id)->get();
+        } elseif (!empty($request->term)) {
+            $cari = $request->term;
+            $data = $query->where(function ($query) use ($cari) {
+                    $query->where('kelas.nama_kelas', 'LIKE', '%' . $cari . '%')
+                        ->orWhere('kelas.subkelas', 'LIKE', '%' . $cari . '%');
+                })
+                ->limit(10)
+                ->get();
+        } else {
+            $data = $query->limit(10)->get();
+        }
+        return response()->json($data);
+    }
 }

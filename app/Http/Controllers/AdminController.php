@@ -133,7 +133,19 @@ class AdminController extends Controller
                     // Top pelanggaran
                     $top_pelanggaran = DB::table('input_pelanggaran_t')
                         ->join('jenis_pelanggaran', 'input_pelanggaran_t.jenis_pelanggaran_id', '=', 'jenis_pelanggaran.id')
-                        ->where('jenis_pelanggaran.poin', '<', 0)
+                        ->join('kategori_m', 'jenis_pelanggaran.kategori_id', '=', 'kategori_m.id')
+                        ->where('kategori_m.nama_kategori', 'pelanggaran')
+                        ->select('jenis_pelanggaran.nama_pelanggaran', DB::raw('COUNT(*) as jumlah'))
+                        ->groupBy('jenis_pelanggaran.id', 'jenis_pelanggaran.nama_pelanggaran')
+                        ->orderBy('jumlah', 'desc')
+                        ->limit(5)
+                        ->get();
+
+                    // Top penghargaan
+                    $top_penghargaan = DB::table('input_pelanggaran_t')
+                        ->join('jenis_pelanggaran', 'input_pelanggaran_t.jenis_pelanggaran_id', '=', 'jenis_pelanggaran.id')
+                        ->join('kategori_m', 'jenis_pelanggaran.kategori_id', '=', 'kategori_m.id')
+                        ->where('kategori_m.nama_kategori', 'penghargaan')
                         ->select('jenis_pelanggaran.nama_pelanggaran', DB::raw('COUNT(*) as jumlah'))
                         ->groupBy('jenis_pelanggaran.id', 'jenis_pelanggaran.nama_pelanggaran')
                         ->orderBy('jumlah', 'desc')
@@ -141,19 +153,30 @@ class AdminController extends Controller
                         ->get();
                     
                     // Trend pelanggaran mingguan (7 hari terakhir)
-                    $trend_pelanggaran = [];
+                  // Ganti bagian trend_pelanggaran (baris 143-158) dengan:
+                    $trend_combined = [];
                     for ($i = 6; $i >= 0; $i--) {
                         $date = Carbon::now()->subDays($i);
-                        $count = InputPelanggaranT::whereHas('jenispelanggaran', function($q) {
+                        
+                        // Data pelanggaran (poin negatif)
+                        $pelanggaran_count = InputPelanggaranT::whereHas('jenispelanggaran', function($q) {
                             $q->where('poin', '<', 0);
                         })
                         ->whereDate('created_at', $date)
                         ->count();
                         
+                        // Data penghargaan (poin positif)
+                        $penghargaan_count = InputPelanggaranT::whereHas('jenispelanggaran', function($q) {
+                            $q->where('poin', '>', 0);
+                        })
+                        ->whereDate('created_at', $date)
+                        ->count();
+                        
                         $dayNames = ['Sun' => 'Min', 'Mon' => 'Sen', 'Tue' => 'Sel', 'Wed' => 'Rab', 'Thu' => 'Kam', 'Fri' => 'Jum', 'Sat' => 'Sab'];
-                        $trend_pelanggaran[] = [
+                        $trend_combined[] = [
                             'day' => $dayNames[$date->format('D')] ?? $date->format('D'),
-                            'count' => $count
+                            'pelanggaran' => $pelanggaran_count,
+                            'penghargaan' => $penghargaan_count
                         ];
                     }
                     
@@ -173,6 +196,34 @@ class AdminController extends Controller
                             'count' => $count
                         ];
                     }
+// Top 10 Pelanggaran Minggu Ini
+$top_pelanggaran_minggu = DB::table('input_pelanggaran_t')
+    ->join('jenis_pelanggaran', 'input_pelanggaran_t.jenis_pelanggaran_id', '=', 'jenis_pelanggaran.id')
+    ->where('jenis_pelanggaran.poin', '<', 0)
+    ->whereBetween('input_pelanggaran_t.created_at', [
+        Carbon::now()->startOfWeek(),
+        Carbon::now()->endOfWeek()
+    ])
+    ->select('jenis_pelanggaran.nama_pelanggaran', 'jenis_pelanggaran.kode', DB::raw('COUNT(*) as jumlah'))
+    ->groupBy('jenis_pelanggaran.id', 'jenis_pelanggaran.nama_pelanggaran', 'jenis_pelanggaran.kode')
+    ->orderBy('jumlah', 'desc')
+    ->limit(10)
+    ->get();
+
+// Top 10 Reward Minggu Ini
+$top_reward_minggu = DB::table('input_pelanggaran_t')
+    ->join('jenis_pelanggaran', 'input_pelanggaran_t.jenis_pelanggaran_id', '=', 'jenis_pelanggaran.id')
+    ->where('jenis_pelanggaran.poin', '>', 0)
+    ->whereBetween('input_pelanggaran_t.created_at', [
+        Carbon::now()->startOfWeek(),
+        Carbon::now()->endOfWeek()
+    ])
+    ->select('jenis_pelanggaran.nama_pelanggaran', 'jenis_pelanggaran.kode', DB::raw('COUNT(*) as jumlah'))
+    ->groupBy('jenis_pelanggaran.id', 'jenis_pelanggaran.nama_pelanggaran', 'jenis_pelanggaran.kode')
+    ->orderBy('jumlah', 'desc')
+    ->limit(10)
+    ->get();
+
                     // }else if(Auth::user()->role == 'Admin' || Auth::user()->role == 'Stakeholder' ){
                 //     $kelompok_kabupaten = Kabupaten::find(Auth::user()->kabupaten_id)->kelompok_kabupaten;
                 //     $kabupaten = Kabupaten::where('kelompok_kabupaten',$kelompok_kabupaten)->get();
@@ -245,8 +296,11 @@ class AdminController extends Controller
                     'siswa_pelanggaran_terbanyak',
                     'siswa_reward_terbanyak',
                     'top_pelanggaran',
-                    'trend_pelanggaran',
-                    'trend_reward'
+                    'top_penghargaan',
+                    'trend_combined',
+                    'trend_reward',
+                    'top_pelanggaran_minggu',
+                    'top_reward_minggu'
                     ) );
             }
         }

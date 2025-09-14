@@ -72,7 +72,7 @@
             <!-- Main Sections -->
             <div class="row mb-4">
                 <!-- Trend Pelanggaran Chart -->
-                <div class="col-xl-8 col-12 mb-4">
+                <div class="col-xl-12 col-12 mb-4">
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Trend Pelanggaran Mingguan</h5>
@@ -88,7 +88,7 @@
                 </div>
 
                 <!-- Pelanggaran Hari Ini -->
-                <div class="col-xl-4 col-12 mb-4">
+                <div class="col-xl-6 col-12 mb-4">
                     <div class="card h-100">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Pelanggaran Hari Ini</h5>
@@ -119,6 +119,38 @@
                         </div>
                     </div>
                 </div>
+                  <!-- Penghargaan Hari Ini -->
+                  <div class="col-xl-6 col-md-6 col-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Penghargaan Hari Ini</h5>
+                            <small class="text-success">
+                                <i class="ti ti-circle-filled me-1" style="font-size: 8px;"></i>
+                                Real-time
+                            </small>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                @forelse($reward_hari_ini as $reward)
+                                <div class="list-group-item border-0 px-0">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">{{ $reward->siswa->nama ?? 'N/A' }} - {{ $reward->siswa->kelas->subkelas ?? 'N/A' }}</h6>
+                                            <p class="mb-1 text-muted">{{ $reward->jenispelanggaran->nama_pelanggaran ?? 'N/A' }}</p>
+                                            <small class="text-muted">{{ $reward->created_at->format('d/m/Y H:i') }}</small>
+                                        </div>
+                                        <span class="badge bg-success">+{{ $reward->jenispelanggaran->poin ?? 0 }}</span>
+                                    </div>
+                                </div>
+                                @empty
+                                <div class="text-center py-3">
+                                    <p class="text-muted">Tidak ada Penghargaan hari ini</p>
+                                </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Sisi Pelanggaran -->
@@ -131,36 +163,13 @@
             </div>
             
             <div class="row mb-4">
-                <!-- Kelas dengan Pelanggar Terbanyak -->
-                <div class="col-xl-4 col-md-6 col-12 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Kelas dengan Pelanggar Terbanyak</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="list-group list-group-flush">
-                                @forelse($kelas_pelanggar_terbanyak as $index => $kelas)
-                                <div class="list-group-item border-0 px-0">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span>{{ $index + 1 }}. {{ $kelas->kelas ?? 'N/A' }}</span>
-                                        <span class="badge bg-danger">{{ $kelas->jumlah_siswa }} siswa</span>
-                                    </div>
-                                </div>
-                                @empty
-                                <div class="text-center py-3">
-                                    <p class="text-muted">Tidak ada data</p>
-                                </div>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
                 
                 <!-- Trend Pelanggaran dengan Pelanggar Terbanyak -->
                 <div class="col-xl-4 col-md-6 col-12 mb-4">
                     <div class="card h-100">
                         <div class="card-header">
-                            <h5 class="card-title mb-0">Trend Pelanggaran Mingguan</h5>
+                            <h5 class="card-title mb-0">Top 10 Pelanggaran Minggu Ini</h5>
                         </div>
                         <div class="card-body">
                             <canvas id="trendPelanggaranChart" height="150"></canvas>
@@ -195,120 +204,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Sisi Reward -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h4 class="mb-3" style="color: #059669; font-weight: 600;">
-                        <i class="ti ti-award me-2"></i>Sisi Reward
-                    </h4>
-                </div>
-            </div>
-            
-            <div class="row mb-4">
-                <!-- Reward Hari Ini -->
-                <div class="col-xl-4 col-md-6 col-12 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="card-title mb-0">Reward Hari Ini</h5>
-                            <small class="text-success">
-                                <i class="ti ti-circle-filled me-1" style="font-size: 8px;"></i>
-                                Real-time
-                            </small>
-                        </div>
-                        <div class="card-body">
-                            <div class="list-group list-group-flush">
-                                @forelse($reward_hari_ini as $reward)
-                                <div class="list-group-item border-0 px-0">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <h6 class="mb-1">{{ $reward->siswa->nama ?? 'N/A' }} - {{ $reward->siswa->kelas->subkelas ?? 'N/A' }}</h6>
-                                            <p class="mb-1 text-muted">{{ $reward->jenispelanggaran->nama_pelanggaran ?? 'N/A' }}</p>
-                                            <small class="text-muted">{{ $reward->created_at->format('d/m/Y H:i') }}</small>
-                                        </div>
-                                        <span class="badge bg-success">+{{ $reward->jenispelanggaran->poin ?? 0 }}</span>
-                                    </div>
-                                </div>
-                                @empty
-                                <div class="text-center py-3">
-                                    <p class="text-muted">Tidak ada reward hari ini</p>
-                                </div>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Kelas dengan Reward Terbanyak -->
-                <div class="col-xl-4 col-md-6 col-12 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Kelas dengan Reward Terbanyak</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="list-group list-group-flush">
-                                @forelse($kelas_reward_terbanyak as $index => $kelas)
-                                <div class="list-group-item border-0 px-0">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span>{{ $index + 1 }}. {{ $kelas->kelas ?? 'N/A' }}</span>
-                                        <span class="badge bg-success">{{ $kelas->jumlah_siswa }} siswa</span>
-                                    </div>
-                                </div>
-                                @empty
-                                <div class="text-center py-3">
-                                    <p class="text-muted">Tidak ada data</p>
-                                </div>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Trend Reward dengan Penerima Terbanyak -->
-                <div class="col-xl-4 col-md-6 col-12 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Trend Reward Mingguan</h5>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="trendRewardChart" height="150"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row">
-                <!-- Siswa dengan Reward Positif Terbanyak -->
-                <div class="col-xl-6 col-12 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Siswa dengan Reward Positif Terbanyak</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="list-group list-group-flush">
-                                @forelse($siswa_reward_terbanyak as $index => $siswa)
-                                <div class="list-group-item border-0 px-0">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <span>{{ $index + 1 }}. {{ $siswa->nama ?? 'N/A' }}</span>
-                                            <br><small class="text-muted">{{ $siswa->kelas ?? 'N/A' }}</small>
-                                        </div>
-                                        <span class="badge bg-success">{{ $siswa->jumlah_reward }}x</span>
-                                    </div>
-                                </div>
-                                @empty
-                                <div class="text-center py-3">
-                                    <p class="text-muted">Tidak ada data</p>
-                                </div>
-                                @endforelse
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
                 <!-- Top Pelanggaran -->
-                <div class="col-xl-6 col-12 mb-4">
+                <div class="col-xl-4 col-12 mb-4">
                     <div class="card h-100">
                         <div class="card-header">
                             <h5 class="card-title mb-0">Top Pelanggaran</h5>
@@ -332,6 +229,88 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Sisi Penghargaan -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h4 class="mb-3" style="color: #059669; font-weight: 600;">
+                        <i class="ti ti-award me-2"></i>Sisi Penghargaan
+                    </h4>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+              
+                
+            
+                
+                <!-- Trend Reward dengan Penerima Terbanyak -->
+                <div class="col-xl-4 col-md-6 col-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Top 10 Penghargaan Minggu Ini</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="trendRewardChart" height="150"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Siswa dengan Penghargaan Terbanyak</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                @forelse($siswa_reward_terbanyak as $index => $siswa)
+                                <div class="list-group-item border-0 px-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <span>{{ $index + 1 }}. {{ $siswa->nama ?? 'N/A' }}</span>
+                                            <br><small class="text-muted">{{ $siswa->kelas ?? 'N/A' }}</small>
+                                        </div>
+                                        <span class="badge bg-success">{{ $siswa->jumlah_reward }}x</span>
+                                    </div>
+                                </div>
+                                @empty
+                                <div class="text-center py-3">
+                                    <p class="text-muted">Tidak ada data</p>
+                                </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4 col-12 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Top Penghargaan</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group list-group-flush">
+                                @forelse($top_penghargaan as $index => $penghargaan)
+                                <div class="list-group-item border-0 px-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>{{ $index + 1 }}. {{ $penghargaan->nama_pelanggaran ?? 'N/A' }}</span>
+                                        <span class="badge bg-success">{{ $penghargaan->jumlah }}x</span>
+                                    </div>
+                                </div>
+                                @empty
+                                <div class="text-center py-3">
+                                    <p class="text-muted">Tidak ada data</p>
+                                </div>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+            </div>
+            
+            
         </div>
     </div>
 
@@ -342,27 +321,38 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Trend Chart (Main)
             const trendCtx = document.getElementById('trendChart').getContext('2d');
-            const trendData = @json($trend_pelanggaran);
+            const trendData = @json($trend_combined);
             
             new Chart(trendCtx, {
                 type: 'line',
                 data: {
                     labels: trendData.map(item => item.day),
-                    datasets: [{
-                        label: 'Pelanggaran',
-                        data: trendData.map(item => item.count),
-                        borderColor: '#dc2626',
-                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
+                    datasets: [
+                        {
+                            label: 'Pelanggaran',
+                            data: trendData.map(item => item.pelanggaran),
+                            borderColor: '#dc2626',
+                            backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Penghargaan',
+                            data: trendData.map(item => item.penghargaan),
+                            borderColor: '#059669',
+                            backgroundColor: 'rgba(5, 150, 105, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            display: false
+                            display: true,
+                            position: 'top'
                         }
                     },
                     scales: {
@@ -378,14 +368,15 @@
 
             // Trend Pelanggaran Chart
             const trendPelanggaranCtx = document.getElementById('trendPelanggaranChart').getContext('2d');
+            const topPelanggaranData = @json($top_pelanggaran_minggu);
             
             new Chart(trendPelanggaranCtx, {
                 type: 'bar',
                 data: {
-                    labels: trendData.map(item => item.day),
+                    labels: topPelanggaranData.map(item => item.kode || item.nama_pelanggaran),
                     datasets: [{
-                        label: 'Pelanggaran',
-                        data: trendData.map(item => item.count),
+                        label: 'Jumlah Pelanggaran',
+                        data: topPelanggaranData.map(item => item.jumlah),
                         backgroundColor: 'rgba(220, 38, 38, 0.8)',
                         borderColor: '#dc2626',
                         borderWidth: 1
@@ -397,6 +388,17 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    return topPelanggaranData[index].nama_pelanggaran;
+                                },
+                                label: function(context) {
+                                    return 'Jumlah: ' + context.parsed.y;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -405,6 +407,12 @@
                             ticks: {
                                 stepSize: 1
                             }
+                        },
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
                         }
                     }
                 }
@@ -412,15 +420,15 @@
 
             // Trend Reward Chart
             const trendRewardCtx = document.getElementById('trendRewardChart').getContext('2d');
-            const rewardData = @json($trend_reward);
+            const topRewardData = @json($top_reward_minggu);
             
             new Chart(trendRewardCtx, {
                 type: 'bar',
                 data: {
-                    labels: rewardData.map(item => item.day),
+                    labels: topRewardData.map(item => item.kode || item.nama_pelanggaran),
                     datasets: [{
-                        label: 'Reward',
-                        data: rewardData.map(item => item.count),
+                        label: 'Jumlah Penghargaan',
+                        data: topRewardData.map(item => item.jumlah),
                         backgroundColor: 'rgba(5, 150, 105, 0.8)',
                         borderColor: '#059669',
                         borderWidth: 1
@@ -432,6 +440,17 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    return topRewardData[index].nama_pelanggaran;
+                                },
+                                label: function(context) {
+                                    return 'Jumlah: ' + context.parsed.y;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -439,6 +458,12 @@
                             beginAtZero: true,
                             ticks: {
                                 stepSize: 1
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
                             }
                         }
                     }

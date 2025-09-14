@@ -41,7 +41,7 @@
                                 <p style="margin: 0; color: #6b7280;">Jenis Kelamin</p>
                                 <p style="font-weight: 600; color: #374151;">
                                     {{ $model->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}</p>
-                                <p style="margin: 0; color: #6b7280;">Total Poin Pelanggaran</p>
+                                <p style="margin: 0; color: #6b7280;">Total Perolehan Poin</p>
                                 <p style="font-weight: 600; color: #dc2626;">{{ $point->total_poin }}</p>
                                 <!-- Button Ubah Password -->
                                 <button type="button" class="btn btn-warning mt-3" data-bs-toggle="modal"

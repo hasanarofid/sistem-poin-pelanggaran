@@ -129,11 +129,25 @@ class GuruController extends Controller
             ->limit(5)
             ->get();
 
-        // Top pelanggaran di kelas guru
+        // Top pelanggaran di kelas guru (kategori = 'pelanggaran')
         $top_pelanggaran = DB::table('input_pelanggaran_t')
             ->join('jenis_pelanggaran', 'input_pelanggaran_t.jenis_pelanggaran_id', '=', 'jenis_pelanggaran.id')
+            ->join('kategori_m', 'jenis_pelanggaran.kategori_id', '=', 'kategori_m.id')
             ->join('siswa', 'input_pelanggaran_t.siswa_id', '=', 'siswa.id')
-            ->where('jenis_pelanggaran.poin', '<', 0)
+            ->where('kategori_m.nama_kategori', 'pelanggaran')
+            ->where('siswa.kelas_id', $kelasId)
+            ->select('jenis_pelanggaran.nama_pelanggaran', DB::raw('COUNT(*) as jumlah'))
+            ->groupBy('jenis_pelanggaran.id', 'jenis_pelanggaran.nama_pelanggaran')
+            ->orderBy('jumlah', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Top penghargaan di kelas guru (kategori = 'penghargaan')
+        $top_penghargaan = DB::table('input_pelanggaran_t')
+            ->join('jenis_pelanggaran', 'input_pelanggaran_t.jenis_pelanggaran_id', '=', 'jenis_pelanggaran.id')
+            ->join('kategori_m', 'jenis_pelanggaran.kategori_id', '=', 'kategori_m.id')
+            ->join('siswa', 'input_pelanggaran_t.siswa_id', '=', 'siswa.id')
+            ->where('kategori_m.nama_kategori', 'penghargaan')
             ->where('siswa.kelas_id', $kelasId)
             ->select('jenis_pelanggaran.nama_pelanggaran', DB::raw('COUNT(*) as jumlah'))
             ->groupBy('jenis_pelanggaran.id', 'jenis_pelanggaran.nama_pelanggaran')
@@ -181,14 +195,81 @@ class GuruController extends Controller
             ];
         }
 
+        // Top 10 Pelanggaran Minggu Ini untuk kelas guru
+        $top_pelanggaran_minggu = DB::table('input_pelanggaran_t')
+            ->join('jenis_pelanggaran', 'input_pelanggaran_t.jenis_pelanggaran_id', '=', 'jenis_pelanggaran.id')
+            ->join('siswa', 'input_pelanggaran_t.siswa_id', '=', 'siswa.id')
+            ->where('jenis_pelanggaran.poin', '<', 0)
+            ->where('siswa.kelas_id', $kelasId)
+            ->whereBetween('input_pelanggaran_t.created_at', [
+                \Carbon\Carbon::now()->startOfWeek(),
+                \Carbon\Carbon::now()->endOfWeek()
+            ])
+            ->select('jenis_pelanggaran.nama_pelanggaran', 'jenis_pelanggaran.kode', DB::raw('COUNT(*) as jumlah'))
+            ->groupBy('jenis_pelanggaran.id', 'jenis_pelanggaran.nama_pelanggaran', 'jenis_pelanggaran.kode')
+            ->orderBy('jumlah', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Top 10 Reward Minggu Ini untuk kelas guru
+        $top_reward_minggu = DB::table('input_pelanggaran_t')
+            ->join('jenis_pelanggaran', 'input_pelanggaran_t.jenis_pelanggaran_id', '=', 'jenis_pelanggaran.id')
+            ->join('siswa', 'input_pelanggaran_t.siswa_id', '=', 'siswa.id')
+            ->where('jenis_pelanggaran.poin', '>', 0)
+            ->where('siswa.kelas_id', $kelasId)
+            ->whereBetween('input_pelanggaran_t.created_at', [
+                \Carbon\Carbon::now()->startOfWeek(),
+                \Carbon\Carbon::now()->endOfWeek()
+            ])
+            ->select('jenis_pelanggaran.nama_pelanggaran', 'jenis_pelanggaran.kode', DB::raw('COUNT(*) as jumlah'))
+            ->groupBy('jenis_pelanggaran.id', 'jenis_pelanggaran.nama_pelanggaran', 'jenis_pelanggaran.kode')
+            ->orderBy('jumlah', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Data gabungan untuk grafik utama (pelanggaran + penghargaan)
+        $trend_combined = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = \Carbon\Carbon::now()->subDays($i);
+            
+            // Data pelanggaran (poin negatif)
+            $pelanggaran_count = \App\Models\InputPelanggaranT::whereHas('jenispelanggaran', function($q) {
+                $q->where('poin', '<', 0);
+            })
+            ->whereHas('siswa', function($q) use ($kelasId) {
+                $q->where('kelas_id', $kelasId);
+            })
+            ->whereDate('created_at', $date)
+            ->count();
+            
+            // Data penghargaan (poin positif)
+            $penghargaan_count = \App\Models\InputPelanggaranT::whereHas('jenispelanggaran', function($q) {
+                $q->where('poin', '>', 0);
+            })
+            ->whereHas('siswa', function($q) use ($kelasId) {
+                $q->where('kelas_id', $kelasId);
+            })
+            ->whereDate('created_at', $date)
+            ->count();
+            
+            $dayNames = ['Sun' => 'Min', 'Mon' => 'Sen', 'Tue' => 'Sel', 'Wed' => 'Rab', 'Thu' => 'Kam', 'Fri' => 'Jum', 'Sat' => 'Sab'];
+            $trend_combined[] = [
+                'day' => $dayNames[$date->format('D')] ?? $date->format('D'),
+                'pelanggaran' => $pelanggaran_count,
+                'penghargaan' => $penghargaan_count
+            ];
+        }
+
         // Data kosong untuk kelas (karena guru hanya melihat kelasnya sendiri)
         $kelas_pelanggar_terbanyak = collect();
         $kelas_reward_terbanyak = collect();
 
         return view('guru.dashboard', compact(
+            'trend_reward',
             'user', 'kelas', 'total_siswa', 'pelanggaran_bulan_ini', 'siswa_bermasalah', 'sanksi_aktif',
             'pelanggaran_hari_ini', 'reward_hari_ini', 'siswa_pelanggaran_terbanyak', 'siswa_reward_terbanyak',
-            'top_pelanggaran', 'trend_pelanggaran', 'trend_reward', 'kelas_pelanggar_terbanyak', 'kelas_reward_terbanyak'
+            'top_pelanggaran', 'top_penghargaan', 'trend_combined', 'top_pelanggaran_minggu', 'top_reward_minggu', 
+            'kelas_pelanggar_terbanyak', 'kelas_reward_terbanyak'
         ));
     }
 

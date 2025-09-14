@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Siswa;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -14,7 +15,15 @@ class SiswaExport implements FromCollection, WithHeadings, WithMapping
     */
     public function collection()
     {
-        return Siswa::with(['kelas', 'tahunAjaran'])->get();
+        $user = Auth::user();
+        if ($user->role == 'Guru') {
+            $kelasId = $user->kelas_id; 
+            return Siswa::with(['kelas', 'tahunAjaran'])
+                        ->where('kelas_id', $kelasId)
+                        ->get();
+        }else{
+            return Siswa::with(['kelas', 'tahunAjaran'])->get();
+        }
     }
 
     /**

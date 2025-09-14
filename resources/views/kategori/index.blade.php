@@ -74,33 +74,33 @@
                         <table class="table table-bordered mb-0" style="border: none;">
                             <thead style="background-color: #f8f9fa;">
                                 <tr>
-                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">NO</th>
+                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none; text-align: center;">NO</th>
                                     <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">NAMA KATEGORI</th>
-                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">STATUS</th>
-                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none;">AKSI</th>
+                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none; text-align: center;">STATUS</th>
+                                    <th style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none; text-align: center;">AKSI</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($kategori as $index => $value)
                                 <tr>
-                                    <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $loop->iteration + ($kategori->currentPage() - 1) * $kategori->perPage() }}</td>
+                                    <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151; text-align: center;">{{ $loop->iteration + ($kategori->currentPage() - 1) * $kategori->perPage() }}</td>
                                     <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">{{ $value->nama_kategori ?? '-' }}</td>
-                                    <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151;">
+                                    <td style="border: 1px solid #e5e7eb; padding: 12px; color: #374151; text-align: center;">
                                         @if($value->is_aktif == 1)
                                             <span class="badge" style="background-color: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;">Aktif</span>
                                         @else
                                             <span class="badge" style="background-color: #fee2e2; color: #dc2626; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;">Tidak Aktif</span>
                                         @endif
                                     </td>
-                                    <td style="border: 1px solid #e5e7eb; padding: 12px;">
-                                        <div class="d-flex gap-1">
-                                            <button type="button" class="btn btn-sm btnEditKategori" style="background: #059669; color: white; border: none; border-radius: 6px; padding: 6px 10px;">
+                                    <td style="border: 1px solid #e5e7eb; padding: 12px; text-align: center; ">
+                                        <div class="d-flex gap-1 justify-content-center">
+                                            <button type="button" class="btn btn-sm btnEditKategori" style="background: #059669; color: white; border: none; border-radius: 6px; padding: 6px 10px; width: 35px; height: 30px;">
                                                 <i class="ti ti-edit"></i>
                                             </button>
                                             <form action="{{ route('admin.kategori.destroy', $value->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm" style="background: #dc2626; color: white; border: none; border-radius: 6px; padding: 6px 10px;">
+                                                <button type="submit" class="btn btn-sm" style="background: #dc2626; color: white; border: none; border-radius: 6px; padding: 6px 10px; width: 35px; height: 30px;">
                                                     <i class="ti ti-trash"></i>
                                                 </button>
                                             </form>

@@ -10,6 +10,7 @@ use App\TahunAjaran;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SiswaExport;
+use App\Imports\GuruSiswaImport;
 use App\Imports\SiswaImport;
 use App\User;
 use Illuminate\Support\Facades\Hash;
@@ -441,7 +442,7 @@ class GuruController extends Controller
         $user = Auth::user();
         
         // Pastikan user adalah guru
-        if ($user->role !== 'guru' && $user->username !== 'guru') {
+        if ($user->role !== 'Guru') {
             abort(403, 'Unauthorized access');
         }
 
@@ -488,25 +489,24 @@ class GuruController extends Controller
 
         ini_set('max_execution_time', 300);
 
-        $validator = Validator::make($request->all(), [
-            'file' => 'required|mimes:xlsx,xls,csv'
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'file' => 'required|mimes:xlsx,xls,csv'
+        // ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator);
-        }
+        // if ($validator->fails()) {
+        //     return redirect()->back()
+        //         ->withErrors($validator);
+        // }
 
         try {
-            // Buat custom import untuk guru dengan filter kelas
-            $import = new \App\Imports\GuruSiswaImport($user->kelas_id);
+            $import = new GuruSiswaImport();
             Excel::import($import, $request->file('file'));
             
             // Buat pesan berdasarkan hasil import
             $messages = [];
             
             if ($import->successCount > 0) {
-                $messages[] = "Berhasil mengimpor {$import->successCount} data siswa ke kelas {$user->kelas->subkelas}.";
+                $messages[] = "Berhasil mengimpor {$import->successCount} data siswa.";
             }
             
             if ($import->errorCount > 0) {

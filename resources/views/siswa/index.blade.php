@@ -144,7 +144,7 @@
                                             </button>
 
                                             <!-- Modal -->
-                                            <div class="modal fade" id="updateKelasModal{{ $item->id }}" tabindex="-1" aria-labelledby="updateKelasModalLabel{{ $item->id }}" aria-hidden="true">
+                                            <div class="modal fade select2modal" id="updateKelasModal{{ $item->id }}" tabindex="-1" aria-labelledby="updateKelasModalLabel{{ $item->id }}" aria-hidden="true">
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
@@ -163,18 +163,15 @@
                                                                     <input type="text" class="form-control" id="id" name="id" value="{{ $item->id }}" hidden>
                                                                 </div>
                                                                 <div class="mb-3">
-                                                                    <label for="kelas" class="form-label">Ke Kelas <span class="text-danger">*</span></label>
-                                                                    <select id="kelas{{ $item->id }}" class="form-select @error('kelas') is-invalid @enderror" name="kelas">
-                                                                        <option value="">Pilih Kelas</option>
-                                                                        @foreach($listKelas as $k)
-                                                                            <option value="{{ $k->id }}" {{ old('kelas') == $k->id ? 'selected' : '' }}>{{ $k->nama_kelas . ' - ' . $k->subkelas }}</option>
-                                                                        @endforeach
+                                                                    <label for="kelas" class="form-label">Ke Kelas <span class="text-danger">*</span></label><br>
+                                                                    <select id="kelas" class="form-select select2" name="kelas">
+                                                                        <option value="">-- Pilih Kelas --</option>
                                                                     </select>
                                                                     @error('kelas')
                                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                                     @enderror
                                                                 </div>
-                                                                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                                                                <button type="submit" class="btn btn-primary">Simpan</button>
                                                             </form>
                                                         </div>
                                                     </div>
@@ -215,64 +212,90 @@
 </div>
 
 <style>
-/* Custom pagination styling */
+/* Responsive Pagination */
 .pagination-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 4px;
+    margin-top: 20px;
+    padding: 15px 0;
+}
+
+.pagination-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px 0;
+    font-size: 14px;
+    color: #6b7280;
 }
 
 .pagination {
-    margin: 0;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 5px;
 }
 
-.pagination .page-link {
-    color: #374151;
-    border: 1px solid #d1d5db;
-    padding: 8px 12px;
-    border-radius: 6px;
-    text-decoration: none;
+.page-item {
+    margin: 0;
+}
+
+.page-link {
     display: flex;
     align-items: center;
     justify-content: center;
     min-width: 40px;
     height: 40px;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #374151;
+    text-decoration: none;
+    border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
     transition: all 0.2s ease;
 }
 
-.pagination .page-link:hover {
-    background-color: #f3f4f6;
+.page-link:hover {
+    background: #f3f4f6;
     border-color: #9ca3af;
     color: #1f2937;
-    transform: translateY(-1px);
 }
 
-.pagination .page-item.active .page-link {
-    background-color: #3b82f6;
+.page-item.active .page-link {
+    background: #3b82f6;
     border-color: #3b82f6;
     color: white;
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
 }
 
-.pagination .page-item.disabled .page-link {
-    color: #9ca3af;
-    background-color: #f9fafb;
+.page-item.disabled .page-link {
+    background: #f9fafb;
     border-color: #e5e7eb;
+    color: #9ca3af;
     cursor: not-allowed;
 }
 
-.pagination .page-item.disabled .page-link:hover {
-    transform: none;
-    background-color: #f9fafb;
+/* Responsive Table */
+.table-responsive {
+    overflow-x: auto;
+    border-radius: 8px;
+}
+
+.table th,
+.table td {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+/* Responsive Buttons */
+.btn-sm {
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 6px;
 }
 
 /* Mobile Responsive Pagination */
@@ -596,5 +619,42 @@ document.addEventListener('DOMContentLoaded', function() {
 @endsection
 @section('script')
     @include('siswa.jsFunction')
+    <script>
+        $(document).on('shown.bs.modal', '.select2modal', function() {
+            var $modal = $(this);
+            var $kelas = $modal.find('.select2'); // select2 di dalam modal itu saja
+
+            // Cegah duplikat inisialisasi
+            if ($kelas.hasClass("select2-hidden-accessible")) {
+                $kelas.select2('destroy');
+            }
+
+            $kelas.select2({
+                dropdownParent: $modal,
+                ajax: {
+                    url: "{{ route('laporan.setkelas') }}",
+                    dataType: 'json',
+                    delay: 250,
+                    type: "GET",
+                    data: function(params) {
+                        return {
+                            term: params.term
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: $.map(data, function(item) {
+                                return {
+                                    id: item.id,
+                                    text: item.nama_kelas + ' (' + item.subkelas + ')'
+                                };
+                            })
+                        };
+                    },
+                    cache: true
+                }
+            });
+        });
+    </script>
 @endsection
 {{-- End of Selection --}}

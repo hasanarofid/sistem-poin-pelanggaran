@@ -74,6 +74,16 @@
             <!-- Table -->
             <div class="card">
                 <div class="card-body">
+                    @if($laporanPelanggaran->hasPages())
+                        <div class="pagination-info">
+                            <div>
+                                Menampilkan {{ $laporanPelanggaran->firstItem() ?? 0 }} - {{ $laporanPelanggaran->lastItem() ?? 0 }} dari {{ $laporanPelanggaran->total() }} data
+                            </div>
+                            <div>
+                                Halaman {{ $laporanPelanggaran->currentPage() }} dari {{ $laporanPelanggaran->lastPage() }}
+                            </div>
+                        </div>
+                    @endif
                     <div class="table-responsive">
                         <table class="table table-bordered mb-0" style="border: none;">
                             <thead style="background-color: #f8f9fa;">

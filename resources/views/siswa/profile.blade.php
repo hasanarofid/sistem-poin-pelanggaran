@@ -62,7 +62,7 @@
                             </div>
                             <div class="card-body" style="max-height: 400px; overflow-y: auto; margin-top: 25px;">
                                 <!-- Item pelanggaran -->
-                                @foreach ($riwayatPoin as $item)
+                                @forelse ($riwayatPoin as $item)
                                 <div class="d-flex mb-4"
                                     style="position: relative; border-left: 4px solid {{ $item->poin_perubahan < 0 ? '#dc2626' : '#059669' }}; padding-left: 15px;">
                                     <div style="flex: 1;">
@@ -90,7 +90,9 @@
                                         </div>
                                     </div>
                                 </div>
-                                @endforeach
+                                @empty
+                                <p style="color: #6b7280; font-size: 0.9rem;"> <i>Data riwayat pelanggaran tidak ada.</i></p>
+                                @endforelse
                                 <!-- Ulangi item lain di sini -->
                             </div>
                         </div>

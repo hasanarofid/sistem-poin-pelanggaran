@@ -32,7 +32,7 @@ class SiswaController extends Controller
         $user = Auth::user();
         
         // Pastikan user adalah siswa berdasarkan role (prioritas utama) atau username
-        if ($user->role !== 'siswa' && $user->username !== 'siswa') {
+        if (strtolower($user->role) !== 'siswa') {
             abort(403, 'Unauthorized access');
         }
 
@@ -60,7 +60,7 @@ class SiswaController extends Controller
             ->get();
         
         // Pastikan user adalah siswa berdasarkan role (prioritas utama) atau username
-        if ($user->role !== 'siswa' && $user->username !== 'siswa') {
+        if (strtolower($user->role) !== 'siswa') {
             abort(403, 'Unauthorized access');
         }
 

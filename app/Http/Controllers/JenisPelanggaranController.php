@@ -16,19 +16,19 @@ class JenisPelanggaranController extends Controller
         // Search functionality
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('kode', 'like', "%{$search}%")
-                  ->orWhere('nama_pelanggaran', 'like', "%{$search}%")
-                  ->orWhere('deskripsi', 'like', "%{$search}%")
-                  ->orWhereHas('kategori', function($kategoriQuery) use ($search) {
-                      $kategoriQuery->where('nama_kategori', 'like', "%{$search}%");
-                  });
+                    ->orWhere('nama_pelanggaran', 'like', "%{$search}%")
+                    ->orWhere('deskripsi', 'like', "%{$search}%")
+                    ->orWhereHas('kategori', function ($kategoriQuery) use ($search) {
+                        $kategoriQuery->where('nama_kategori', 'like', "%{$search}%");
+                    });
             });
         }
 
         $jenisPelanggaran = $query->orderBy('kode', 'asc')->paginate(10);
         $kategori = Kategori::where('is_aktif', true)->get();
-        
+
         return view('jenispelanggaran.index', compact('jenisPelanggaran', 'kategori'));
     }
 
@@ -94,9 +94,7 @@ class JenisPelanggaranController extends Controller
         $pelanggaran->save();
 
         // Kalau pakai AJAX, balikan JSON
-        return response()->json([
-            'success' => true,
-            'message' => 'Jenis Poin berhasil diperbarui'
-        ]);
+        return redirect()->route('admin.jenis-poin.index')
+            ->with('success', 'Jenis Poin berhasil diperbarui');
     }
 }

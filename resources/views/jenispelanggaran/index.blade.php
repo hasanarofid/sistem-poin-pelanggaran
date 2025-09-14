@@ -23,7 +23,7 @@
             </div>
         </div>
     </div>
-
+    <br>
     <!-- Alert Messages -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
@@ -291,7 +291,7 @@
         </div>
     </div>
 </div>
-
+@section('script')
 <script>
 $(document).ready(function() {
     // Edit button click handler
@@ -318,6 +318,7 @@ $(document).ready(function() {
     });
 });
 </script>
+@endsection
 
 <style>
 /* Responsive Top Section */

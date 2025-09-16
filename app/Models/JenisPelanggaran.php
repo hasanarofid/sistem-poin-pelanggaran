@@ -16,6 +16,10 @@ class JenisPelanggaran extends Model
         'deskripsi',
     ];
 
+    protected $casts = [
+        'poin' => 'integer'
+    ];
+
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'kategori_id');

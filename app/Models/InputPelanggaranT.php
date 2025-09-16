@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Siswa;
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class InputPelanggaranT extends Model
@@ -18,5 +19,10 @@ class InputPelanggaranT extends Model
     public function siswa()
     {
         return $this->belongsTo(Siswa::class, 'siswa_id');
+    }
+
+    public function pelapor()
+    {
+        return $this->belongsTo(User::class, 'pelapor_id');
     }
 }

@@ -56,6 +56,10 @@ Route::get('/chartpie', 'AdminController@chartpie')->name('admin.chartpie')->mid
 Route::get('/spider-web-data', 'AdminController@getSpiderWebData')->name('admin.spiderWebData')->middleware(['auth', 'role.admin']);
 
 // Routes untuk Admin
+// Route AJAX untuk filter (tanpa middleware)
+Route::get('/api/get-kelas', 'InputPelanggaranController@getKelasForFilter')->name('api.get-kelas');
+Route::get('/api/get-jenis-poin', 'InputPelanggaranController@getJenisPoinForFilter')->name('api.get-jenis-poin');
+
 Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
 
     Route::prefix('jenis-poin')->name('admin.jenis-poin.')->group(function () {
@@ -76,6 +80,24 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
         Route::delete('/{id}', 'InputPelanggaranController@destroy')->name('destroy');
         Route::get('/{id}/edit', 'InputPelanggaranController@edit')->name('edit');
         Route::put('/{id}/update', 'InputPelanggaranController@update')->name('update');
+    });
+    
+    // route menu list input point untuk admin
+    Route::prefix('list-input-poin')->name('admin.list-input-poin.')->group(function () {
+        Route::get('/', 'InputPelanggaranController@listInputPoin')->name('index');
+        Route::get('/get-kelas', 'InputPelanggaranController@getKelasForFilter')->name('get-kelas');
+        Route::get('/get-jenis-poin', 'InputPelanggaranController@getJenisPoinForFilter')->name('get-jenis-poin');
+        Route::get('/{id}/edit', 'InputPelanggaranController@editInputPoin')->name('edit');
+        Route::put('/{id}/update_input', 'InputPelanggaranController@updateInputPoin')->name('update_input');
+        Route::get('/{id}', 'InputPelanggaranController@showInputPoin')->name('show');
+    });
+    
+    
+    // route menu penambahan poin otomatis satu kelas untuk admin
+    Route::prefix('penambahan-poin-kelas')->name('admin.penambahan-poin-kelas.')->group(function () {
+        Route::get('/', 'InputPelanggaranController@penambahanPoinKelas')->name('index');
+        Route::post('/store', 'InputPelanggaranController@storePoinKelas')->name('store');
+        Route::get('/get-siswa/{kelas_id}', 'InputPelanggaranController@getSiswaByKelas')->name('get-siswa');
     });
     
     

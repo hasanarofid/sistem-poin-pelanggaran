@@ -58,6 +58,22 @@
                     <div data-i18n="Profile" style="color: white; font-weight: 500;">Input Poin</div>
                 </a>
             </li>
+            <li class="menu-item {{ request()->routeIs('admin.list-input-poin.*') ? 'active' : '' }}" style="margin: 2px 10px;">
+                <a href="{{ route('admin.list-input-poin.index') }}"
+                    class="menu-link"
+                    style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('admin.list-input-poin.*') ? 'background: #4a5568 !important;' : '' }}">
+                    <i class="menu-icon tf-icons ti ti-clipboard-list" style="margin-right: 12px; color: white;"></i>
+                    <div data-i18n="Profile" style="color: white; font-weight: 500;">List Input Poin</div>
+                </a>
+            </li>
+            <li class="menu-item {{ request()->routeIs('admin.penambahan-poin-kelas.*') ? 'active' : '' }}" style="margin: 2px 10px;">
+                <a href="{{ route('admin.penambahan-poin-kelas.index') }}"
+                    class="menu-link"
+                    style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('admin.penambahan-poin-kelas.*') ? 'background: #4a5568 !important;' : '' }}">
+                    <i class="menu-icon tf-icons ti ti-users" style="margin-right: 12px; color: white;"></i>
+                    <div data-i18n="Profile" style="color: white; font-weight: 500;">Penambahan Poin Kelas</div>
+                </a>
+            </li>
             <li class="menu-item {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}" style="margin: 2px 10px;">
                 <a href="{{ route('admin.laporan.index') }}"
                     class="menu-link"

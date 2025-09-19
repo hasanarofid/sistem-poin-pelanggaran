@@ -37,9 +37,18 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <label for="kelas" class="form-label">Kelas</label>
-                                <select id="kelas" class="form-select select2" name="kelas" onchange="setSiswa(this.value)">
-                                    <option value="" {{ request('kelas') == '' ? 'selected' : '' }}>Semua Kelas</option>
-                                </select>
+                                @if(auth()->user()->role === 'Guru')
+                                    <select id="kelas" class="form-select select2" name="kelas" onchange="setSiswa(this.value)" readonly>
+                                        <option value="{{ auth()->user()->kelas_id }}" selected>
+                                            {{ auth()->user()->kelas->nama_kelas ?? 'Kelas tidak ditemukan' }} 
+                                            ({{ auth()->user()->kelas->subkelas ?? '' }})
+                                        </option>
+                                    </select>
+                                @else
+                                    <select id="kelas" class="form-select select2" name="kelas" onchange="setSiswa(this.value)">
+                                        <option value="" {{ request('kelas') == '' ? 'selected' : '' }}>Semua Kelas</option>
+                                    </select>
+                                @endif
                             </div>
                             <div class="col-md-6">
                                 <label for="siswa" class="form-label">Siswa</label>
@@ -105,6 +114,9 @@
                                         PELANGGARAN</th>
                                     <th
                                         style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none; text-align: center; vertical-align: middle;">
+                                        KETERANGAN</th>
+                                    <th
+                                        style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none; text-align: center; vertical-align: middle;">
                                         POIN</th>
                                     <th
                                         style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none; text-align: center; vertical-align: middle;">
@@ -137,6 +149,8 @@
                                             @endif
                                             <td style="border:1px solid #e5e7eb; padding:12px;">
                                                 {{ $item->nama_pelanggaran }}</td>
+                                            <td style="border:1px solid #e5e7eb; padding:12px;">
+                                                {{ $item->keterangan }}</td>
                                             <td
                                                 style="border:1px solid #e5e7eb; padding:12px; text-align: center; vertical-align: middle;">
                                                 {{ $item->poin }}</td>

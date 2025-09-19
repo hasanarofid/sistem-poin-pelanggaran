@@ -35,6 +35,9 @@
                 PELANGGARAN</th>
             <th
                 style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none; text-align: center; vertical-align: middle;">
+                KETERANGAN</th>
+            <th
+                style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none; text-align: center; vertical-align: middle;">
                 POIN</th>
             <th
                 style="border: 1px solid #e5e7eb; padding: 12px; font-weight: 600; color: #374151; border-top: none; text-align: center; vertical-align: middle;">
@@ -59,6 +62,7 @@
                         </td>
                     @endif
                     <td style="vertical-align: middle;">{{ $item->nama_pelanggaran }}</td>
+                    <td style="vertical-align: middle;">{{ $item->keterangan }}</td>
                     <td style="text-align: center; vertical-align: middle;">{{ $item->poin }}</td>
                     @if ($i == 0)
                         <td rowspan="{{ $rowspan }}" style="vertical-align: middle;">{{ $item->pelapor }}</td>

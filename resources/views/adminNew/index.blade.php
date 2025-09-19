@@ -49,7 +49,7 @@
                                 </div>
                             </div>
                             <h4 class="mb-0 text-warning">{{ $siswa_bermasalah }}</h4>
-                            <small class="text-muted">Poin ≥ 20</small>
+                            <small class="text-muted">Poin ≥ 80</small>
                         </div>
                     </div>
                 </div>

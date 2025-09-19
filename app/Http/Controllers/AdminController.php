@@ -57,7 +57,7 @@ class AdminController extends Controller
                     ->count();
                     
                     // Siswa bermasalah (poin <= 80, karena default 100)
-                    $siswa_bermasalah = Point::where('total_poin', '<=', 20)->count();
+                    $siswa_bermasalah = Point::where('total_poin', '<=', 80)->count();
                     
                     // Sanksi aktif (poin <= 70, karena default 100)
                     $sanksi_aktif = Point::where('total_poin', '<=', 30)->count();

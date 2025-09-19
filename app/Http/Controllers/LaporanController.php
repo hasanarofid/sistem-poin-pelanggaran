@@ -26,6 +26,7 @@ class LaporanController extends Controller
         $query = DB::table('input_pelanggaran_t as t')
             ->select(
                 't.id as pelanggaran_id',
+                't.keterangan',
                 't.created_at as tanggal',
                 's.nama',
                 's.id as siswa_id',
@@ -156,10 +157,17 @@ class LaporanController extends Controller
 
     public function export(Request $request)
     {
+        $user = \Illuminate\Support\Facades\Auth::user();
         $dari_tanggal = $request->dari_tanggal;
         $sampai_tanggal =  $request->sampai_tanggal;
         $kelas =  $request->kelas;
         $siswa = $request->siswa;
+        
+        // Untuk guru, otomatis set kelas berdasarkan kelas_id user
+        if ($user->role === 'Guru') {
+            $kelas = $user->kelas_id;
+        }
+        
         $modKelas = Kelas::find($kelas);
         $modSiswa = Siswa::find($siswa);
 
@@ -168,6 +176,7 @@ class LaporanController extends Controller
                 ->select(
                     't.id as pelanggaran_id',
                     't.created_at as tanggal',
+                    't.keterangan',
                     's.nama',
                     'k.nama_kelas',
                     'k.subkelas',
@@ -180,6 +189,12 @@ class LaporanController extends Controller
                 ->leftJoin('jenis_pelanggaran as j', 't.jenis_pelanggaran_id', '=', 'j.id')
                 ->leftJoin('kelas as k', 's.kelas_id', '=', 'k.id')
                 ->leftJoin('users as u', 't.pelapor_id', '=', 'u.id')
+                ->when($dari_tanggal, function ($query, $dari_tanggal) {
+                    return $query->where('t.created_at', '>=', $dari_tanggal . ' 00:00:00');
+                })
+                ->when($sampai_tanggal, function ($query, $sampai_tanggal) {
+                    return $query->where('t.created_at', '<=', $sampai_tanggal . ' 23:59:59');
+                })
                 ->when($kelas, function ($query, $kelas) {
                     return $query->where('k.id', $kelas);
                 })
@@ -198,6 +213,7 @@ class LaporanController extends Controller
                 ->select(
                     't.id as pelanggaran_id',
                     't.created_at as tanggal',
+                    't.keterangan',
                     's.nama',
                     'k.nama_kelas',
                     'k.subkelas',
@@ -235,10 +251,17 @@ class LaporanController extends Controller
 
     public function exportPDF(Request $request)
     {
+        $user = \Illuminate\Support\Facades\Auth::user();
         $dari_tanggal = $request->dari_tanggal;
         $sampai_tanggal =  $request->sampai_tanggal;
         $kelas =  $request->kelas;
         $siswa = $request->siswa;
+        
+        // Untuk guru, otomatis set kelas berdasarkan kelas_id user
+        if ($user->role === 'Guru') {
+            $kelas = $user->kelas_id;
+        }
+        
         $modKelas = Kelas::find($kelas);
         $modSiswa = Siswa::find($siswa);
 
@@ -247,6 +270,7 @@ class LaporanController extends Controller
                 ->select(
                     't.id as pelanggaran_id',
                     't.created_at as tanggal',
+                    't.keterangan',
                     's.nama',
                     'k.nama_kelas',
                     'k.subkelas',
@@ -259,6 +283,12 @@ class LaporanController extends Controller
                 ->leftJoin('jenis_pelanggaran as j', 't.jenis_pelanggaran_id', '=', 'j.id')
                 ->leftJoin('kelas as k', 's.kelas_id', '=', 'k.id')
                 ->leftJoin('users as u', 't.pelapor_id', '=', 'u.id')
+                ->when($dari_tanggal, function ($query, $dari_tanggal) {
+                    return $query->where('t.created_at', '>=', $dari_tanggal . ' 00:00:00');
+                })
+                ->when($sampai_tanggal, function ($query, $sampai_tanggal) {
+                    return $query->where('t.created_at', '<=', $sampai_tanggal . ' 23:59:59');
+                })
                 ->when($kelas, function ($query, $kelas) {
                     return $query->where('k.id', $kelas);
                 })
@@ -286,6 +316,7 @@ class LaporanController extends Controller
                 ->select(
                     't.id as pelanggaran_id',
                     't.created_at as tanggal',
+                    't.keterangan',
                     's.nama',
                     'k.nama_kelas',
                     'k.subkelas',
@@ -334,9 +365,15 @@ class LaporanController extends Controller
 
     public function exportPerKelas(Request $request)
     {
+        $user = \Illuminate\Support\Facades\Auth::user();
         $dari_tanggal = $request->get('dari_tanggal');
         $sampai_tanggal = $request->get('sampai_tanggal');
         $kelas_id = $request->get('kelas');
+
+        // Untuk guru, otomatis set kelas berdasarkan kelas_id user
+        if ($user->role === 'Guru') {
+            $kelas_id = $user->kelas_id;
+        }
 
         // Validasi: kelas harus dipilih
         if (!$kelas_id) {

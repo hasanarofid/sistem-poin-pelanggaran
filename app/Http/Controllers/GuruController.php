@@ -69,7 +69,7 @@ class GuruController extends Controller
         // Siswa bermasalah di kelas guru
         $siswa_bermasalah = \App\Point::whereHas('siswa', function($q) use ($kelasId) {
             $q->where('kelas_id', $kelasId);
-        })->where('total_poin', '<=', 20)->count();
+        })->where('total_poin', '<=', 80)->count();
         
         // Sanksi aktif di kelas guru
         $sanksi_aktif = \App\Point::whereHas('siswa', function($q) use ($kelasId) {

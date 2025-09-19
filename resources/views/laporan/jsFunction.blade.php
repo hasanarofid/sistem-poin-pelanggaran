@@ -99,50 +99,69 @@
 
         var kelas = $('#kelas');
         var selectedKelasId = "{{ request('kelas') }}";
+        var userRole = "{{ auth()->user()->role }}";
 
-        // Jika ada kelas yang dipilih, load data kelas tersebut
-        if (selectedKelasId && selectedKelasId !== '') {
-            $.ajax({
-                url: "{{ route('laporan.setkelas') }}",
-                dataType: 'json',
-                type: "GET",
-                data: {
-                    id: selectedKelasId
-                },
-                success: function(data) {
-                    if (data.length > 0) {
-                        var option = new Option(data[0].nama_kelas + ' (' + data[0].subkelas + ')',
-                            data[0].id, true, true);
-                        kelas.append(option).trigger('change');
+        // Untuk guru, otomatis set kelas berdasarkan kelas_id user
+        if (userRole === 'Guru') {
+            var guruKelasId = "{{ auth()->user()->kelas_id }}";
+            var guruKelasNama = "{{ auth()->user()->kelas->nama_kelas ?? '' }}";
+            var guruKelasSubkelas = "{{ auth()->user()->kelas->subkelas ?? '' }}";
+            
+            // Set kelas otomatis untuk guru
+            if (guruKelasId && guruKelasNama) {
+                var option = new Option(guruKelasNama + ' (' + guruKelasSubkelas + ')', guruKelasId, true, true);
+                kelas.append(option).trigger('change');
+                
+                // Load siswa untuk kelas guru
+                setSiswa(guruKelasId);
+            }
+            
+            // Disable select2 untuk guru
+            kelas.prop('disabled', true);
+        } else {
+            // Jika ada kelas yang dipilih, load data kelas tersebut
+            if (selectedKelasId && selectedKelasId !== '') {
+                $.ajax({
+                    url: "{{ route('laporan.setkelas') }}",
+                    dataType: 'json',
+                    type: "GET",
+                    data: {
+                        id: selectedKelasId
+                    },
+                    success: function(data) {
+                        if (data.length > 0) {
+                            var option = new Option(data[0].nama_kelas + ' (' + data[0].subkelas + ')',
+                                data[0].id, true, true);
+                            kelas.append(option).trigger('change');
+                        }
                     }
-                }
+                });
+            }
+
+            kelas.select2({
+                ajax: {
+                    url: "{{ route('laporan.setkelas') }}",
+                    dataType: 'json',
+                    delay: 250,
+                    type: "GET",
+                    data: function(params) {
+                        return {
+                            term: params.term,
+                        };
+                    },
+                    processResults: function(data) {
+                        return {
+                            results: $.map(data, function(item) {
+                                return {
+                                    text: item.nama_kelas + ' (' + item.subkelas + ')',
+                                    id: item.id,
+                                };
+                            })
+                        };
+                    },
+                    cache: true
+                },
             });
         }
-
-        kelas.select2({
-            ajax: {
-                url: "{{ route('laporan.setkelas') }}",
-                dataType: 'json',
-                delay: 250,
-                type: "GET",
-                data: function(params) {
-                    return {
-                        term: params.term,
-                    };
-                },
-                processResults: function(data) {
-                    return {
-                        results: $.map(data, function(item) {
-                            return {
-                                text: item.nama_kelas + ' (' + item.subkelas + ')',
-                                id: item.id,
-                            };
-                        })
-                    };
-                },
-                cache: true
-            },
-        });
-
     });
 </script>

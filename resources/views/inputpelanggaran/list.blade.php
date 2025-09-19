@@ -3,10 +3,12 @@
 @section('titelcard', 'List Input Poin')
 @section('content')
 <style>
+/* Responsive Table Styles */
 .table-responsive {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
 }
 
 .table th {
@@ -14,11 +16,140 @@
   border-bottom: 2px solid #dee2e6;
   font-weight: 600;
   color: #495057;
+  white-space: nowrap;
+  min-width: 120px;
 }
 
 .table td {
   vertical-align: middle;
   border-bottom: 1px solid #dee2e6;
+  word-wrap: break-word;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .table-responsive {
+    font-size: 0.875rem;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.8rem;
+  }
+  
+  .table th:nth-child(n+6),
+  .table td:nth-child(n+6) {
+    display: none;
+  }
+  
+  .mobile-card {
+    display: block;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .mobile-card .card-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .mobile-card .card-body {
+    padding: 0;
+  }
+  
+  .mobile-card .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .mobile-card .info-label {
+    font-weight: 600;
+    color: #6b7280;
+    font-size: 0.8rem;
+  }
+  
+  .mobile-card .info-value {
+    color: #374151;
+    font-size: 0.8rem;
+  }
+  
+  .mobile-card .actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .mobile-card .actions .btn {
+    flex: 1;
+    font-size: 0.75rem;
+    padding: 0.375rem 0.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .container-xxl {
+    padding: 15px !important;
+  }
+  
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .d-flex.gap-2 {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .d-flex.gap-2 .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .filter-card .row {
+    margin: 0;
+  }
+  
+  .filter-card .col-md-6,
+  .filter-card .col-md-3 {
+    padding: 0.5rem 0;
+  }
+  
+  .stats-card .row {
+    margin: 0;
+  }
+  
+  .stats-card .col-md-3 {
+    padding: 0.5rem;
+  }
+  
+  .stat-number {
+    font-size: 1.5rem !important;
+  }
+  
+  .stat-label {
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Desktop Table Styles */
+@media (min-width: 769px) {
+  .mobile-card {
+    display: none;
+  }
 }
 
 .badge {
@@ -257,7 +388,6 @@
     </div>
     @endif
 
-    <!-- Debug Flash Messages -->
     <!-- Header Title & Buttons -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1 class="mb-0" style="font-size: 28px; font-weight: 700; color: #1f2937;">List Input Poin</h1>
@@ -320,15 +450,6 @@
             <option value="">Semua Jenis</option>
           </select>
         </div>
-        {{-- <div class="col-md-2">
-          <label for="filter_tanggal" class="form-label">Filter Tanggal</label>
-          <select class="form-select select2" id="filter_tanggal">
-            <option value="">Semua</option>
-            <option value="today">Hari Ini</option>
-            <option value="week">Minggu Ini</option>
-            <option value="month">Bulan Ini</option>
-          </select>
-        </div> --}}
       </div>
     </div>
 
@@ -336,7 +457,9 @@
     <div class="card">
       <div class="card-body">
         @if($inputPelanggaranT->count() > 0)
-        <div class="table-responsive">
+        
+        <!-- Desktop Table View -->
+        <div class="table-responsive d-none d-md-block">
           <table class="table table-hover" id="dataTable">
             <thead>
               <tr>
@@ -412,6 +535,60 @@
           </table>
         </div>
 
+        <!-- Mobile Card View -->
+        <div class="d-md-none">
+          @foreach($inputPelanggaranT as $index => $item)
+          <div class="mobile-card">
+            <div class="card-header">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold">{{ $item->siswa->nama }}</span>
+                <span class="badge bg-primary">{{ $item->siswa->kelas->subkelas ?? '-' }}</span>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="info-row">
+                <span class="info-label">Tanggal:</span>
+                <span class="info-value">{{ $item->created_at->format('d/m/Y H:i') }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">NIS:</span>
+                <span class="info-value">{{ $item->siswa->nis }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Jenis Poin:</span>
+                <span class="info-value">{{ $item->jenispelanggaran->nama_pelanggaran }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Poin:</span>
+                <span class="info-value {{ $item->jenispelanggaran->poin > 0 ? 'point-positive' : 'point-negative' }}">
+                  {{ $item->jenispelanggaran->poin > 0 ? '+' : '' }}{{ $item->jenispelanggaran->poin }}
+                </span>
+              </div>
+              @if($item->keterangan)
+              <div class="info-row">
+                <span class="info-label">Keterangan:</span>
+                <span class="info-value">{{ $item->keterangan }}</span>
+              </div>
+              @endif
+              <div class="info-row">
+                <span class="info-label">Pelapor:</span>
+                <span class="info-value">{{ $item->pelapor->name ?? 'Tidak diketahui' }}</span>
+              </div>
+              <div class="actions">
+                <a href="{{ route('admin.list-input-poin.show', $item->id) }}" 
+                   class="btn btn-info btn-sm">
+                  <i class="ti ti-eye me-1"></i>Detail
+                </a>
+                <a href="{{ route('admin.list-input-poin.edit', $item->id) }}" 
+                   class="btn btn-warning btn-sm">
+                  <i class="ti ti-edit me-1"></i>Edit
+                </a>
+              </div>
+            </div>
+          </div>
+          @endforeach
+        </div>
+
         <!-- Pagination -->
         <div class="d-flex justify-content-between align-items-center mt-3">
           <div class="text-muted">
@@ -477,13 +654,6 @@ $(document).ready(function() {
       timer: 3000
     });
   @endif
-
-  // Initialize Select2 for filter tanggal
-  $('#filter_tanggal').select2({
-    placeholder: 'Semua',
-    allowClear: true,
-    width: '100%'
-  });
 
   // Initialize Select2 for filter kelas with AJAX
   $('#filter_kelas').select2({
@@ -574,7 +744,7 @@ $(document).ready(function() {
   });
 
   // Filter functionality
-  $('#filter_kelas, #filter_jenis, #filter_tanggal').on('change', function() {
+  $('#filter_kelas, #filter_jenis').on('change', function() {
     filterTable();
   });
 
@@ -599,15 +769,14 @@ $(document).ready(function() {
     let searchTerm = $('#search').val().toLowerCase();
     let kelasFilter = $('#filter_kelas').val();
     let jenisFilter = $('#filter_jenis').val();
-    let tanggalFilter = $('#filter_tanggal').val();
 
+    // Filter desktop table
     $('#dataTable tbody tr').each(function() {
       let row = $(this);
       let siswaNama = row.find('td:nth-child(3)').text().toLowerCase();
       let siswaNis = row.find('td:nth-child(3) small').text().toLowerCase();
       let kelas = row.find('td:nth-child(4)').text().toLowerCase();
       let jenis = row.find('td:nth-child(5)').text().toLowerCase();
-      let tanggal = row.find('td:nth-child(2)').text();
 
       let matchesSearch = searchTerm === '' || 
         siswaNama.includes(searchTerm) || 
@@ -616,31 +785,34 @@ $(document).ready(function() {
 
       let matchesKelas = kelasFilter === '' || kelas.includes(kelasFilter.toLowerCase());
       let matchesJenis = jenisFilter === '' || jenis.includes(jenisFilter.toLowerCase());
-      
-      let matchesTanggal = true;
-      if (tanggalFilter !== '') {
-        let today = new Date();
-        let rowDate = new Date(tanggal.split('/').reverse().join('-'));
-        
-        switch(tanggalFilter) {
-          case 'today':
-            matchesTanggal = rowDate.toDateString() === today.toDateString();
-            break;
-          case 'week':
-            let weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
-            matchesTanggal = rowDate >= weekStart;
-            break;
-          case 'month':
-            matchesTanggal = rowDate.getMonth() === today.getMonth() && 
-                           rowDate.getFullYear() === today.getFullYear();
-            break;
-        }
-      }
 
-      if (matchesSearch && matchesKelas && matchesJenis && matchesTanggal) {
+      if (matchesSearch && matchesKelas && matchesJenis) {
         row.show();
       } else {
         row.hide();
+      }
+    });
+
+    // Filter mobile cards
+    $('.mobile-card').each(function() {
+      let card = $(this);
+      let siswaNama = card.find('.card-header .fw-bold').text().toLowerCase();
+      let siswaNis = card.find('.info-row').eq(1).find('.info-value').text().toLowerCase();
+      let kelas = card.find('.card-header .badge').text().toLowerCase();
+      let jenis = card.find('.info-row').eq(2).find('.info-value').text().toLowerCase();
+
+      let matchesSearch = searchTerm === '' || 
+        siswaNama.includes(searchTerm) || 
+        siswaNis.includes(searchTerm) || 
+        kelas.includes(searchTerm);
+
+      let matchesKelas = kelasFilter === '' || kelas.includes(kelasFilter.toLowerCase());
+      let matchesJenis = jenisFilter === '' || jenis.includes(jenisFilter.toLowerCase());
+
+      if (matchesSearch && matchesKelas && matchesJenis) {
+        card.show();
+      } else {
+        card.hide();
       }
     });
   }
@@ -666,7 +838,7 @@ $(document).ready(function() {
   });
 
   // Add loading state to action buttons
-  $('.action-buttons .btn').on('click', function() {
+  $('.action-buttons .btn, .actions .btn').on('click', function() {
     let btn = $(this);
     let originalHtml = btn.html();
     btn.html('<span class="loading-spinner"></span>').prop('disabled', true);

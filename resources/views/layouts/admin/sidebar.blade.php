@@ -86,6 +86,12 @@
 
         {{-- Menu untuk Guru --}}
         @if($isGuru)
+            <li class="menu-item {{ request()->routeIs('guru.profile') ? 'active' : '' }}" style="margin: 2px 10px;">
+                <a href="{{ route('guru.profile') }}" class="menu-link" style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('guru.profile') ? 'background: #4a5568 !important;' : '' }}">
+                    <i class="menu-icon tf-icons ti ti-user" style="margin-right: 12px; color: white;"></i>
+                    <div data-i18n="Profile" style="color: white; font-weight: 500;">Profile</div>
+                </a>
+            </li>
             <li class="menu-item {{ request()->routeIs('guru.siswa.*') ? 'active' : '' }}" style="margin: 2px 10px;">
                 <a href="{{ route('guru.siswa.index') }}" class="menu-link" style="color: white; padding: 12px 15px; border-radius: 6px; {{ request()->routeIs('guru.siswa.*') ? 'background: #4a5568 !important;' : '' }}">
                     <i class="menu-icon tf-icons ti ti-users" style="margin-right: 12px; color: white;"></i>

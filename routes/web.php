@@ -90,6 +90,7 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
         Route::get('/get-jenis-poin', 'InputPelanggaranController@getJenisPoinForFilter')->name('get-jenis-poin');
         Route::get('/{id}/edit', 'InputPelanggaranController@editInputPoin')->name('edit');
         Route::put('/{id}/update_input', 'InputPelanggaranController@updateInputPoin')->name('update_input');
+        Route::delete('/{id}/delete', 'InputPelanggaranController@deleteInputPoin')->name('delete');
         Route::get('/{id}', 'InputPelanggaranController@showInputPoin')->name('show');
     });
     
@@ -130,6 +131,8 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
 // Routes untuk Guru
 Route::prefix('guru')->middleware(['auth', 'role.guru'])->group(function () {
     Route::get('/dashboard', 'GuruController@dashboard')->name('guru.dashboard');
+    Route::get('/profile', 'GuruController@profile')->name('guru.profile');
+    Route::post('/ubah-password/{id}', 'GuruController@ubahPassword')->name('guru.ubah-password');
     Route::get('/input-poin', 'InputPelanggaranController@index')->name('guru.input-poin');
     Route::post('/input-poin/store', 'InputPelanggaranController@store')->name('guru.input-poin.store');
     Route::get('/input-poin/search-siswa', 'InputPelanggaranController@searchSiswa')->name('guru.input-poin.search-siswa');

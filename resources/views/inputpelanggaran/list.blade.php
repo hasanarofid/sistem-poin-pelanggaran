@@ -697,6 +697,87 @@ $(document).ready(function() {
       btn.html(originalHtml).prop('disabled', false);
     }, 2000);
   });
+
+  // Delete functionality with SweetAlert
+  $(document).on('click', '.delete-btn', function(e) {
+    e.preventDefault();
+    
+    let btn = $(this);
+    let id = btn.data('id');
+    let siswa = btn.data('siswa');
+    let poin = btn.data('poin');
+    let jenis = btn.data('jenis');
+    
+    // Show SweetAlert confirmation
+    Swal.fire({
+      title: 'Konfirmasi Hapus',
+      html: `
+        <div class="text-start">
+          <p>Apakah Anda yakin ingin menghapus data input poin berikut?</p>
+          <div class="alert alert-warning">
+            <strong>Siswa:</strong> ${siswa}<br>
+            <strong>Jenis Poin:</strong> ${jenis}<br>
+            <strong>Poin:</strong> ${poin > 0 ? '+' : ''}${poin}
+          </div>
+          <p class="text-danger"><strong>Peringatan:</strong> Tindakan ini akan menghapus data dan mengurangi poin siswa sesuai dengan nilai yang dihapus.</p>
+        </div>
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal',
+      reverseButtons: true,
+      focusCancel: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show loading state
+        Swal.fire({
+          title: 'Menghapus...',
+          text: 'Sedang menghapus data dan menghitung ulang poin...',
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+        
+        // Make AJAX request to delete
+        $.ajax({
+          url: `/admin/list-input-poin/${id}/delete`,
+          type: 'DELETE',
+          data: {
+            _token: $('meta[name="csrf-token"]').attr('content')
+          },
+          success: function(response) {
+            Swal.fire({
+              title: 'Berhasil!',
+              text: response.message,
+              icon: 'success',
+              confirmButtonText: 'OK'
+            }).then(() => {
+              // Refresh the data
+              performSearch();
+            });
+          },
+          error: function(xhr) {
+            let errorMessage = 'Terjadi kesalahan saat menghapus data';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+              errorMessage = xhr.responseJSON.message;
+            }
+            
+            Swal.fire({
+              title: 'Error!',
+              text: errorMessage,
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
+          }
+        });
+      }
+    });
+  });
 });
 </script>
 @endsection

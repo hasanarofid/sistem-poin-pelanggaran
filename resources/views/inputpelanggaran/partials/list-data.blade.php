@@ -71,6 +71,14 @@
                  class="btn btn-warning btn-sm">
                 <i class="ti ti-edit"></i>
               </a>
+              <button type="button" 
+                      class="btn btn-danger btn-sm delete-btn" 
+                      data-id="{{ $item->id }}"
+                      data-siswa="{{ $item->siswa->nama }}"
+                      data-poin="{{ $item->jenispelanggaran->poin }}"
+                      data-jenis="{{ $item->jenispelanggaran->nama_pelanggaran }}">
+                <i class="ti ti-trash"></i>
+              </button>
             </div>
           </td>
         </tr>
@@ -136,6 +144,14 @@
                  class="btn btn-warning btn-sm">
                 <i class="ti ti-edit me-1"></i>Edit
               </a>
+              <button type="button" 
+                      class="btn btn-danger btn-sm delete-btn" 
+                      data-id="{{ $item->id }}"
+                      data-siswa="{{ $item->siswa->nama }}"
+                      data-poin="{{ $item->jenispelanggaran->poin }}"
+                      data-jenis="{{ $item->jenispelanggaran->nama_pelanggaran }}">
+                <i class="ti ti-trash me-1"></i>Hapus
+              </button>
             </div>
           </div>
         </div>

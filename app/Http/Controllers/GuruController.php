@@ -15,6 +15,7 @@ use App\Imports\SiswaImport;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class GuruController extends Controller
 {
@@ -660,6 +661,99 @@ class GuruController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan saat memperbarui kelas siswa: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Show the profile for guru.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function profile()
+    {
+        $user = Auth::user();
+        
+        // Pastikan user adalah guru
+        if ($user->role !== 'Guru') {
+            abort(403, 'Unauthorized access');
+        }
+
+        // Ambil data kelas guru
+        $kelas = $user->kelas;
+        
+        if (!$kelas) {
+            abort(403, 'Guru tidak memiliki kelas yang ditugaskan');
+        }
+
+        // Data siswa di kelas guru
+        $total_siswa = Siswa::where('kelas_id', $user->kelas_id)->count();
+        
+        // Pelanggaran bulan ini untuk siswa di kelas guru
+        $thisMonth = \Carbon\Carbon::now()->month;
+        $thisYear = \Carbon\Carbon::now()->year;
+        $pelanggaran_bulan_ini = \App\Models\InputPelanggaranT::whereHas('jenispelanggaran', function($q) {
+            $q->where('poin', '<', 0);
+        })
+        ->whereHas('siswa', function($q) use ($user) {
+            $q->where('kelas_id', $user->kelas_id);
+        })
+        ->whereMonth('created_at', $thisMonth)
+        ->whereYear('created_at', $thisYear)
+        ->count();
+
+        // Siswa bermasalah di kelas guru
+        $siswa_bermasalah = \App\Point::whereHas('siswa', function($q) use ($user) {
+            $q->where('kelas_id', $user->kelas_id);
+        })->where('total_poin', '<=', 80)->count();
+
+        return view('guru.profile', compact('user', 'kelas', 'total_siswa', 'pelanggaran_bulan_ini', 'siswa_bermasalah'));
+    }
+
+    /**
+     * Update password for guru.
+     *
+     * @param Request $request
+     * @param int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function ubahPassword(Request $request, $id)
+    {
+        try {
+            // Validasi input
+            $request->validate([
+                'password' => 'required|string|min:8|confirmed',
+            ], [
+                'password.required' => 'Password baru harus diisi.',
+                'password.min' => 'Password minimal 8 karakter.',
+                'password.confirmed' => 'Konfirmasi password tidak sesuai.',
+            ]);
+
+            $user = User::findOrFail($id);
+            
+            // Pastikan user adalah guru yang sedang login
+            if ($user->id !== Auth::id() || $user->role !== 'Guru') {
+                return redirect()->route('guru.profile')->with('error', 'Unauthorized access.');
+            }
+
+            $user->password = Hash::make($request->password);
+            $user->save();
+
+            return redirect()->route('guru.profile')->with('success', 'Password berhasil diubah. Silahkan login kembali.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Handle validation errors specifically
+            return redirect()->route('guru.profile')
+                ->withErrors($e->validator)
+                ->withInput()
+                ->with('error', 'Validasi gagal: ' . implode(', ', $e->validator->errors()->all()));
+        } catch (\Exception $e) {
+            // Log the actual error for debugging
+            Log::error('Guru password change error: ' . $e->getMessage(), [
+                'user_id' => Auth::id(),
+                'request_data' => $request->except(['password', 'password_confirmation']),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return redirect()->route('guru.profile')->with('error', 'Terjadi kesalahan saat mengubah password: ' . $e->getMessage());
         }
     }
 }

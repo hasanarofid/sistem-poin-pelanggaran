@@ -9,6 +9,7 @@ use App\Kelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class InputPelanggaranController extends Controller
 {
@@ -251,7 +252,7 @@ class InputPelanggaranController extends Controller
         ]);
 
         // Debug logging
-        \Log::info('Updating input poin', [
+        Log::info('Updating input poin', [
             'input_id' => $id,
             'request_data' => $request->all(),
             'user_id' => $pelapor_id
@@ -302,7 +303,7 @@ class InputPelanggaranController extends Controller
             DB::commit();
 
             // Debug logging
-            \Log::info('Update successful, redirecting with flash message', [
+            Log::info('Update successful, redirecting with flash message', [
                 'input_id' => $id,
                 'user_id' => $pelapor_id
             ]);
@@ -315,7 +316,7 @@ class InputPelanggaranController extends Controller
             DB::rollback();
             
             // Log error untuk debugging
-            \Log::error('Error updating input poin: ' . $e->getMessage(), [
+            Log::error('Error updating input poin: ' . $e->getMessage(), [
                 'input_id' => $id,
                 'request_data' => $request->all(),
                 'trace' => $e->getTraceAsString()
@@ -354,7 +355,7 @@ class InputPelanggaranController extends Controller
         $pelapor_id = $user->id;
         
         // Debug logging
-        \Log::info('Store Poin Kelas - Request Data:', [
+        Log::info('Store Poin Kelas - Request Data:', [
             'request_data' => $request->all(),
             'user_id' => $pelapor_id
         ]);
@@ -368,7 +369,7 @@ class InputPelanggaranController extends Controller
                 'siswa_ids.*' => 'required|integer|exists:siswa,id',
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            \Log::error('Store Poin Kelas - Validation Error:', [
+            Log::error('Store Poin Kelas - Validation Error:', [
                 'errors' => $e->errors(),
                 'request_data' => $request->all()
             ]);
@@ -399,7 +400,7 @@ class InputPelanggaranController extends Controller
             $siswaIds = $request->siswa_ids;
             $chunkSize = 10; // Process in chunks of 10 for better performance
             
-            \Log::info('Processing siswa_ids:', [
+            Log::info('Processing siswa_ids:', [
                 'siswa_ids' => $siswaIds,
                 'total_count' => count($siswaIds)
             ]);
@@ -419,7 +420,7 @@ class InputPelanggaranController extends Controller
                     ];
                 }
                 
-                \Log::info('Bulk insert data for chunk:', [
+                Log::info('Bulk insert data for chunk:', [
                     'chunk_size' => count($chunk),
                     'data' => $inputPelanggaranData
                 ]);
@@ -427,7 +428,7 @@ class InputPelanggaranController extends Controller
                 // Bulk insert this chunk
                 $insertResult = InputPelanggaranT::insert($inputPelanggaranData);
                 
-                \Log::info('Bulk insert result:', [
+                Log::info('Bulk insert result:', [
                     'result' => $insertResult,
                     'chunk_size' => count($chunk)
                 ]);
@@ -469,7 +470,7 @@ class InputPelanggaranController extends Controller
                 $message .= ". Terdapat " . count($errors) . " error: " . implode(', ', $errors);
             }
 
-            \Log::info('Store Poin Kelas - Success:', [
+            Log::info('Store Poin Kelas - Success:', [
                 'success_count' => $successCount,
                 'errors' => $errors,
                 'message' => $message
@@ -495,7 +496,7 @@ class InputPelanggaranController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             
-            \Log::error('Store Poin Kelas - Error:', [
+            Log::error('Store Poin Kelas - Error:', [
                 'error_message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
                 'request_data' => $request->all()
@@ -614,5 +615,80 @@ class InputPelanggaranController extends Controller
                 'more' => ($page * $perPage) < $totalCount
             ]
         ]);
+    }
+
+    // Method untuk delete input point dengan rollback poin
+    public function deleteInputPoin($id)
+    {
+        $user = Auth::user();
+        $pelapor_id = $user->id;
+        
+        // Debug logging
+        Log::info('Deleting input poin', [
+            'input_id' => $id,
+            'user_id' => $pelapor_id
+        ]);
+
+        DB::beginTransaction();
+        
+        try {
+            // Ambil data input pelanggaran
+            $inputPelanggaran = InputPelanggaranT::with(['jenispelanggaran', 'siswa'])->findOrFail($id);
+            $jenisPelanggaran = $inputPelanggaran->jenispelanggaran;
+            $siswa = $inputPelanggaran->siswa;
+            $point = $siswa->getOrCreatePoint();
+            
+            // Rollback poin (negatif untuk mengurangi poin yang sudah ditambahkan)
+            $jenisTransaksi = $jenisPelanggaran->poin < 0 ? 'pelanggaran' : 'reward';
+            $point->updatePoin(
+                -$jenisPelanggaran->poin, // Negatif untuk rollback
+                $jenisTransaksi,
+                $inputPelanggaran->id,
+                'Rollback delete: ' . $inputPelanggaran->keterangan,
+                $pelapor_id
+            );
+
+            // Hapus input pelanggaran
+            $inputPelanggaran->delete();
+
+            DB::commit();
+
+            // Debug logging
+            Log::info('Delete successful', [
+                'input_id' => $id,
+                'user_id' => $pelapor_id
+            ]);
+
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data berhasil dihapus dan poin dihitung ulang'
+                ]);
+            }
+
+            return redirect()
+                ->route('admin.list-input-poin.index')
+                ->with('success', 'Data berhasil dihapus dan poin dihitung ulang');
+                
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            // Log error untuk debugging
+            Log::error('Error deleting input poin: ' . $e->getMessage(), [
+                'input_id' => $id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            if (request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan server: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            return redirect()
+                ->route('admin.list-input-poin.index')
+                ->with('error', 'Terjadi kesalahan server: ' . $e->getMessage());
+        }
     }
 }

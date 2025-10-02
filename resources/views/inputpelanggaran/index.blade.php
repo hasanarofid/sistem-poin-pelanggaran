@@ -234,16 +234,6 @@
               </label>
               <select id="siswa_id" name="siswa_id" class="form-select select2">
                 <option value="">Pilih siswa...</option>
-                @foreach($siswa as $value)
-                <option value="{{$value->id}}" 
-                        data-nis="{{$value->nis}}" 
-                        data-nama="{{$value->nama}}" 
-                        data-kelas="{{$value->nama_kelas_lengkap}}"
-                        data-rfid="{{$value->rfid}}"
-                        data-points="{{$value->point ? $value->point->total_poin : 100}}">
-                  {{$value->nis}} - {{$value->nama}} - {{$value->nama_kelas_lengkap}}
-                </option>
-                @endforeach
               </select>
             </div>
 
@@ -287,38 +277,55 @@
     let rfidScanTimeout;
     let isScanning = false;
     
-    // Initialize select2 for siswa dropdown with search
+    // Initialize select2 for siswa dropdown with AJAX search
     $('#siswa_id').select2({
       placeholder: 'Pilih siswa...',
       allowClear: true,
       width: '100%',
-      matcher: function(params, data) {
-        // If there are no search terms, return all data
-        if ($.trim(params.term) === '') {
-          return data;
+      ajax: {
+        url: "{{ request()->routeIs('admin.*') ? route('admin.input-poin.search-siswa') : route('guru.input-poin.search-siswa') }}",
+        dataType: 'json',
+        delay: 250,
+        data: function (params) {
+          return {
+            q: params.term,
+            page: params.page || 1
+          };
+        },
+        processResults: function (data, params) {
+          params.page = params.page || 1;
+          
+          return {
+            results: data.results,
+            pagination: {
+              more: data.pagination.more
+            }
+          };
+        },
+        cache: true
+      },
+      minimumInputLength: 0,
+      templateResult: function(student) {
+        if (student.loading) {
+          return student.text;
         }
-
-        // Do not display the item if there is no 'text' property
-        if (typeof data.text === 'undefined') {
-          return null;
-        }
-
-        // Search in NIS, Nama, Kelas, and RFID
-        let searchTerm = params.term.toLowerCase();
-        let nis = data.element.getAttribute('data-nis') || '';
-        let nama = data.element.getAttribute('data-nama') || '';
-        let kelas = data.element.getAttribute('data-kelas') || '';
-        let rfid = data.element.getAttribute('data-rfid') || '';
         
-        if (nis.toLowerCase().indexOf(searchTerm) > -1 || 
-            nama.toLowerCase().indexOf(searchTerm) > -1 || 
-            kelas.toLowerCase().indexOf(searchTerm) > -1 ||
-            rfid.toLowerCase().indexOf(searchTerm) > -1) {
-          return data;
-        }
-
-        // Return null if the term should not be displayed
-        return null;
+        let $result = $(
+          '<div class="d-flex justify-content-between align-items-center">' +
+            '<div>' +
+              '<strong>' + student.nama + '</strong><br>' +
+              '<small class="text-muted">NIS: ' + student.nis + ' | Kelas: ' + student.kelas + '</small>' +
+            '</div>' +
+            '<div class="text-end">' +
+              '<span class="badge bg-primary">' + student.points + ' poin</span>' +
+            '</div>' +
+          '</div>'
+        );
+        
+        return $result;
+      },
+      templateSelection: function(student) {
+        return student.nis + ' - ' + student.nama + ' - ' + student.kelas;
       }
     });
 
@@ -348,53 +355,75 @@
     }
 
     function findStudentByRFID(rfid) {
-      let found = false;
-      $('#siswa_id option').each(function() {
-        let optionRfid = $(this).data('rfid');
-        if (optionRfid && optionRfid.toString() === rfid.toString()) {
-          let option = $(this);
-          let studentId = option.val();
-          let studentName = option.data('nama');
-          let studentNis = option.data('nis');
-          let studentKelas = option.data('kelas');
-          let studentPoints = option.data('points');
+      // Search for student by RFID using AJAX
+      $.ajax({
+        url: "{{ request()->routeIs('admin.*') ? route('admin.input-poin.search-siswa') : route('guru.input-poin.search-siswa') }}",
+        data: {
+          q: rfid,
+          page: 1
+        },
+        dataType: 'json',
+        success: function(data) {
+          let found = false;
           
-          // Set the selected student
-          $('#siswa_id').val(studentId).trigger('change');
+          // Look for exact RFID match in results
+          if (data.results && data.results.length > 0) {
+            for (let i = 0; i < data.results.length; i++) {
+              let student = data.results[i];
+              if (student.rfid && student.rfid.toString() === rfid.toString()) {
+                // Create option element for Select2
+                let option = new Option(student.text, student.id, true, true);
+                option.dataset.nis = student.nis;
+                option.dataset.nama = student.nama;
+                option.dataset.kelas = student.kelas;
+                option.dataset.rfid = student.rfid;
+                option.dataset.points = student.points;
+                
+                // Add option to select and trigger change
+                $('#siswa_id').append(option).trigger('change');
+                
+                // Update student info display
+                $('#student_name').text(student.nama);
+                $('#student_nis').text(student.nis);
+                $('#student_kelas').text(student.kelas);
+                $('#student_points').text(student.points);
+                $('#student_info_section').show();
+                
+                // Update RFID status
+                updateRFIDStatus('success', 'Siswa ditemukan!', 'ti ti-user-check');
+                
+                // Play success sound
+                playSound('success');
+                
+                // Auto focus to jenis poin
+                setTimeout(() => {
+                  $('#jenis_pelanggaran_id').select2('open');
+                }, 500);
+                
+                found = true;
+                break;
+              }
+            }
+          }
           
-          // Update student info display
-          $('#student_name').text(studentName);
-          $('#student_nis').text(studentNis);
-          $('#student_kelas').text(studentKelas);
-          $('#student_points').text(studentPoints);
-          $('#student_info_section').show();
+          if (!found) {
+            updateRFIDStatus('error', 'RFID tidak ditemukan', 'ti ti-user-x');
+            playSound('error');
+            
+            // Clear student info
+            $('#student_info_section').hide();
+            $('#siswa_id').val('').trigger('change');
+          }
+        },
+        error: function() {
+          updateRFIDStatus('error', 'Gagal mencari siswa', 'ti ti-user-x');
+          playSound('error');
           
-          // Update RFID status
-          updateRFIDStatus('success', 'Siswa ditemukan!', 'ti ti-user-check');
-          
-          // Play success sound (if available)
-          playSound('success');
-          
-          // Auto focus to jenis poin
-          setTimeout(() => {
-            $('#jenis_pelanggaran_id').select2('open');
-          }, 500);
-          
-          found = true;
-          return false; // Break the loop
+          // Clear student info
+          $('#student_info_section').hide();
+          $('#siswa_id').val('').trigger('change');
         }
       });
-      
-      if (!found) {
-        updateRFIDStatus('error', 'RFID tidak ditemukan', 'ti ti-user-x');
-        playSound('error');
-        
-        // Clear student info
-        $('#student_info_section').hide();
-        $('#siswa_id').val('').trigger('change');
-      }
-      
-      return found;
     }
 
     function playSound(type) {
@@ -497,10 +526,10 @@
     $('#siswa_id').on('change', function() {
       let selectedOption = $(this).find('option:selected');
       if (selectedOption.val()) {
-        let studentName = selectedOption.data('nama');
-        let studentNis = selectedOption.data('nis');
-        let studentKelas = selectedOption.data('kelas');
-        let studentPoints = selectedOption.data('points');
+        let studentName = selectedOption.data('nama') || selectedOption.text().split(' - ')[1];
+        let studentNis = selectedOption.data('nis') || selectedOption.text().split(' - ')[0];
+        let studentKelas = selectedOption.data('kelas') || selectedOption.text().split(' - ')[2];
+        let studentPoints = selectedOption.data('points') || 100;
         
         // Update student info display
         $('#student_name').text(studentName);

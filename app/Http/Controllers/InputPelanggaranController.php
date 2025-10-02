@@ -166,11 +166,53 @@ class InputPelanggaranController extends Controller
     }
 
     // Method untuk list input point
-    public function listInputPoin()
+    public function listInputPoin(Request $request)
     {
-        $inputPelanggaranT = InputPelanggaranT::with(['jenispelanggaran.kategori', 'siswa.kelas', 'pelapor'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+        $query = InputPelanggaranT::with(['jenispelanggaran.kategori', 'siswa.kelas', 'pelapor']);
+        
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->whereHas('siswa', function($siswaQuery) use ($searchTerm) {
+                    $siswaQuery->where('nama', 'like', '%' . $searchTerm . '%')
+                              ->orWhere('nis', 'like', '%' . $searchTerm . '%');
+                })
+                ->orWhereHas('siswa.kelas', function($kelasQuery) use ($searchTerm) {
+                    $kelasQuery->where('nama_kelas', 'like', '%' . $searchTerm . '%')
+                              ->orWhere('subkelas', 'like', '%' . $searchTerm . '%');
+                })
+                ->orWhereHas('jenispelanggaran', function($jenisQuery) use ($searchTerm) {
+                    $jenisQuery->where('nama_pelanggaran', 'like', '%' . $searchTerm . '%')
+                              ->orWhere('kode', 'like', '%' . $searchTerm . '%');
+                })
+                ->orWhere('keterangan', 'like', '%' . $searchTerm . '%');
+            });
+        }
+        
+        // Filter by kelas
+        if ($request->has('filter_kelas') && !empty($request->filter_kelas)) {
+            $query->whereHas('siswa.kelas', function($kelasQuery) use ($request) {
+                $kelasQuery->where('subkelas', $request->filter_kelas);
+            });
+        }
+        
+        // Filter by jenis poin
+        if ($request->has('filter_jenis') && !empty($request->filter_jenis)) {
+            $query->whereHas('jenispelanggaran', function($jenisQuery) use ($request) {
+                $jenisQuery->where('nama_pelanggaran', $request->filter_jenis);
+            });
+        }
+        
+        $inputPelanggaranT = $query->orderBy('created_at', 'desc')->paginate(15);
+        
+        // For AJAX requests, return JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('inputpelanggaran.partials.list-data', compact('inputPelanggaranT'))->render(),
+                'pagination' => $inputPelanggaranT->links()->render()
+            ]);
+        }
         
         return view('inputpelanggaran.list', compact('inputPelanggaranT'));
     }
@@ -514,5 +556,63 @@ class InputPelanggaranController extends Controller
             ->get();
         
         return response()->json($jenisPelanggaran);
+    }
+
+    // Method untuk AJAX search siswa dengan server-side search
+    public function searchSiswa(Request $request)
+    {
+        $user = Auth::user();
+        $term = $request->get('q', '');
+        $page = $request->get('page', 1);
+        $perPage = 20; // Limit results per page
+        
+        // Filter berdasarkan role
+        $query = Siswa::with(['kelas', 'point']);
+        
+        if ($user->role === 'Guru') {
+            $query->where('kelas_id', $user->kelas_id);
+        }
+        
+        // Search in multiple fields
+        if (!empty($term)) {
+            $query->where(function($q) use ($term) {
+                $q->where('nis', 'like', '%' . $term . '%')
+                  ->orWhere('nama', 'like', '%' . $term . '%')
+                  ->orWhere('rfid', 'like', '%' . $term . '%')
+                  ->orWhereHas('kelas', function($kelasQuery) use ($term) {
+                      $kelasQuery->where('nama_kelas', 'like', '%' . $term . '%')
+                                ->orWhere('subkelas', 'like', '%' . $term . '%');
+                  });
+            });
+        }
+        
+        // Get total count for pagination
+        $totalCount = $query->count();
+        
+        // Get paginated results
+        $siswa = $query->orderBy('nama', 'asc')
+                      ->skip(($page - 1) * $perPage)
+                      ->take($perPage)
+                      ->get();
+        
+        // Format data for Select2
+        $results = $siswa->map(function($item) {
+            return [
+                'id' => $item->id,
+                'text' => $item->nis . ' - ' . $item->nama . ' - ' . $item->nama_kelas_lengkap,
+                'nis' => $item->nis,
+                'nama' => $item->nama,
+                'kelas' => $item->nama_kelas_lengkap,
+                'rfid' => $item->rfid,
+                'points' => $item->point ? $item->point->total_poin : 100
+            ];
+        });
+        
+        return response()->json([
+            'results' => $results,
+            'pagination' => [
+                'more' => ($page * $perPage) < $totalCount
+            ]
+        ]);
     }
 }

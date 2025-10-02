@@ -436,7 +436,7 @@
       <div class="row">
         <div class="col-md-6">
           <label for="search" class="form-label">Cari Siswa</label>
-          <input type="text" class="form-control search-box" id="search" placeholder="NIS, Nama, atau Kelas...">
+          <input type="text" class="form-control search-box" id="search" placeholder="NIS, Nama, atau Kelas..." value="">
         </div>
         <div class="col-md-3">
           <label for="filter_kelas" class="form-label">Filter Kelas</label>
@@ -455,160 +455,8 @@
 
     <!-- Data Table -->
     <div class="card">
-      <div class="card-body">
-        @if($inputPelanggaranT->count() > 0)
-        
-        <!-- Desktop Table View -->
-        <div class="table-responsive d-none d-md-block">
-          <table class="table table-hover" id="dataTable">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Tanggal</th>
-                <th>Siswa</th>
-                <th>Kelas</th>
-                <th>Jenis Poin</th>
-                <th>Poin</th>
-                <th>Keterangan</th>
-                <th>Pelapor</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach($inputPelanggaranT as $index => $item)
-              <tr>
-                <td>{{ $inputPelanggaranT->firstItem() + $index }}</td>
-                <td>
-                  <div class="d-flex flex-column">
-                    <span class="fw-bold">{{ $item->created_at->format('d/m/Y') }}</span>
-                    <small class="text-muted">{{ $item->created_at->format('H:i') }}</small>
-                  </div>
-                </td>
-                <td>
-                  <div class="d-flex flex-column">
-                    <span class="fw-bold">{{ $item->siswa->nama }}</span>
-                    <small class="text-muted">NIS: {{ $item->siswa->nis }}</small>
-                  </div>
-                </td>
-                <td>
-                  <span class="badge bg-primary">{{ $item->siswa->kelas->subkelas ?? '-' }}</span>
-                </td>
-                <td>
-                  <div class="d-flex flex-column">
-                    <span class="fw-bold">{{ $item->jenispelanggaran->nama_pelanggaran }}</span>
-                    <small class="text-muted">{{ $item->jenispelanggaran->kategori->nama_kategori ?? '-' }}</small>
-                  </div>
-                </td>
-                <td>
-                  <span class="fw-bold {{ $item->jenispelanggaran->poin > 0 ? 'point-positive' : 'point-negative' }}">
-                    {{ $item->jenispelanggaran->poin > 0 ? '+' : '' }}{{ $item->jenispelanggaran->poin }}
-                  </span>
-                </td>
-                <td>
-                  <span class="text-truncate d-inline-block" style="max-width: 150px;" title="{{ $item->keterangan }}">
-                    {{ $item->keterangan ?: '-' }}
-                  </span>
-                </td>
-                <td>
-                  <div class="d-flex flex-column">
-                    <span class="fw-bold">{{ $item->pelapor->name ?? 'Tidak diketahui' }}</span>
-                    <small class="text-muted">ID: {{ $item->pelapor_id }}</small>
-                  </div>
-                </td>
-                <td>
-                  <div class="action-buttons">
-                    <a href="{{ route('admin.list-input-poin.show', $item->id) }}" 
-                       class="btn btn-info btn-sm" 
-                       title="Lihat Detail">
-                      <i class="ti ti-eye"></i>
-                    </a>
-                    <a href="{{ route('admin.list-input-poin.edit', $item->id) }}" 
-                       class="btn btn-warning btn-sm" 
-                       title="Edit">
-                      <i class="ti ti-edit"></i>
-                    </a>
-                  </div>
-                </td>
-              </tr>
-              @endforeach
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Mobile Card View -->
-        <div class="d-md-none">
-          @foreach($inputPelanggaranT as $index => $item)
-          <div class="mobile-card">
-            <div class="card-header">
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-bold">{{ $item->siswa->nama }}</span>
-                <span class="badge bg-primary">{{ $item->siswa->kelas->subkelas ?? '-' }}</span>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="info-row">
-                <span class="info-label">Tanggal:</span>
-                <span class="info-value">{{ $item->created_at->format('d/m/Y H:i') }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">NIS:</span>
-                <span class="info-value">{{ $item->siswa->nis }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Jenis Poin:</span>
-                <span class="info-value">{{ $item->jenispelanggaran->nama_pelanggaran }}</span>
-              </div>
-              <div class="info-row">
-                <span class="info-label">Poin:</span>
-                <span class="info-value {{ $item->jenispelanggaran->poin > 0 ? 'point-positive' : 'point-negative' }}">
-                  {{ $item->jenispelanggaran->poin > 0 ? '+' : '' }}{{ $item->jenispelanggaran->poin }}
-                </span>
-              </div>
-              @if($item->keterangan)
-              <div class="info-row">
-                <span class="info-label">Keterangan:</span>
-                <span class="info-value">{{ $item->keterangan }}</span>
-              </div>
-              @endif
-              <div class="info-row">
-                <span class="info-label">Pelapor:</span>
-                <span class="info-value">{{ $item->pelapor->name ?? 'Tidak diketahui' }}</span>
-              </div>
-              <div class="actions">
-                <a href="{{ route('admin.list-input-poin.show', $item->id) }}" 
-                   class="btn btn-info btn-sm">
-                  <i class="ti ti-eye me-1"></i>Detail
-                </a>
-                <a href="{{ route('admin.list-input-poin.edit', $item->id) }}" 
-                   class="btn btn-warning btn-sm">
-                  <i class="ti ti-edit me-1"></i>Edit
-                </a>
-              </div>
-            </div>
-          </div>
-          @endforeach
-        </div>
-
-        <!-- Pagination -->
-        <div class="d-flex justify-content-between align-items-center mt-3">
-          <div class="text-muted">
-            Menampilkan {{ $inputPelanggaranT->firstItem() }} sampai {{ $inputPelanggaranT->lastItem() }} 
-            dari {{ $inputPelanggaranT->total() }} data
-          </div>
-          <div>
-            {{ $inputPelanggaranT->links() }}
-          </div>
-        </div>
-        @else
-        <div class="empty-state">
-          <i class="ti ti-database-off"></i>
-          <h4>Tidak ada data input poin</h4>
-          <p>Belum ada data input poin yang tersimpan.</p>
-          <a href="{{ route('admin.input-poin.index') }}" class="btn btn-primary">
-            <i class="ti ti-plus me-2"></i>Input Poin Pertama
-          </a>
-        </div>
-        @endif
+      <div class="card-body" id="data-container">
+        @include('inputpelanggaran.partials.list-data')
       </div>
     </div>
 
@@ -620,6 +468,28 @@
 @section('script')
 <script>
 $(document).ready(function() {
+  // Clear search input and filters on page load
+  $('#search').val('');
+  $('#filter_kelas').val('').trigger('change');
+  $('#filter_jenis').val('').trigger('change');
+  
+  // Clear URL parameters to ensure clean state
+  if (window.history.replaceState) {
+    const url = new URL(window.location);
+    url.searchParams.delete('search');
+    url.searchParams.delete('filter_kelas');
+    url.searchParams.delete('filter_jenis');
+    window.history.replaceState({}, '', url);
+  }
+  
+  // Ensure data is loaded without any filters on initial load
+  if (!window.location.search.includes('search=') && 
+      !window.location.search.includes('filter_kelas=') && 
+      !window.location.search.includes('filter_jenis=')) {
+    // Page is loaded without search parameters, ensure clean state
+    console.log('Page loaded without search parameters - showing all data');
+  }
+  
   // Auto-hide flash messages after 5 seconds
   setTimeout(function() {
     $('.alert').fadeOut('slow');
@@ -737,15 +607,19 @@ $(document).ready(function() {
     }
   });
 
-  // Search functionality
+  // AJAX Search functionality
+  let searchTimeout;
+  
   $('#search').on('keyup', function() {
-    let searchTerm = $(this).val().toLowerCase();
-    filterTable();
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(function() {
+      performSearch();
+    }, 500); // Delay 500ms after user stops typing
   });
 
   // Filter functionality
   $('#filter_kelas, #filter_jenis').on('change', function() {
-    filterTable();
+    performSearch();
   });
 
   // Add loading state handlers for AJAX Select2
@@ -765,54 +639,29 @@ $(document).ready(function() {
     $(this).closest('.select2-container').removeClass('select2-container--loading');
   });
 
-  function filterTable() {
-    let searchTerm = $('#search').val().toLowerCase();
+  function performSearch() {
+    let searchTerm = $('#search').val();
     let kelasFilter = $('#filter_kelas').val();
     let jenisFilter = $('#filter_jenis').val();
-
-    // Filter desktop table
-    $('#dataTable tbody tr').each(function() {
-      let row = $(this);
-      let siswaNama = row.find('td:nth-child(3)').text().toLowerCase();
-      let siswaNis = row.find('td:nth-child(3) small').text().toLowerCase();
-      let kelas = row.find('td:nth-child(4)').text().toLowerCase();
-      let jenis = row.find('td:nth-child(5)').text().toLowerCase();
-
-      let matchesSearch = searchTerm === '' || 
-        siswaNama.includes(searchTerm) || 
-        siswaNis.includes(searchTerm) || 
-        kelas.includes(searchTerm);
-
-      let matchesKelas = kelasFilter === '' || kelas.includes(kelasFilter.toLowerCase());
-      let matchesJenis = jenisFilter === '' || jenis.includes(jenisFilter.toLowerCase());
-
-      if (matchesSearch && matchesKelas && matchesJenis) {
-        row.show();
-      } else {
-        row.hide();
-      }
-    });
-
-    // Filter mobile cards
-    $('.mobile-card').each(function() {
-      let card = $(this);
-      let siswaNama = card.find('.card-header .fw-bold').text().toLowerCase();
-      let siswaNis = card.find('.info-row').eq(1).find('.info-value').text().toLowerCase();
-      let kelas = card.find('.card-header .badge').text().toLowerCase();
-      let jenis = card.find('.info-row').eq(2).find('.info-value').text().toLowerCase();
-
-      let matchesSearch = searchTerm === '' || 
-        siswaNama.includes(searchTerm) || 
-        siswaNis.includes(searchTerm) || 
-        kelas.includes(searchTerm);
-
-      let matchesKelas = kelasFilter === '' || kelas.includes(kelasFilter.toLowerCase());
-      let matchesJenis = jenisFilter === '' || jenis.includes(jenisFilter.toLowerCase());
-
-      if (matchesSearch && matchesKelas && matchesJenis) {
-        card.show();
-      } else {
-        card.hide();
+    
+    // Show loading state
+    $('#data-container').html('<div class="text-center py-4"><i class="ti ti-loader-2 spin fs-1 text-primary"></i><br><small class="text-muted">Mencari data...</small></div>');
+    
+    $.ajax({
+      url: "{{ route('admin.list-input-poin.index') }}",
+      type: 'GET',
+      data: {
+        search: searchTerm,
+        filter_kelas: kelasFilter,
+        filter_jenis: jenisFilter,
+        page: 1 // Always start from page 1 when searching
+      },
+      success: function(response) {
+        $('#data-container').html(response.html);
+      },
+      error: function(xhr, status, error) {
+        console.error('Search error:', error);
+        $('#data-container').html('<div class="alert alert-danger">Gagal memuat data. Silakan coba lagi.</div>');
       }
     });
   }

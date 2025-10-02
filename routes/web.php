@@ -80,6 +80,7 @@ Route::prefix('admin')->middleware(['auth', 'role.admin'])->group(function () {
         Route::delete('/{id}', 'InputPelanggaranController@destroy')->name('destroy');
         Route::get('/{id}/edit', 'InputPelanggaranController@edit')->name('edit');
         Route::put('/{id}/update', 'InputPelanggaranController@update')->name('update');
+        Route::get('/search-siswa', 'InputPelanggaranController@searchSiswa')->name('search-siswa');
     });
     
     // route menu list input point untuk admin
@@ -131,6 +132,7 @@ Route::prefix('guru')->middleware(['auth', 'role.guru'])->group(function () {
     Route::get('/dashboard', 'GuruController@dashboard')->name('guru.dashboard');
     Route::get('/input-poin', 'InputPelanggaranController@index')->name('guru.input-poin');
     Route::post('/input-poin/store', 'InputPelanggaranController@store')->name('guru.input-poin.store');
+    Route::get('/input-poin/search-siswa', 'InputPelanggaranController@searchSiswa')->name('guru.input-poin.search-siswa');
     Route::get('/laporan', 'LaporanController@index')->name('guru.laporan');
     Route::get('/export/excel', 'LaporanController@export')->name('guru.laporan.export');
     Route::get('/export/excel-per-kelas', 'LaporanController@exportPerKelas')->name('guru.laporan.export-per-kelas');
